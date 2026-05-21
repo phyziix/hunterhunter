@@ -133,6 +133,7 @@
 | `data/inspire/_狩猎系统/state.json` | 游戏状态持久化文件（星点余额、连续天数、勋章、回顾/战报完成状态等） |
 | `data/inspire/_狩猎系统/config.yaml` | 系统配置参数（基础星点、倍数、奖励金额、汇率等） |
 | `requirements.txt` | Python 依赖声明 |
+| `.gitignore` | 忽略规则（venv/、__pycache__/、.DS_Store 等） |
 | `LOGS.md` | 开发日志与任务追踪，记录当前任务清单和每日决策/问题/计划 |
 
 ### 数据存储
@@ -196,6 +197,7 @@ hunt: true
 |------|------|------|
 | POST | `/api/capture` | 提交灵感采集 |
 | GET | `/api/status` | 获取游戏状态 |
+| POST | `/api/reset` | 重置游戏状态（开发/测试用） |
 | POST | `/api/content/verify` | 提交内容输出链接并验证 |
 | POST | `/api/exchange` | 兑换星点 |
 | POST | `/api/review/weekly` | 生成上周素材文件，返回文件路径和内容预览 |
@@ -368,10 +370,10 @@ iCloud Drive (Obsidian Vault)
 ### 开发环境依赖
 
 ```bash
-fastapi==0.104.1
-uvicorn==0.24.0
-pydantic==2.5.2
-pyyaml==6.0.1
+fastapi
+uvicorn
+pyyaml
+python-frontmatter
 ```
 
 ---

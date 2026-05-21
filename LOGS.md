@@ -5,6 +5,8 @@
 - [ ] 响应式适配：移动端按钮和布局优化
 - [ ] 内容输出（媒体发布）功能联调测试
 - [ ] 惩罚机制触发与恢复流程验证
+- [x] Git 仓库清理：移除 venv/、.DS_Store，删除旧分支
+- [x] Git 工作流标准化：pull → commit → push
 - [x] 回顾/战报提交时自动添加 frontmatter 头
 - [x] 回顾弹窗视觉层级：标题 > 日期 > 标签
 - [x] 复制全文按钮 + Ctrl+A 全选 bug 修复
@@ -16,6 +18,29 @@
 ---
 
 ## 📝 详细日志（最新的在上）
+
+### 2026-05-21 22:07 @ MacBook Air / TRAE IDE
+
+- **做了什么**：Git 仓库清理与工作流规范化。
+  1. 从远程和本地删除旧分支 `trae/solo-agent-Je1tw0`（Trae IDE 自动生成的空分支）
+  2. `git rm --cached` 移除仓库中追踪的 `.DS_Store`（4 个）和 `venv/`（1102 个文件，334768 行），本地文件保留
+  3. `.gitignore` 已包含 `venv/`、`.DS_Store`、`__pycache__/`，后续不再追踪
+  4. 确认标准 Git 工作流：`git pull → 改代码 → git add + commit → git push`
+- **决策**：venv 本地保留（项目运行需要），但不提交到仓库；其他 IDE 的 AI 通过 `.gitignore` 即可判断哪些文件该 push。
+
+---
+
+### 2026-05-21 21:57 @ MacBook Air / TRAE IDE
+
+- **做了什么**：Git/GitHub 推送流程打通。
+  1. 安装 Homebrew → `gh` CLI（版本 2.68.1），配置 `git_protocol=ssh`
+  2. 解决本地与远程「不相关历史」问题：远程是 Trae IDE 自动创建的初始版本（含 venv/），本地是独立 `git init` 的历史，两个仓库各自有各自的 root commit
+  3. 最终通过 GitHub API 将 main 分支指针直接更新到本地最新提交（`b1fd804`）
+  4. 教育用户理解 commit（代码快照）、root commit（仓库第一个 commit）、venv（虚拟环境，不应提交）
+- **遇到问题**：`gh auth login` 浏览器未打开 → 改用 personal access token；PR 创建失败（无共同祖先）→ 通过 API PATCH refs 直接更新分支指针。
+- **决策**：以后使用标准 Git 工作流，push/pull 走 SSH。
+
+---
 
 ### 2026-05-21 21:19 @ MacBook Air / TRAE IDE
 
