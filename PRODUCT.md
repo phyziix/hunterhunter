@@ -1,5 +1,8 @@
 # 认知狩猎 - 产品规格说明书
 
+> 代码仓库：[phyziix/hunterhunter](https://github.com/phyziix/hunterhunter)  
+> Git 工作流：`git pull → 改代码 → git add + commit → git push`
+
 本文档包含产品的详细设计规格、核心玩法规则、技术实现细节和开发规范。
 
 ---

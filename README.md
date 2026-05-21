@@ -1,5 +1,7 @@
 # 认知狩猎 (Cognitive Hunt) 
 
+> GitHub: [phyziix/hunterhunter](https://github.com/phyziix/hunterhunter)
+
 ## 1. 项目概述 
 
 ### 一句话描述
@@ -213,12 +215,22 @@ hunt: true
 
 ## 7. 开发环境与部署 
 
+### 快速开始
+```bash
+git clone git@github.com:phyziix/hunterhunter.git
+cd hunterhunter
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+python3 -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+```
+
 ### 环境依赖
 ```bash
-fastapi==0.104.1
-uvicorn==0.24.0
-pydantic==2.5.2
-pyyaml==6.0.1
+fastapi
+uvicorn
+pyyaml
+python-frontmatter
 ```
 
 ### 启动命令
