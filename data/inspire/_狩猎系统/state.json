@@ -1,19 +1,17 @@
 {
-  "total_star": 1544.4000000000003,
-  "today_count": 11,
-  "last_capture_date": "2026-05-20",
-  "streak_days": 1,
+  "total_star": 0.0,
+  "today_count": 0,
+  "last_capture_date": "",
+  "streak_days": 0,
   "penalty_active": false,
   "penalty_days": 0,
-  "medals": [
-    "灵光乍现"
-  ],
-  "monthly_medals": 1,
+  "medals": [],
+  "monthly_medals": 0,
   "gray_medal": false,
-  "last_weekly_review": "2026-20",
-  "last_monthly_report": "2026-05",
-  "weekly_review_done": true,
-  "monthly_report_done": true,
+  "last_weekly_review": "",
+  "last_monthly_report": "",
+  "weekly_review_done": false,
+  "monthly_report_done": false,
   "exchange_history": [],
-  "published_count": 1
+  "published_count": 0
 }

@@ -1,5 +1,6 @@
 import json
 import os
+import re
 import yaml
 import time
 import random
@@ -310,72 +311,312 @@ class HuntingEngine:
             "message": "请手动转账"
         }
     
-    def weekly_review(self, confirmed=True, insight=""):
+    # ========== 回顾与战报：两步流程 ==========
+
+    def _get_previous_week_range(self):
+        """返回上一自然周（周一→周日）的日期范围"""
+        today = datetime.now().date()
+        current_monday = today - timedelta(days=today.weekday())
+        prev_monday = current_monday - timedelta(days=7)
+        prev_sunday = prev_monday + timedelta(days=6)
+        return prev_monday, prev_sunday
+
+    def _get_previous_month_range(self):
+        """返回上一自然月（1日→月末）的日期范围"""
+        today = datetime.now().date()
+        first_day_this_month = today.replace(day=1)
+        last_day_prev_month = first_day_this_month - timedelta(days=1)
+        first_day_prev_month = last_day_prev_month.replace(day=1)
+        return first_day_prev_month, last_day_prev_month
+
+    def _get_week_label(self, monday_date):
+        """返回中文周标签，如 '2026年第20周'"""
+        year = monday_date.year
+        week_num = monday_date.isocalendar()[1]
+        return f"{year}年第{week_num}周"
+
+    def _get_month_label(self, year, month):
+        """返回中文月标签，如 '2026年5月'"""
+        return f"{year}年{month}月"
+
+    def _scan_notes(self, start_date, end_date):
+        """扫描 Inbox 中指定日期范围内的所有灵感笔记，返回列表"""
+        notes = []
+        for file in sorted(self.inbox_folder.glob("灵感-*.md")):
+            try:
+                with open(file, 'r', encoding='utf-8') as f:
+                    raw_content = f.read()
+
+                if not raw_content.startswith('---'):
+                    continue
+
+                parts = raw_content.split('---', 2)
+                if len(parts) < 3:
+                    continue
+
+                frontmatter_text = parts[1]
+                body = parts[2].strip()
+
+                if 'hunt: true' not in frontmatter_text and 'hunt: True' not in frontmatter_text:
+                    continue
+
+                # 解析日期
+                date_match = re.search(r'date:\s*(.+)', frontmatter_text)
+                if not date_match:
+                    continue
+
+                date_str = date_match.group(1).strip()
+                try:
+                    note_date = datetime.fromisoformat(date_str.replace('Z', '+00:00')).date()
+                except Exception:
+                    continue
+
+                if not (start_date <= note_date <= end_date):
+                    continue
+
+                # 解析标签
+                tags = []
+                tags_match = re.search(r'tags:\s*\[(.+?)\]', frontmatter_text)
+                if tags_match:
+                    tag_list = tags_match.group(1)
+                    tags = [t.strip().strip("'\"") for t in tag_list.split(',')]
+
+                # 取标题（文件名中去掉前缀和日期部分）
+                title = file.stem
+                if title.startswith('灵感-'):
+                    title = title[3:]
+
+                notes.append({
+                    'date': note_date,
+                    'date_str': note_date.strftime('%Y-%m-%d'),
+                    'weekday': ['周一', '周二', '周三', '周四', '周五', '周六', '周日'][note_date.weekday()],
+                    'tags': tags,
+                    'body': body,
+                    'title': title,
+                    'filename': file.name
+                })
+            except Exception:
+                continue
+
+        notes.sort(key=lambda n: n['date'])
+        return notes
+
+    def _build_material_content(self, notes, title, date_range_label):
+        """根据笔记列表生成素材 Markdown 内容"""
+        lines = [
+            f"# {title}",
+            "",
+            f"> 时间范围：{date_range_label}",
+            f"> 共 {len(notes)} 条灵感碎片",
+            "",
+            "## 本周灵感碎片" if "周" in title else "## 本月灵感碎片",
+            ""
+        ]
+
+        for note in notes:
+            tag_str = ' '.join(f"#{t}" for t in note['tags'])
+            lines.append(f"### {note['date_str']} {note['weekday']}")
+            lines.append(f"**{note['title'][:30]}**  {tag_str}")
+            lines.append("")
+            lines.append(note['body'])
+            lines.append("")
+            lines.append("---")
+            lines.append("")
+
+        return '\n'.join(lines)
+
+    def generate_weekly_review(self):
+        """步骤2-3：扫描上一自然周灵感，生成素材文件，返回路径和内容"""
         self._load_state()
-        
+
+        # 检查是否已生成过素材（本周的素材是否已存在）
+        prev_monday, prev_sunday = self._get_previous_week_range()
+        week_label = self._get_week_label(prev_monday)
+
+        if self.state["weekly_review_done"] and self.state["last_weekly_review"]:
+            return {"error": f"本周回顾已完成（{self.state['last_weekly_review']}）"}
+
+        notes = self._scan_notes(prev_monday, prev_sunday)
+        if not notes:
+            return {
+                "error": f"上一自然周（{prev_monday} 至 {prev_sunday}）没有灵感笔记，无法生成回顾素材"
+            }
+
+        date_range_label = f"{prev_monday.strftime('%Y-%m-%d')}（周一）至 {prev_sunday.strftime('%Y-%m-%d')}（周日）"
+        content = self._build_material_content(notes, f"周回顾素材 - {week_label}", date_range_label)
+
+        filename = f"周回顾素材-{week_label}.md"
+        file_path = self.inbox_folder / filename
+
+        with open(file_path, 'w', encoding='utf-8') as f:
+            f.write(content)
+
+        return {
+            "file_path": str(file_path),
+            "filename": filename,
+            "content": content,
+            "week_label": week_label,
+            "date_range": date_range_label,
+            "note_count": len(notes)
+        }
+
+    def _extract_tags_from_content(self, content):
+        """从素材内容中提取所有标签"""
+        tags = set()
+        for match in re.finditer(r'#(\S+)', content):
+            tag = match.group(1)
+            if tag not in ('周回顾', '月回顾'):
+                tags.add(tag)
+        return sorted(tags)
+
+    def _prepend_frontmatter(self, file_path, tags, tag_label):
+        """为文件添加 frontmatter 头"""
+        fp = Path(file_path)
+        with open(fp, 'r', encoding='utf-8') as f:
+            original = f.read()
+
+        all_tags = tags + [tag_label]
+        frontmatter = f"""---
+date: {datetime.now().isoformat()}
+tags: {all_tags}
+hunt: true
+---
+
+"""
+        with open(fp, 'w', encoding='utf-8') as f:
+            f.write(frontmatter + original)
+
+    def submit_weekly_review(self, file_path, insight):
+        """步骤6-7：将用户洞察写入素材文件，添加标签和 frontmatter，发放星点"""
+        self._load_state()
+
+        fp = Path(file_path)
+        if not fp.exists():
+            return {"error": "素材文件不存在，请先点击周回顾生成素材"}
+
+        # 读取现有内容以提取标签
+        with open(fp, 'r', encoding='utf-8') as f:
+            existing = f.read()
+
+        tags = self._extract_tags_from_content(existing)
+
+        # 追加用户洞察
+        with open(fp, 'a', encoding='utf-8') as f:
+            f.write(f"\n## 本周核心洞察\n\n{insight}\n\n")
+
+        # 添加 frontmatter 头
+        self._prepend_frontmatter(file_path, tags, "周回顾")
+
+        # 更新状态
         current_week = self._get_week_str()
-        
-        if self.state["last_weekly_review"] == current_week:
-            return {"error": "本周已完成回顾"}
-        
         self.state["last_weekly_review"] = current_week
         self.state["weekly_review_done"] = True
         self.state["total_star"] += self.config["weekly_review_reward"]
-        
+
         self._save_state()
-        
+
         return {
             "reward": self.config["weekly_review_reward"],
             "new_balance": self.state["total_star"],
             "message": "周回顾完成！"
         }
-    
-    def monthly_report(self, confirmed=True, insight=""):
+
+    def generate_monthly_report(self):
+        """步骤2-3：扫描上一自然月灵感，生成素材文件，返回路径和内容"""
         self._load_state()
-        
+
+        prev_first, prev_last = self._get_previous_month_range()
+        month_label = self._get_month_label(prev_first.year, prev_first.month)
+
+        if self.state["monthly_report_done"] and self.state["last_monthly_report"]:
+            return {"error": f"本月战报已完成（{self.state['last_monthly_report']}）"}
+
+        notes = self._scan_notes(prev_first, prev_last)
+        if not notes:
+            return {
+                "error": f"上一自然月（{prev_first} 至 {prev_last}）没有灵感笔记，无法生成战报素材"
+            }
+
+        date_range_label = f"{prev_first.strftime('%Y-%m-%d')} 至 {prev_last.strftime('%Y-%m-%d')}"
+        content = self._build_material_content(notes, f"月度战报素材 - {month_label}", date_range_label)
+
+        filename = f"月度战报素材-{month_label}.md"
+        file_path = self.inbox_folder / filename
+
+        with open(file_path, 'w', encoding='utf-8') as f:
+            f.write(content)
+
+        return {
+            "file_path": str(file_path),
+            "filename": filename,
+            "content": content,
+            "month_label": month_label,
+            "date_range": date_range_label,
+            "note_count": len(notes)
+        }
+
+    def submit_monthly_report(self, file_path, insight):
+        """步骤6-7：将用户洞察写入素材文件，添加标签和 frontmatter，发放星点"""
+        self._load_state()
+
+        fp = Path(file_path)
+        if not fp.exists():
+            return {"error": "素材文件不存在，请先点击月度战报生成素材"}
+
+        # 读取现有内容以提取标签
+        with open(fp, 'r', encoding='utf-8') as f:
+            existing = f.read()
+
+        tags = self._extract_tags_from_content(existing)
+
+        # 追加用户洞察
+        with open(fp, 'a', encoding='utf-8') as f:
+            f.write(f"\n## 本月核心洞察\n\n{insight}\n\n")
+
+        # 添加 frontmatter 头
+        self._prepend_frontmatter(file_path, tags, "月回顾")
+
         current_month = self._get_month_str()
-        
-        if self.state["last_monthly_report"] == current_month:
-            return {"error": "本月已完成战报"}
-        
+
+        # 勋章逻辑
         if self.state["gray_medal"]:
             self.state["gray_medal"] = False
         else:
             self.state["monthly_medals"] += 1
-        
-        self.state["last_monthly_report"] = current_month
-        self.state["monthly_report_done"] = True
-        self.state["total_star"] += self.config["monthly_report_reward"]
-        
+
         tag_count = self._count_monthly_tags(current_month)
         if tag_count >= 3 and "连线大师" not in self.state["medals"]:
             self.state["medals"].append("连线大师")
-        
+
+        self.state["last_monthly_report"] = current_month
+        self.state["monthly_report_done"] = True
+        self.state["total_star"] += self.config["monthly_report_reward"]
+
         self._save_state()
-        
+
         return {
             "reward": self.config["monthly_report_reward"],
             "new_balance": self.state["total_star"],
             "monthly_medals": self.state["monthly_medals"],
             "message": "月度战报完成！"
         }
-    
+
     def _count_monthly_tags(self, month_str):
         tags = set()
         month_dt = datetime.strptime(month_str, "%Y-%m")
-        
+
         for file in self.inbox_folder.glob("灵感-*.md"):
             try:
                 with open(file, 'r', encoding='utf-8') as f:
                     content = f.read()
-                    if 'hunt: true' in content:
+                    if 'hunt: true' in content or 'hunt: True' in content:
                         lines = content.split('\n')
                         in_frontmatter = False
                         for line in lines:
                             if line.startswith('---'):
                                 in_frontmatter = not in_frontmatter
                             elif in_frontmatter and line.startswith('date:'):
-                                date_str = line.split(':')[1].strip()
+                                date_str = line.split(':', 1)[1].strip()
                                 try:
                                     file_date = datetime.fromisoformat(date_str.replace('Z', '+00:00'))
                                     if file_date.year == month_dt.year and file_date.month == month_dt.month:
@@ -389,7 +630,7 @@ class HuntingEngine:
                                     continue
             except:
                 continue
-        
+
         return len(tags)
     
     def get_monthly_draft(self):
@@ -442,6 +683,38 @@ class HuntingEngine:
         self.config.update(updates)
         self._save_config()
         return self.config
+    
+    def reset_all(self):
+        """调试用：重置状态并清理素材文件"""
+        self._load_state()
+        
+        # 重置状态
+        self.state = {
+            "total_star": 0.0,
+            "today_count": 0,
+            "last_capture_date": "",
+            "streak_days": 0,
+            "penalty_active": False,
+            "penalty_days": 0,
+            "medals": [],
+            "monthly_medals": 0,
+            "gray_medal": False,
+            "last_weekly_review": "",
+            "last_monthly_report": "",
+            "weekly_review_done": False,
+            "monthly_report_done": False,
+            "exchange_history": [],
+            "published_count": 0
+        }
+        self._save_state()
+        
+        # 清理回顾/战报素材文件
+        import glob
+        for pattern in ["周回顾素材-*.md", "月度战报素材-*.md"]:
+            for f in self.inbox_folder.glob(pattern):
+                f.unlink()
+        
+        return {"success": True, "message": "状态已重置，素材文件已清理"}
     
     def reset_daily_flags(self):
         self._load_state()

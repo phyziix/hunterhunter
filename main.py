@@ -28,12 +28,12 @@ class ExchangeRequest(BaseModel):
     type: str
     amount: float
 
-class ReviewRequest(BaseModel):
-    confirmed: bool = True
-    insight: Optional[str] = ""
-
 class ContentVerifyRequest(BaseModel):
     url: str
+
+class ReviewSubmitRequest(BaseModel):
+    file_path: str
+    insight: str
 
 @app.post("/api/capture")
 async def capture(request: CaptureRequest):
@@ -79,10 +79,24 @@ async def exchange(request: ExchangeRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/api/review/weekly")
-async def weekly_review(request: ReviewRequest):
+async def weekly_review():
+    """生成上周素材文件，返回文件路径和内容预览"""
     try:
-        result = engine.weekly_review(
-            confirmed=request.confirmed,
+        result = engine.generate_weekly_review()
+        if "error" in result:
+            raise HTTPException(status_code=400, detail=result["error"])
+        return result
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/review/weekly/submit")
+async def weekly_review_submit(request: ReviewSubmitRequest):
+    """提交周回顾总结，写入素材文件并添加 #周回顾 标签，发放星点"""
+    try:
+        result = engine.submit_weekly_review(
+            file_path=request.file_path,
             insight=request.insight
         )
         if "error" in result:
@@ -94,10 +108,24 @@ async def weekly_review(request: ReviewRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/api/report/monthly")
-async def monthly_report(request: ReviewRequest):
+async def monthly_report():
+    """生成上月素材文件，返回文件路径和内容预览"""
     try:
-        result = engine.monthly_report(
-            confirmed=request.confirmed,
+        result = engine.generate_monthly_report()
+        if "error" in result:
+            raise HTTPException(status_code=400, detail=result["error"])
+        return result
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/report/monthly/submit")
+async def monthly_report_submit(request: ReviewSubmitRequest):
+    """提交月度战报总结，写入素材文件并添加 #月回顾 标签，发放星点"""
+    try:
+        result = engine.submit_monthly_report(
+            file_path=request.file_path,
             insight=request.insight
         )
         if "error" in result:
@@ -112,6 +140,14 @@ async def monthly_report(request: ReviewRequest):
 async def get_monthly_draft():
     try:
         return engine.get_monthly_draft()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/reset")
+async def reset_state():
+    """调试用：重置游戏状态到初始值，清理回顾/战报素材文件"""
+    try:
+        return engine.reset_all()
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

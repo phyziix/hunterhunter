@@ -1,0 +1,23 @@
+# 虚拟环境
+venv/
+.venv/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+.codebuddy/
+
+# 系统
+.DS_Store
+Thumbs.db
+
+# 环境
+.env
+.env.local
