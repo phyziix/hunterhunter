@@ -5,6 +5,22 @@
 
 ---
 
+## ⚠️ 部署前需确认的路径
+
+本文档中以下占位符需替换为实际路径：
+
+| 占位符 | 含义 | 示例 |
+|--------|------|------|
+| `<WORKSPACE>` | Git 代码仓库根目录 | `/Users/xxx/Documents/trae_projects` |
+| `<PRODUCTION>` | 生产运行根目录 | `/Users/xxx/project/hh-online` |
+| `<REPO_URL>` | GitHub 仓库地址 | `git@github.com:xxx/hunterhunter.git` |
+| `<YOUR_SUBDOMAIN>` | localtunnel 子域名 | `myapp` |
+| `<BUNDLE_ID>` | launchd Bundle ID 前缀 | `com.yourname` |
+
+> 上述路径直接影响服务能否正常启动，部署前务必确认替换。
+
+---
+
 ## 一、目录结构概览
 
 项目涉及两个目录，需区分清楚：
@@ -131,7 +147,7 @@ for file in sorted(self.inbox_folder.glob("灵感-*.md")):
 
 ### 4.1 FastAPI 服务
 
-plist：`~/Library/LaunchAgents/com.phyziix.hunterhunter-v0.1.plist`
+plist：`~/Library/LaunchAgents/<BUNDLE_ID>.hunterhunter-v0.1.plist`
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -140,22 +156,22 @@ plist：`~/Library/LaunchAgents/com.phyziix.hunterhunter-v0.1.plist`
 <plist version="1.0">
 <dict>
     <key>Label</key>
-    <string>com.phyziix.hunterhunter-v0.1</string>
+    <string><BUNDLE_ID>.hunterhunter-v0.1</string>
     <key>ProgramArguments</key>
     <array>
-        <string>&lt;PRODUCTION&gt;/venv/bin/python3</string>
-        <string>&lt;PRODUCTION&gt;/v0.1/main.py</string>
+        <string><PRODUCTION>/venv/bin/python3</string>
+        <string><PRODUCTION>/v0.1/main.py</string>
     </array>
     <key>WorkingDirectory</key>
-    <string>&lt;PRODUCTION&gt;/v0.1</string>
+    <string><PRODUCTION>/v0.1</string>
     <key>RunAtLoad</key>
     <true/>
     <key>KeepAlive</key>
     <true/>
     <key>StandardOutPath</key>
-    <string>&lt;PRODUCTION&gt;/v0.1/logs/stdout.log</string>
+    <string><PRODUCTION>/v0.1/logs/stdout.log</string>
     <key>StandardErrorPath</key>
-    <string>&lt;PRODUCTION&gt;/v0.1/logs/stderr.log</string>
+    <string><PRODUCTION>/v0.1/logs/stderr.log</string>
 </dict>
 </plist>
 ```
@@ -175,18 +191,18 @@ plist：`~/Library/LaunchAgents/com.hunterhunter.tunnel.plist`
     <key>ProgramArguments</key>
     <array>
         <string>/bin/bash</string>
-        <string>&lt;PRODUCTION&gt;/v0.1/tunnel.sh</string>
+        <string><PRODUCTION>/v0.1/tunnel.sh</string>
     </array>
     <key>RunAtLoad</key>
     <true/>
     <key>KeepAlive</key>
     <true/>
     <key>WorkingDirectory</key>
-    <string>&lt;PRODUCTION&gt;/v0.1</string>
+    <string><PRODUCTION>/v0.1</string>
     <key>StandardOutPath</key>
-    <string>&lt;PRODUCTION&gt;/v0.1/logs/tunnel_stdout.log</string>
+    <string><PRODUCTION>/v0.1/logs/tunnel_stdout.log</string>
     <key>StandardErrorPath</key>
-    <string>&lt;PRODUCTION&gt;/v0.1/logs/tunnel_stderr.log</string>
+    <string><PRODUCTION>/v0.1/logs/tunnel_stderr.log</string>
 </dict>
 </plist>
 ```
@@ -303,8 +319,8 @@ lt --port 8002 --subdomain <YOUR_SUBDOMAIN>
 launchctl list | grep hunterhunter
 
 # 重启 FastAPI 服务
-launchctl unload ~/Library/LaunchAgents/com.phyziix.hunterhunter-v0.1.plist
-launchctl load ~/Library/LaunchAgents/com.phyziix.hunterhunter-v0.1.plist
+launchctl unload ~/Library/LaunchAgents/<BUNDLE_ID>.hunterhunter-v0.1.plist
+launchctl load ~/Library/LaunchAgents/<BUNDLE_ID>.hunterhunter-v0.1.plist
 
 # 重启 tunnel
 launchctl unload ~/Library/LaunchAgents/com.hunterhunter.tunnel.plist
