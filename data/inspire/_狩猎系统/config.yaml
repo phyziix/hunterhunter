@@ -113,7 +113,7 @@ medals:
     threshold: 5
 
   - id: "season_pioneer"
-    name: "开拓者勋章"
+    name: "开拓者"
     icon: "🗺️"
     trigger: "season"
     season_theme: "pioneer"

@@ -1,10 +1,10 @@
 {
-  "total_star": 992.0,
-  "today_count": 4,
+  "total_star": 1114.0,
+  "today_count": 17,
   "last_capture_date": "2026-05-22",
   "streak_days": 1,
   "active_days": 1,
-  "total_notes": 4,
+  "total_notes": 17,
   "penalty_active": false,
   "penalty_days": 0,
   "medals": [
@@ -28,15 +28,15 @@
   ],
   "exchange_path": "fund",
   "fund_pool": 0.0,
-  "available_star": 992.0,
+  "available_star": 1114.0,
   "consumption_loss_this_month": 25.0,
   "path_streak_weeks": 0,
   "last_path_choice": "2026-20",
   "published_count": 1,
   "total_output_star": 995,
   "abilities": {
-    "hunt_power": 5.0,
-    "link_power": 50.0,
+    "hunt_power": 5.08699229457548,
+    "link_power": 33.654722536682264,
     "output_power": 6.903747257584598
   },
   "ability_changes": [
@@ -57,17 +57,59 @@
       "ability": "output_power",
       "change": 6.9,
       "reason": "输出力计算更新"
+    },
+    {
+      "date": "2026-05-22T17:24:19.049740",
+      "ability": "link_power",
+      "change": -2.61,
+      "reason": "连接力计算更新"
+    },
+    {
+      "date": "2026-05-22T17:24:19.061587",
+      "ability": "link_power",
+      "change": -4.3,
+      "reason": "连接力计算更新"
+    },
+    {
+      "date": "2026-05-22T17:24:19.072894",
+      "ability": "link_power",
+      "change": -3.5,
+      "reason": "连接力计算更新"
+    },
+    {
+      "date": "2026-05-22T17:24:19.084101",
+      "ability": "link_power",
+      "change": -2.92,
+      "reason": "连接力计算更新"
+    },
+    {
+      "date": "2026-05-22T17:24:19.095755",
+      "ability": "link_power",
+      "change": -0.63,
+      "reason": "连接力计算更新"
+    },
+    {
+      "date": "2026-05-22T17:24:19.107321",
+      "ability": "hunt_power",
+      "change": 0.09,
+      "reason": "采集力计算更新"
+    },
+    {
+      "date": "2026-05-22T17:24:19.107331",
+      "ability": "link_power",
+      "change": -2.38,
+      "reason": "连接力计算更新"
     }
   ],
-  "cross_domain_notes_count": 4,
+  "cross_domain_notes_count": 17,
   "tag_graph": {
     "nodes": {
       "#测试": {
-        "count": 2,
+        "count": 4,
         "first_seen": "2026-05-22"
       },
       "#开发": {
-        "count": 1,
+        "count": 3,
         "first_seen": "2026-05-22"
       },
       "#设计": {
@@ -81,13 +123,168 @@
       "#效率": {
         "count": 1,
         "first_seen": "2026-05-22"
+      },
+      "测试": {
+        "count": 1,
+        "first_seen": "2026-05-22"
+      },
+      "API": {
+        "count": 1,
+        "first_seen": "2026-05-22"
+      },
+      "学习": {
+        "count": 1,
+        "first_seen": "2026-05-22"
+      },
+      "认知": {
+        "count": 1,
+        "first_seen": "2026-05-22"
+      },
+      "成长": {
+        "count": 1,
+        "first_seen": "2026-05-22"
+      },
+      "效率": {
+        "count": 1,
+        "first_seen": "2026-05-22"
+      },
+      "时间管理": {
+        "count": 1,
+        "first_seen": "2026-05-22"
+      },
+      "工作法": {
+        "count": 1,
+        "first_seen": "2026-05-22"
+      },
+      "产品设计": {
+        "count": 1,
+        "first_seen": "2026-05-22"
+      },
+      "用户体验": {
+        "count": 1,
+        "first_seen": "2026-05-22"
+      },
+      "反馈": {
+        "count": 1,
+        "first_seen": "2026-05-22"
+      },
+      "AI": {
+        "count": 1,
+        "first_seen": "2026-05-22"
+      },
+      "机器学习": {
+        "count": 1,
+        "first_seen": "2026-05-22"
+      },
+      "技术": {
+        "count": 1,
+        "first_seen": "2026-05-22"
+      },
+      "敏捷": {
+        "count": 1,
+        "first_seen": "2026-05-22"
+      },
+      "团队协作": {
+        "count": 1,
+        "first_seen": "2026-05-22"
+      },
+      "开发": {
+        "count": 2,
+        "first_seen": "2026-05-22"
+      },
+      "注意力": {
+        "count": 1,
+        "first_seen": "2026-05-22"
+      },
+      "信息": {
+        "count": 1,
+        "first_seen": "2026-05-22"
+      },
+      "专注": {
+        "count": 1,
+        "first_seen": "2026-05-22"
+      },
+      "冥想": {
+        "count": 1,
+        "first_seen": "2026-05-22"
+      },
+      "心理健康": {
+        "count": 1,
+        "first_seen": "2026-05-22"
+      },
+      "习惯": {
+        "count": 1,
+        "first_seen": "2026-05-22"
+      },
+      "知识管理": {
+        "count": 1,
+        "first_seen": "2026-05-22"
+      },
+      "网络": {
+        "count": 1,
+        "first_seen": "2026-05-22"
+      },
+      "组织": {
+        "count": 1,
+        "first_seen": "2026-05-22"
+      },
+      "git": {
+        "count": 1,
+        "first_seen": "2026-05-22"
+      },
+      "工具": {
+        "count": 1,
+        "first_seen": "2026-05-22"
+      },
+      "灵感": {
+        "count": 1,
+        "first_seen": "2026-05-22"
+      },
+      "睡眠": {
+        "count": 1,
+        "first_seen": "2026-05-22"
+      },
+      "创造力": {
+        "count": 1,
+        "first_seen": "2026-05-22"
       }
     },
     "edges": {
-      "#测试<->#开发": 1,
+      "#测试<->#开发": 3,
       "#测试<->#设计": 1,
       "#设计<->#生产力": 1,
-      "#生产力<->#效率": 1
+      "#生产力<->#效率": 1,
+      "测试<->API": 1,
+      "学习<->认知": 1,
+      "学习<->成长": 1,
+      "认知<->成长": 1,
+      "效率<->时间管理": 1,
+      "效率<->工作法": 1,
+      "时间管理<->工作法": 1,
+      "产品设计<->用户体验": 1,
+      "产品设计<->反馈": 1,
+      "用户体验<->反馈": 1,
+      "AI<->机器学习": 1,
+      "AI<->技术": 1,
+      "机器学习<->技术": 1,
+      "敏捷<->团队协作": 1,
+      "敏捷<->开发": 1,
+      "团队协作<->开发": 1,
+      "注意力<->信息": 1,
+      "注意力<->专注": 1,
+      "信息<->专注": 1,
+      "冥想<->心理健康": 1,
+      "冥想<->习惯": 1,
+      "心理健康<->习惯": 1,
+      "知识管理<->网络": 1,
+      "知识管理<->组织": 1,
+      "网络<->组织": 1,
+      "git<->工具": 1,
+      "git<->开发": 1,
+      "工具<->开发": 1,
+      "灵感<->睡眠": 1,
+      "灵感<->创造力": 1,
+      "睡眠<->创造力": 1
     }
   },
   "current_season": {

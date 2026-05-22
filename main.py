@@ -108,6 +108,15 @@ async def exchange_fund(request: ExchangeRequest):
 
 # ========== 回顾与战报 API ==========
 
+@app.get("/api/projection")
+async def get_projection(days: int = 180):
+    """长期推演计算，基于当前速度预测未来状态"""
+    try:
+        result = engine.calculate_long_term_projection(days=days)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.post("/api/review/weekly")
 async def weekly_review():
     """生成上周素材文件，返回文件路径和内容预览"""
@@ -188,6 +197,77 @@ async def get_notes_by_tag(tag: str):
     """按标签查询笔记摘要"""
     try:
         return engine.get_notes_by_tag(tag=tag)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# ========== 勋章相关 API ==========
+
+@app.get("/api/medals")
+async def get_medals():
+    """获取所有勋章定义和状态"""
+    try:
+        return {"medals": engine.get_all_medals()}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+class MedalCheckRequest(BaseModel):
+    trigger_type: Optional[str] = None
+
+@app.post("/api/medals/check")
+async def check_medals(request: MedalCheckRequest = None):
+    """触发勋章检查（通常由系统自动调用，也可手动触发）"""
+    try:
+        trigger_type = request.trigger_type if request else None
+        newly_earned = engine._check_medals(trigger_type=trigger_type)
+        return {
+            "checked": len(engine.get_all_medals()),
+            "newly_earned": newly_earned
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# ========== 赛季相关 API ==========
+
+@app.get("/api/season/current")
+async def get_current_season():
+    """获取当前赛季信息"""
+    try:
+        return engine.get_current_season()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/season/history")
+async def get_season_history():
+    """获取赛季历史记录"""
+    try:
+        return {"history": engine.get_season_history()}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/season/check")
+async def check_season_end():
+    """检查赛季是否结束并自动开启新赛季"""
+    try:
+        result = engine.check_season_end()
+        if result:
+            return {
+                "season_changed": True,
+                "old_season": result["old_season"],
+                "new_season": result["new_season"]
+            }
+        return {"season_changed": False}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/season/start")
+async def start_new_season():
+    """手动开启新赛季"""
+    try:
+        result = engine.start_new_season()
+        return {
+            "old_season": result["old_season"],
+            "new_season": result["new_season"]
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

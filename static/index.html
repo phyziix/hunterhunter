@@ -393,6 +393,57 @@
             transform: none;
         }
 
+        /* ===== 模态框基础样式 ===== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            animation: fadeIn 0.2s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            width: 90%;
+            max-width: 500px;
+            animation: scaleIn 0.2s;
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .btn-close {
+            padding: 6px 12px;
+            background: #f0f0f0;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            color: #666;
+        }
+
+        .btn-close:hover {
+            background: #e0e0e0;
+        }
+
         /* ===== 回顾弹窗样式 ===== */
         .review-modal {
             background: white;
@@ -682,7 +733,7 @@
             <h3>🏅 勋章墙</h3>
             <div class="medal-wall">
                 <template x-for="medal in allMedals" :key="medal.name">
-                    <span :class="['medal', getMedalClass(medal.name)]" x-text="medal.emoji + ' ' + medal.name"></span>
+                    <span :class="['medal', getMedalClass(medal.name)]" x-text="(medal.icon || medal.emoji || '🏅') + ' ' + (medal.name || '未命名')"></span>
                 </template>
             </div>
             
@@ -771,9 +822,9 @@
                         💰 基金充值
                     </button>
                     <div style="margin-top: 6px; font-size: 0.9rem; color: #666;">
-                        <div style="font-weight: 600; color: #333;">1星点 = <span x-text="(config.fund_base_rate * (1 + status.fund_bonus / 100)).toFixed(2)"></span>元</div>
+                        <div style="font-weight: 600; color: #333;">1星点 = <span x-text="(config.fund_base_rate * (1 + (status.fund_bonus || 0) / 100)).toFixed(2)"></span>元</div>
                         <div style="font-size: 0.8rem; color: #888;">基础: 1星点 = <span x-text="config.fund_base_rate"></span>元</div>
-                        <div style="font-size: 0.8rem; color: #888;">基金加成: +<span x-text="status.fund_bonus"></span>%</div>
+                        <div style="font-size: 0.8rem; color: #888;">基金加成: +<span x-text="status.fund_bonus || 0"></span>%</div>
                     </div>
                 </div>
             </div>
@@ -1081,7 +1132,8 @@
             <textarea 
                 class="review-insight-input" 
                 x-model="reviewInsight" 
-                @keydown.ctrl.a="$event.target.select()"
+                @keydown.ctrl.a.prevent="$event.target.select()"
+                @keydown.meta.a.prevent="$event.target.select()"
                 :placeholder="reviewType === 'weekly' ? '写下本周的核心洞察...' : '写下本月的核心洞察...'"
             ></textarea>
 
@@ -1095,12 +1147,16 @@
 
     <!-- 兑换模态框 -->
     <div x-show="showExchangeModal" style="display: none;" class="modal-overlay" @click.self="closeExchangeModal">
-        <div class="modal" @click.stop>
-            <h3 x-text="exchangeType === 'coupon' ? '🎫 消费券兑换' : '💰 基金充值'"></h3>
+        <div class="modal" @click.stop style="max-width: 550px;">
+            <h3 x-text="exchangeType === 'coupon' ? '🎫 消费券兑换' : '💰 基金充值'" style="margin-bottom: 15px;"></h3>
+            
+            <!-- 当前余额 -->
             <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 12px; border-radius: 8px; margin-bottom: 15px; text-align: center;">
                 <div style="color: rgba(255,255,255,0.8); font-size: 0.85rem;">当前星点余额</div>
                 <div style="color: white; font-size: 1.8rem; font-weight: bold;">⭐ <span x-text="formatNumber(status.total_star)"></span></div>
             </div>
+            
+            <!-- 输入数量 -->
             <div class="form-group">
                 <label>兑换星点数量</label>
                 <input 
@@ -1110,10 +1166,71 @@
                     min="1"
                 />
             </div>
-            <div x-show="exchangeAmount" style="padding: 10px; background: #f8f9fa; border-radius: 8px;">
-                <div>扣除星点: <span x-text="exchangeAmount"></span></div>
-                <div>实际价值: <span x-text="calculateRealValue()"></span></div>
+            
+            <!-- 镜像对比：等值对比 -->
+            <div x-show="exchangeAmount" style="margin-bottom: 15px;">
+                <h4 style="margin: 0 0 10px 0; font-size: 0.95rem; color: #333;">⚖️ 等值对比</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div style="background: #eff6ff; padding: 12px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 1.1rem; font-weight: bold; color: #3b82f6;">🎫 消费券</div>
+                        <div style="font-size: 0.85rem; color: #666;">立即可用</div>
+                        <div style="font-size: 1.3rem; font-weight: bold; color: #1e40af; margin-top: 5px;">
+                            <span x-text="(exchangeAmount * config.coupon_rate).toFixed(2)"></span> 元
+                        </div>
+                    </div>
+                    <div style="background: #fef3c7; padding: 12px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 1.1rem; font-weight: bold; color: #d97706;">💰 基金</div>
+                        <div style="font-size: 0.85rem; color: #666;">锁定30天</div>
+                        <div style="font-size: 1.3rem; font-weight: bold; color: #92400e; margin-top: 5px;">
+                            <span x-text="(exchangeAmount * config.fund_base_rate * (1 + (status.fund_bonus || 0) / 100)).toFixed(2)"></span> 元
+                        </div>
+                    </div>
+                </div>
             </div>
+            
+            <!-- 镜像对比：时间维度延伸 -->
+            <div x-show="exchangeAmount" style="margin-bottom: 15px;">
+                <h4 style="margin: 0 0 10px 0; font-size: 0.95rem; color: #333;">⏰ 时间维度</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div style="background: #fef2f2; padding: 12px; border-radius: 8px;">
+                        <div style="font-size: 0.85rem; color: #666; margin-bottom: 5px;">🎫 消费券</div>
+                        <div style="font-size: 0.9rem; color: #dc2626;">即时消费，无增值</div>
+                    </div>
+                    <div style="background: #f0fdf4; padding: 12px; border-radius: 8px;">
+                        <div style="font-size: 0.85rem; color: #666; margin-bottom: 5px;">💰 基金</div>
+                        <div style="font-size: 0.9rem; color: #16a34a;">30天后可提取，预计增值 <span x-text="((status.fund_bonus || 0) + 50).toFixed(0)"></span>%</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 镜像对比：历史累计 -->
+            <div x-show="exchangeAmount" style="margin-bottom: 15px;">
+                <h4 style="margin: 0 0 10px 0; font-size: 0.95rem; color: #333;">📊 本月累计</h4>
+                <div style="background: #f8fafc; padding: 12px; border-radius: 8px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <span style="color: #666;">本月消费支出</span>
+                        <span style="color: #dc2626; font-weight: 600;">-<span x-text="(status.consumption_loss_this_month || 0).toFixed(2)"></span> 元</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: #666;">基金累计收益</span>
+                        <span style="color: #16a34a; font-weight: 600;">+<span x-text="(status.fund_pool || 0).toFixed(2)"></span> 元</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 当前路径选择 -->
+            <div x-show="status.exchange_path" style="margin-bottom: 15px; padding: 10px; background: #f0fdf4; border-radius: 8px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="color: #666;">当前选择路径</span>
+                    <span style="font-weight: 600; color: #166534;">
+                        <span x-text="status.exchange_path === 'fund' ? '💰 基金' : '🎫 消费券'"></span>
+                        <span x-show="status.path_streak_weeks > 0" style="margin-left: 8px; font-size: 0.8rem; color: #3b82f6;">
+                            连续 <span x-text="status.path_streak_weeks"></span> 周
+                        </span>
+                    </span>
+                </div>
+            </div>
+            
             <div class="modal-buttons">
                 <button class="btn btn-secondary" @click="closeExchangeModal">取消</button>
                 <button class="btn btn-primary" @click="submitExchange">确认兑换</button>
@@ -1195,6 +1312,127 @@
                     { name: '周常猎人', emoji: '🏹' },
                     { name: '连线大师', emoji: '🔗' }
                 ],
+                // ===== 采集成功弹窗 =====
+                captureSuccessData: null,
+                showCaptureSuccessModal: false,
+                closeCaptureSuccessModal() {
+                    this.showCaptureSuccessModal = false;
+                    this.captureSuccessData = null;
+                },
+                // ===== 长期推演数据 =====
+                projection: null,
+                showProjectionModal: false,
+                async loadProjection() {
+                    try {
+                        const response = await fetch('/api/projection');
+                        if (response.ok) {
+                            this.projection = await response.json();
+                        }
+                    } catch (error) {
+                        console.error('Failed to load projection:', error);
+                    }
+                },
+                openProjectionModal() {
+                    this.loadProjection();
+                    this.showProjectionModal = true;
+                },
+                closeProjectionModal() {
+                    this.showProjectionModal = false;
+                },
+                // ===== 赛季结算 =====
+                seasonSettlementData: null,
+                showSeasonSettlementModal: false,
+                async checkSeasonEnd() {
+                    try {
+                        const response = await fetch('/api/season/check', { method: 'POST' });
+                        const data = await response.json();
+                        
+                        if (data.season_changed) {
+                            this.seasonSettlementData = data;
+                            this.showSeasonSettlementModal = true;
+                            await this.loadStatus();
+                        } else {
+                            this.showNotificationMessage('当前赛季尚未结束', 'info', '📅');
+                        }
+                    } catch (error) {
+                        console.error('Failed to check season end:', error);
+                    }
+                },
+                closeSeasonSettlementModal() {
+                    this.showSeasonSettlementModal = false;
+                    this.seasonSettlementData = null;
+                },
+                getSeasonMessage(activeDays) {
+                    if (activeDays >= 60) {
+                        return '你保持了惊人的专注力，连续活跃超过60天。这份坚持终将开花结果。';
+                    } else if (activeDays >= 30) {
+                        return '你建立了稳定的采集习惯，这是成长的基石。继续保持。';
+                    } else if (activeDays >= 10) {
+                        return '你开始了这段旅程。每一个开始都值得尊敬。';
+                    } else {
+                        return '新的赛季，新的开始。无论过去如何，此刻都是重新出发的机会。';
+                    }
+                },
+                // ===== 标签相关 =====
+                tagViewMode: 'cloud',
+                tagCloudData: {},
+                tagNotes: [],
+                selectedTag: '',
+                showTagModal: false,
+                async loadTags() {
+                    try {
+                        const response = await fetch('/api/tags');
+                        if (response.ok) {
+                            const data = await response.json();
+                            this.tagCloudData = data.nodes || {};
+                        }
+                    } catch (error) {
+                        console.error('Failed to load tags:', error);
+                    }
+                },
+                get tagCloudData() {
+                    return this._tagCloudData || {};
+                },
+                set tagCloudData(value) {
+                    this._tagCloudData = value;
+                },
+                getTagSize(count) {
+                    const minSize = 0.85;
+                    const maxSize = 1.8;
+                    const maxCount = Math.max(...Object.values(this.tagCloudData).map(d => d.count), 1);
+                    return minSize + (count / maxCount) * (maxSize - minSize);
+                },
+                getTagColor(count) {
+                    const colors = [
+                        'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                        'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                        'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+                        'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+                        'linear-gradient(135deg, #fa709a 0%, #fee140 100%)'
+                    ];
+                    const index = Math.min(count - 1, colors.length - 1);
+                    return colors[index];
+                },
+                get sortedTags() {
+                    return Object.entries(this.tagCloudData).sort((a, b) => b[1].count - a[1].count);
+                },
+                async openTagDetail(tag) {
+                    try {
+                        const response = await fetch(`/api/notes/by-tag?tag=${encodeURIComponent(tag)}`);
+                        if (response.ok) {
+                            this.tagNotes = await response.json();
+                            this.selectedTag = tag;
+                            this.showTagModal = true;
+                        }
+                    } catch (error) {
+                        console.error('Failed to load tag notes:', error);
+                    }
+                },
+                closeTagModal() {
+                    this.showTagModal = false;
+                    this.tagNotes = [];
+                    this.selectedTag = '';
+                },
                 addTag() {
                     if (this.tagInput.trim() && !this.captureForm.tags.includes(this.tagInput.trim())) {
                         this.captureForm.tags.push(this.tagInput.trim());
@@ -1224,10 +1462,15 @@
                             this.showEarned = true;
                             setTimeout(() => { this.showEarned = false; }, 500);
                             
-                            this.showNotificationMessage(`+${data.earned.toFixed(1)} 星点！`, 'success', '🎉');
+                            // 保存采集成功数据用于弹窗展示
+                            this.captureSuccessData = data;
+                            this.showCaptureSuccessModal = true;
+                            
                             this.captureForm.content = '';
                             this.captureForm.tags = [];
+                            this.tagInput = '';
                             await this.loadStatus();
+                            await this.loadTags();
                             this.playSound();
                         } else {
                             this.showNotificationMessage(data.detail || '捕获失败', 'error', '❌');
@@ -1681,9 +1924,23 @@
                         this.showNotificationMessage('网络错误', 'error', '❌');
                     }
                 },
+                async loadMedals() {
+                    try {
+                        const response = await fetch('/api/medals');
+                        if (response.ok) {
+                            const data = await response.json();
+                            this.allMedals = data.medals || [];
+                        }
+                    } catch (error) {
+                        console.error('Failed to load medals:', error);
+                    }
+                },
                 init() {
                     this.loadStatus();
                     this.loadConfig();
+                    this.loadMedals();
+                    this.loadTags();
+                    this.loadProjection();
                     setInterval(() => {
                         this.loadStatus();
                     }, 10000);
@@ -1711,8 +1968,246 @@
                 }
             }
         }
-        
-        
     </script>
+    
+    <!-- 标签详情弹窗 -->
+    <div x-show="showTagModal" class="modal-overlay" @click.self="closeTagModal()">
+        <div class="modal-content" style="max-width: 500px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3 style="margin: 0;">📋 {{ selectedTag }} 的笔记</h3>
+                <button @click="closeTagModal()" class="btn-close">✕</button>
+            </div>
+            
+            <div x-show="tagNotes.length === 0" style="text-align: center; padding: 40px; color: #94a3b8;">
+                <div style="font-size: 3rem; margin-bottom: 10px;">📭</div>
+                <p>暂无相关笔记</p>
+            </div>
+            
+            <div x-show="tagNotes.length > 0" style="max-height: 400px; overflow-y: auto;">
+                <template x-for="note in tagNotes" :key="note.file_path">
+                    <div style="padding: 12px; border-bottom: 1px solid #eee; cursor: pointer;" @click="openNoteDetail(note)">
+                        <div style="font-weight: 600; color: #333;" x-text="note.title || '无标题'"></div>
+                        <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 4px;" x-text="note.date"></div>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 采集成功弹窗 -->
+    <div x-show="showCaptureSuccessModal" class="modal-overlay" @click.self="closeCaptureSuccessModal()">
+        <div class="modal-content" style="max-width: 480px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="margin: 0; color: #667eea;">🎉 捕获成功</h3>
+                <button @click="closeCaptureSuccessModal()" class="btn-close">✕</button>
+            </div>
+            
+            <template x-if="captureSuccessData">
+                <div>
+                    <!-- 星点收入 -->
+                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 20px;">
+                        <div style="font-size: 2rem; font-weight: bold;" x-text="'+' + captureSuccessData.earned.toFixed(1) + ' 星点'"></div>
+                        <div style="font-size: 0.85rem; opacity: 0.9; margin-top: 5px;">
+                            基础 <span x-text="captureSuccessData.base_stars"></span> 
+                            <span x-show="captureSuccessData.streak_bonus_pct > 0">+ 连续加成 <span x-text="captureSuccessData.streak_bonus_amount.toFixed(1)"></span> (<span x-text="captureSuccessData.streak_bonus_pct"></span>%)</span>
+                        </div>
+                    </div>
+                    
+                    <!-- 三要素 -->
+                    <div style="margin-bottom: 20px;">
+                        <h4 style="margin: 0 0 12px 0; color: #333; font-size: 0.95rem;">📊 本次采集反馈</h4>
+                        
+                        <!-- 行为确认 -->
+                        <div style="display: flex; align-items: flex-start; gap: 10px; padding: 12px; background: #f8f9fa; border-radius: 8px; margin-bottom: 10px;">
+                            <span style="font-size: 1.2rem;">✅</span>
+                            <div>
+                                <div style="font-weight: 600; color: #333;">行为已确认</div>
+                                <div style="font-size: 0.85rem; color: #666;">
+                                    今日第 <span x-text="captureSuccessData.today_count"></span> 条 | 连续 <span x-text="captureSuccessData.streak_days"></span> 天
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 新连接 -->
+                        <div x-show="captureSuccessData.new_connections && captureSuccessData.new_connections.length > 0" style="display: flex; align-items: flex-start; gap: 10px; padding: 12px; background: #f0fdf4; border-radius: 8px; margin-bottom: 10px;">
+                            <span style="font-size: 1.2rem;">🔗</span>
+                            <div>
+                                <div style="font-weight: 600; color: #166534;">新标签连接</div>
+                                <div style="font-size: 0.85rem; color: #666;">
+                                    <template x-for="conn in captureSuccessData.new_connections" :key="conn">
+                                        <span x-text="conn" style="display: inline-block; margin: 2px;"></span>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 能力值变化 -->
+                        <div style="display: flex; align-items: flex-start; gap: 10px; padding: 12px; background: #fef3c7; border-radius: 8px;">
+                            <span style="font-size: 1.2rem;">📈</span>
+                            <div>
+                                <div style="font-weight: 600; color: #92400e;">能力值更新</div>
+                                <div style="font-size: 0.8rem; color: #666; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 5px;">
+                                    <div>
+                                        <div style="color: #10b981;">采</div>
+                                        <div x-text="captureSuccessData.abilities.hunt_power.toFixed(1)"></div>
+                                    </div>
+                                    <div>
+                                        <div style="color: #3b82f6;">连</div>
+                                        <div x-text="captureSuccessData.abilities.link_power.toFixed(1)"></div>
+                                    </div>
+                                    <div>
+                                        <div style="color: #f59e0b;">输</div>
+                                        <div x-text="captureSuccessData.abilities.output_power.toFixed(1)"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 相似笔记 -->
+                    <div x-show="captureSuccessData.related_notes && captureSuccessData.related_notes.length > 0" style="margin-bottom: 20px;">
+                        <h4 style="margin: 0 0 12px 0; color: #333; font-size: 0.95rem;">💡 相似笔记（与过去的自己对话）</h4>
+                        <div style="max-height: 150px; overflow-y: auto;">
+                            <template x-for="note in captureSuccessData.related_notes" :key="note.file_path">
+                                <div style="padding: 10px; background: #f8f9fa; border-radius: 8px; margin-bottom: 8px;">
+                                    <div style="font-weight: 600; color: #333; font-size: 0.9rem;" x-text="note.title"></div>
+                                    <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 4px;">
+                                        <span x-text="note.date"></span> · 
+                                        <span style="color: #667eea;" x-text="note.tag_overlap + ' 个共同标签'"></span>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                    
+                    <!-- 关闭按钮 -->
+                    <button @click="closeCaptureSuccessModal()" style="width: 100%; padding: 12px; background: #667eea; color: white; border: none; border-radius: 10px; font-size: 1rem; cursor: pointer;">
+                        继续采集
+                    </button>
+                </div>
+            </template>
+        </div>
+    </div>
+    
+    <!-- 长期推演弹窗 -->
+    <div x-show="showProjectionModal" class="modal-overlay" @click.self="closeProjectionModal()">
+        <div class="modal-content" style="max-width: 600px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="margin: 0; color: #667eea;">🔮 6个月后的你</h3>
+                <button @click="closeProjectionModal()" class="btn-close">✕</button>
+            </div>
+            
+            <template x-if="projection">
+                <div>
+                    <!-- 预测数据 -->
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px;">
+                        <!-- 笔记 -->
+                        <div style="background: #f0fdf4; padding: 16px; border-radius: 12px; text-align: center;">
+                            <div style="font-size: 1.5rem; margin-bottom: 8px;">📝</div>
+                            <div style="font-size: 0.8rem; color: #666;">当前笔记</div>
+                            <div style="font-size: 1.5rem; font-weight: bold; color: #166534;" x-text="projection.notes_projection.current"></div>
+                            <div style="font-size: 1.2rem; color: #166534; margin-top: 4px;" x-text="'→ ' + projection.notes_projection.projected"></div>
+                            <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 4px;" x-text="projection.notes_projection.daily_rate + '/天'"></div>
+                        </div>
+                        
+                        <!-- 连接 -->
+                        <div style="background: #eff6ff; padding: 16px; border-radius: 12px; text-align: center;">
+                            <div style="font-size: 1.5rem; margin-bottom: 8px;">🔗</div>
+                            <div style="font-size: 0.8rem; color: #666;">当前连接</div>
+                            <div style="font-size: 1.5rem; font-weight: bold; color: #1e40af;" x-text="projection.connections_projection.current"></div>
+                            <div style="font-size: 1.2rem; color: #1e40af; margin-top: 4px;" x-text="'→ ' + projection.connections_projection.projected"></div>
+                            <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 4px;" x-text="projection.connections_projection.daily_rate + '/天'"></div>
+                        </div>
+                        
+                        <!-- 基金 -->
+                        <div style="background: #fef3c7; padding: 16px; border-radius: 12px; text-align: center;">
+                            <div style="font-size: 1.5rem; margin-bottom: 8px;">💰</div>
+                            <div style="font-size: 0.8rem; color: #666;">基金池</div>
+                            <div style="font-size: 1.5rem; font-weight: bold; color: #92400e;" x-text="projection.fund_projection.current.toFixed(0)"></div>
+                            <div style="font-size: 1.2rem; color: #92400e; margin-top: 4px;" x-text="'→ ' + projection.fund_projection.projected.toFixed(0)"></div>
+                            <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 4px;" x-text="projection.fund_projection.weekly_rate.toFixed(0) + '/周'"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- 能力值预测 -->
+                    <div style="background: #f8f9fa; padding: 16px; border-radius: 12px;">
+                        <h4 style="margin: 0 0 12px 0; color: #333; font-size: 0.95rem;">📊 能力值预测</h4>
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+                            <template x-for="(data, ability) in projection.abilities_projection" :key="ability">
+                                <div style="text-align: center;">
+                                    <div style="font-size: 0.8rem; color: #666;" x-text="ability === 'hunt_power' ? '采集力' : ability === 'link_power' ? '连接力' : '输出力'"></div>
+                                    <div style="font-size: 1.1rem; font-weight: bold; color: #333;" x-text="data.current + ' → ' + data.projected"></div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </div>
+    </div>
+    
+    <!-- 赛季结算弹窗 -->
+    <div x-show="showSeasonSettlementModal" class="modal-overlay" @click.self="closeSeasonSettlementModal()">
+        <div class="modal-content" style="max-width: 550px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="margin: 0; color: #f59e0b;">🏆 赛季更替</h3>
+                <button @click="closeSeasonSettlementModal()" class="btn-close">✕</button>
+            </div>
+            
+            <template x-if="seasonSettlementData">
+                <div>
+                    <!-- 旧赛季总结 -->
+                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 12px; margin-bottom: 16px;">
+                        <div style="font-size: 1.1rem; font-weight: bold; margin-bottom: 12px;" x-text="seasonSettlementData.old_season.name + ' 赛季结束'"></div>
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; font-size: 0.9rem;">
+                            <div>
+                                <div style="opacity: 0.8;">星点</div>
+                                <div style="font-size: 1.3rem; font-weight: bold;" x-text="seasonSettlementData.old_season.star_earned_this_season || 0"></div>
+                            </div>
+                            <div>
+                                <div style="opacity: 0.8;">跨界</div>
+                                <div style="font-size: 1.3rem; font-weight: bold;" x-text="seasonSettlementData.old_season.cross_domain_notes_this_season || 0"></div>
+                            </div>
+                            <div>
+                                <div style="opacity: 0.8;">活跃天</div>
+                                <div style="font-size: 1.3rem; font-weight: bold;" x-text="seasonSettlementData.old_season.active_days_this_season || 0"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 新赛季 -->
+                    <div style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; padding: 20px; border-radius: 12px; margin-bottom: 16px;">
+                        <div style="font-size: 1.1rem; font-weight: bold; margin-bottom: 8px;">🌟 欢迎来到</div>
+                        <div style="font-size: 1.5rem; font-weight: bold;" x-text="seasonSettlementData.new_season.name + ' 赛季'"></div>
+                    </div>
+                    
+                    <!-- 预测对比 -->
+                    <div x-show="seasonSettlementData.old_season.predictions" style="background: #f0fdf4; padding: 16px; border-radius: 12px; margin-bottom: 16px;">
+                        <h4 style="margin: 0 0 12px 0; color: #166534; font-size: 0.95rem;">🔮 预测对比</h4>
+                        <div style="font-size: 0.9rem; color: #333;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                                <span>当时预测星点：</span>
+                                <span x-text="seasonSettlementData.old_season.predictions?.predicted_star?.toFixed(0) || 'N/A'"></span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>实际获得：</span>
+                                <span style="color: #16a34a; font-weight: bold;" x-text="seasonSettlementData.old_season.star_earned_this_season || 0"></span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 致未来自己 -->
+                    <div style="background: #fef3c7; padding: 16px; border-radius: 12px; margin-bottom: 20px;">
+                        <h4 style="margin: 0 0 8px 0; color: #92400e; font-size: 0.95rem;">💌 来自过去的寄语</h4>
+                        <p style="margin: 0; font-size: 0.9rem; color: #333; line-height: 1.6;" x-text="getSeasonMessage(seasonSettlementData.old_season.active_days_this_season || 0)"></p>
+                    </div>
+                    
+                    <button @click="closeSeasonSettlementModal()" style="width: 100%; padding: 14px; background: #667eea; color: white; border: none; border-radius: 10px; font-size: 1rem; cursor: pointer; font-weight: 600;">
+                        开始新赛季
+                    </button>
+                </div>
+            </template>
+        </div>
+    </div>
 </body>
 </html>

@@ -50,8 +50,8 @@
     "streak_days": { "type": "integer", "description": "连续采集天数" },
     "active_days": { "type": "integer", "description": "总活跃天数" },
     "total_notes": { "type": "integer", "description": "总笔记数" },
-    "penalty_active": { "type": "boolean", "description": "惩罚激活状态（已废弃，仅保留兼容）" },
-    "penalty_days": { "type": "integer", "description": "惩罚天数（已废弃，仅保留兼容）" },
+    "penalty_active": { "type": "boolean", "description": "惩罚激活状态（⚠️ 已废弃，仅保留兼容）" },
+    "penalty_days": { "type": "integer", "description": "惩罚天数（⚠️ 已废弃，仅保留兼容）" },
     "medals": { "type": "array", "items": { "type": "string" }, "description": "已获得勋章列表" },
     "monthly_medals": { "type": "integer", "description": "月度勋章数" },
     "gray_medal": { "type": "boolean", "description": "灰色勋章状态" },
@@ -333,7 +333,21 @@ custom_fund_name: "我的投资账户"
 {
   "earned": 15.0,
   "total_star": 115.0,
+  "available_star": 65.0,
   "today_count": 2,
+  "streak_days": 5,
+  "streak_bonus_pct": 10,
+  "streak_bonus_amount": 1.5,
+  "abilities": {
+    "hunt_power": 25.5,
+    "link_power": 3.2,
+    "output_power": 8.5
+  },
+  "new_connections": ["#生产力<->#冥想"],
+  "related_notes": [
+    {"title": "时间管理心得", "date": "2026-05-12"},
+    {"title": "番茄工作法实践", "date": "2026-05-15"}
+  ],
   "message": "捕获成功！"
 }
 ```
@@ -694,33 +708,20 @@ custom_fund_name: "我的投资账户"
 
 ### 3.8 赛季
 
-#### GET `/api/season/status`
+#### GET `/api/season/current`
 
 **响应**：
 ```json
 {
-  "current_season": {
-    "id": 1,
-    "name": "开拓者",
-    "start_date": "2026-01-01",
-    "end_date": "2026-03-31",
-    "theme_tags": [],
-    "star_earned_this_season": 2500,
-    "cross_domain_notes_this_season": 15,
-    "active_days_this_season": 30
-  },
-  "comparison": {
-    "last_season": {
-      "star_earned": 1800,
-      "cross_domain_notes": 10,
-      "active_days": 25
-    },
-    "diff": {
-      "star_earned": 700,
-      "cross_domain_notes": 5,
-      "active_days": 5
-    }
-  }
+  "id": 1,
+  "name": "开拓者",
+  "theme_id": "pioneer",
+  "start_date": "2026-01-01",
+  "end_date": "2026-03-31",
+  "theme_tags": [],
+  "star_earned_this_season": 2500,
+  "cross_domain_notes_this_season": 15,
+  "active_days_this_season": 30
 }
 ```
 
@@ -729,30 +730,49 @@ custom_fund_name: "我的投资账户"
 **响应**：
 ```json
 {
-  "seasons": [
+  "history": [
     {
-      "id": 0,
+      "id": 1,
       "name": "开拓者",
       "start_date": "2025-10-01",
       "end_date": "2025-12-31",
-      "star_earned": 1800,
-      "medals": ["开拓者勋章"]
+      "star_earned_this_season": 1800,
+      "cross_domain_notes_this_season": 10,
+      "active_days_this_season": 25
     }
   ]
 }
 ```
 
-#### POST `/api/season/settle`
+#### POST `/api/season/check`
+
+**说明**：检查赛季是否结束并自动开启新赛季
+
+**响应**（赛季未结束）：
+```json
+{
+  "season_changed": false
+}
+```
+
+**响应**（赛季结束）：
+```json
+{
+  "season_changed": true,
+  "old_season": {...},
+  "new_season": {...}
+}
+```
+
+#### POST `/api/season/start`
+
+**说明**：手动开启新赛季
 
 **响应**：
 ```json
 {
-  "message": "赛季结算完成",
-  "season_report": {
-    "id": 1,
-    "star_earned": 2500,
-    "medals": ["开拓者勋章", "连接者勋章"]
-  }
+  "old_season": {...},
+  "new_season": {...}
 }
 ```
 
@@ -760,9 +780,53 @@ custom_fund_name: "我的投资账户"
 
 ## 四、关键函数签名
 
+> **Phase 7a 新增 API**：
+
+### 3.9 三层反馈（Phase 7a）
+
+#### GET `/api/projection`
+
+**说明**：长期推演计算，基于当前速度预测6个月后的状态
+
+**响应**：
+```json
+{
+  "projection_days": 180,
+  "notes_projection": {
+    "current": 100,
+    "projected": 280,
+    "daily_rate": 1.0
+  },
+  "connections_projection": {
+    "current": 45,
+    "projected": 150,
+    "daily_rate": 0.6
+  },
+  "fund_projection": {
+    "current": 1500,
+    "projected": 4500,
+    "weekly_rate": 50
+  },
+  "abilities_projection": {
+    "hunt_power": {"current": 45.2, "projected": 78.5},
+    "link_power": {"current": 12.3, "projected": 28.7},
+    "output_power": {"current": 15.0, "projected": 35.2}
+  },
+  "season_progress": {
+    "current_season_days": 45,
+    "total_season_days": 90,
+    "completion_pct": 50
+  }
+}
+```
+
+---
+
+## 五、关键函数签名
+
 > AI IDE 请基于现有 engine.py 补充完整函数签名、参数类型、返回类型。
 
-### 4.1 能力值计算
+### 5.1 能力值计算
 
 ```python
 def _calculate_hunt_power(self) -> float:
@@ -802,7 +866,7 @@ def _update_ability_changes(self, ability: str, change: float, reason: str) -> N
     pass
 ```
 
-### 4.2 勋章系统
+### 5.2 勋章系统
 
 ```python
 def check_medals(self, trigger_type: str = None) -> list:
@@ -852,7 +916,7 @@ def get_medal_status(self, medal_id: str) -> dict:
     pass
 ```
 
-### 4.3 标签图更新
+### 5.3 标签图更新
 
 ```python
 def _update_tag_graph(self, tags: list) -> None:
@@ -893,7 +957,7 @@ def get_notes_by_tag(self, tag: str) -> list:
     pass
 ```
 
-### 4.4 兑换相关
+### 5.4 兑换相关
 
 ```python
 def _calculate_exchange_rate(self, path: str) -> float:
@@ -931,42 +995,74 @@ def _update_path_streak(self, path: str) -> None:
     pass
 ```
 
-### 4.5 赛季相关
+### 5.5 赛季相关
 
 ```python
-def _init_season(self) -> None:
-    """初始化新赛季
-    逻辑:
-        - 检查当前赛季是否结束
-        - 如结束则结算并创建新赛季
-        - 设置赛季主题（如配置）
-    """
-    pass
-
-def _settle_season(self) -> dict:
-    """结算当前赛季
+def get_current_season(self) -> dict:
+    """获取当前赛季信息
     返回:
         {
             "id": int,
-            "star_earned": float,
-            "medals": list,
-            "report": str  # 结算报告内容
+            "name": str,
+            "theme_id": str,
+            "start_date": str,
+            "end_date": str,
+            "theme_tags": list,
+            "star_earned_this_season": float,
+            "cross_domain_notes_this_season": int,
+            "active_days_this_season": int
         }
     """
     pass
 
-def _get_season_comparison(self) -> dict:
-    """本赛季 vs 上赛季对比数据
+def check_season_end(self) -> dict or None:
+    """检查赛季是否结束
+    逻辑:
+        - 检查当前赛季是否已超过 90 天（可配置）
+        - 如结束则调用 start_new_season() 自动开启新赛季
     返回:
-        {
-            "last_season": {...},
-            "diff": {...}
-        }
+        None 表示赛季未结束
+        dict 表示赛季已结算: {"old_season": {...}, "new_season": {...}}
+    """
+    pass
+
+def start_new_season(self) -> dict:
+    """开启新赛季
+    逻辑:
+        - 将当前赛季存入 season_history
+        - 根据主题列表轮换分配新主题
+        - 重置赛季计数器
+    返回:
+        {"old_season": {...}, "new_season": {...}}
+    """
+    pass
+
+def get_season_history(self) -> list:
+    """获取赛季历史记录
+    返回:
+        [
+            {
+                "id": int,
+                "name": str,
+                "start_date": str,
+                "end_date": str,
+                ...
+            }
+        ]
+    """
+    pass
+
+def _check_season_medal(self, medal: dict) -> bool:
+    """检查赛季触发类型勋章
+    参数:
+        medal: 勋章配置对象
+    返回:
+        True 表示满足条件并已发放
     """
     pass
 ```
 
-### 4.6 采集/回顾/战报
+### 5.6 采集/回顾/战报
 
 ```python
 def process_daily_capture(self, content: str, tags: list = None, folder: str = "Inbox") -> dict:
@@ -1058,11 +1154,11 @@ def process_publish(self, url: str) -> dict:
 
 ---
 
-## 五、前端组件结构
+## 六、前端组件结构
 
 > AI IDE 请基于 `static/index.html` 补充实际 Alpine.js 组件划分和关键 data/methods。
 
-### 5.1 核心组件划分
+### 6.1 核心组件划分
 
 ```javascript
 function appData() {
@@ -1124,13 +1220,18 @@ function appData() {
         },
         
         // ===== 勋章定义 =====
-        allMedals: [
-            { name: '灵光乍现', emoji: '💡', condition: '单日完成3条采集' },
-            { name: '周常猎人', emoji: '🏹', condition: '连续4周完成回顾' },
-            { name: '连线大师', emoji: '🕸️', condition: '单篇战报连接3个领域' },
-            { name: '采集达人', emoji: '📚', condition: '采集力≥30' },
-            { name: '连线新手', emoji: '🔗', condition: '连接力≥5' }
-        ],
+        allMedals: [],
+        
+        // ===== 标签宇宙 =====
+        tagViewMode: 'cloud',  // 'cloud' or 'list'
+        tagCloudData: {},
+        tagNotes: [],
+        selectedTag: '',
+        showTagModal: false,
+        
+        // ===== 赛季 =====
+        currentSeason: {},
+        seasonHistory: [],
         
         // ===== 初始化 =====
         async init() {
@@ -1265,13 +1366,66 @@ function appData() {
         },
         
         // ===== 标签相关 =====
-        async showTagDetail(tag) {
+        async loadTags() {
+            const res = await fetch('/api/tags');
+            const data = await res.json();
+            this.tagCloudData = data.nodes || {};
+        },
+        
+        getTagSize(count) {
+            const minSize = 0.85, maxSize = 1.8;
+            const maxCount = Math.max(...Object.values(this.tagCloudData).map(d => d.count), 1);
+            return minSize + (count / maxCount) * (maxSize - minSize);
+        },
+        
+        getTagColor(count) {
+            const colors = [
+                'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+                'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+                'linear-gradient(135deg, #fa709a 0%, #fee140 100%)'
+            ];
+            return colors[Math.min(count - 1, colors.length - 1)];
+        },
+        
+        get sortedTags() {
+            return Object.entries(this.tagCloudData).sort((a, b) => b[1].count - a[1].count);
+        },
+        
+        async openTagDetail(tag) {
             const res = await fetch(`/api/notes/by-tag?tag=${encodeURIComponent(tag)}`);
-            const result = await res.json();
-            
-            this.tagModal.tag = tag;
-            this.tagModal.notes = result.notes;
-            this.tagModal.show = true;
+            this.tagNotes = await res.json();
+            this.selectedTag = tag;
+            this.showTagModal = true;
+        },
+        
+        closeTagModal() {
+            this.showTagModal = false;
+            this.tagNotes = [];
+            this.selectedTag = '';
+        },
+        
+        // ===== 勋章相关 =====
+        async loadMedals() {
+            const res = await fetch('/api/medals');
+            const data = await res.json();
+            this.allMedals = data.medals || [];
+        },
+        
+        getMedalClass(medal) {
+            return medal.earned ? '' : 'locked';
+        },
+        
+        // ===== 赛季相关 =====
+        async loadSeason() {
+            const res = await fetch('/api/season/current');
+            this.currentSeason = await res.json();
+        },
+        
+        async checkSeasonEnd() {
+            const res = await fetch('/api/season/check', { method: 'POST' });
+            return await res.json();
         },
         
         // ===== 工具方法 =====
@@ -1291,7 +1445,7 @@ function appData() {
 }
 ```
 
-### 5.2 关键交互要求
+### 6.2 关键交互要求
 
 - **兑换确认页**：必须展示镜像对比（等值对比 + 时间维度 + 历史累计）
 - **基金池**：CSS 水位动画，星点增加时微涨
@@ -1301,7 +1455,7 @@ function appData() {
 - **赛季卡片**：进度显示 + 上赛季对比
 - **微观反馈**：采集成功后展示三要素 + 相似笔记
 
-### 5.3 模态窗规范
+### 6.3 模态窗规范
 
 - **回顾弹窗**：已实现（参考现有代码）
 - **镜像对比弹窗**：兑换确认页强制展示
@@ -1310,9 +1464,9 @@ function appData() {
 
 ---
 
-## 六、算法细节
+## 七、算法细节
 
-### 6.1 连接力计算
+### 7.1 连接力计算
 
 ```python
 import math
@@ -1330,7 +1484,7 @@ def calculate_link_power(nodes_count, edges_count, cross_domain_ratio):
     return density * 100 * math.log2(nodes_count + 1) * (cross_domain_ratio + 0.1)
 ```
 
-### 6.2 标签共现图更新
+### 7.2 标签共现图更新
 
 ```python
 def _update_tag_graph(self, tags):
@@ -1364,7 +1518,7 @@ def _update_tag_graph(self, tags):
         self.state["cross_domain_notes_count"] += 1
 ```
 
-### 6.3 连续选择奖惩
+### 7.3 连续选择奖惩
 
 ```python
 def _calculate_exchange_rate(self, path):

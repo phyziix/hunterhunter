@@ -1,76 +1,117 @@
-# 认知狩猎 - 初始值模板
-# 首次启动或重置系统时，从本文件读取默认值生成 state.json
-# 本文件定义所有字段的初始值，迁移脚本和重置接口从这里读取，不硬编码
+# 默认初始值配置文件
+# 用于首次启动和重置时初始化状态
 
-# ===== 星点与采集 =====
-total_star: 0
-today_count: 0
-last_capture_date: null
+# 基础配置
+base_star: 10
+daily_multipliers:
+  - 1.0
+  - 1.5
+  - 2.0
+  - 0.2
+weekly_review_reward: 200
+monthly_report_reward: 500
+content_output_reward_min: 750
+content_output_reward_max: 1000
+content_output_max_times: 5
+coupon_rate: 1.0
 
-# ===== 连续记录 =====
-streak_days: 0
+# 基金配置
+fund:
+  base_rate: 1.5
+  lock_days: 30
+  min_withdraw: 500
 
-# ===== 统计 =====
-active_days: 0
-total_notes: 0
+# 自定义名称
+custom_fund_name: "我的投资账户"
 
-# ===== 勋章（已获得列表）=====
-medals: []
+# 连续加成配置
+streak_bonuses:
+  - days: 7
+    bonus_pct: 10
+  - days: 30
+    bonus_pct: 30
+  - days: 90
+    bonus_pct: 50
 
-# ===== 月度勋章计数 =====
-monthly_medals: 0
+# 路径选择奖惩
+path_bonuses:
+  coupon:
+    - rate: 0.95
+      weeks: 2
+    - rate: 0.9
+      weeks: 4
+    - rate: 0.85
+      weeks: 8
+  fund:
+    - rate: 1.55
+      weeks: 2
+    - rate: 1.6
+      weeks: 4
+    - rate: 1.65
+      weeks: 8
 
-# ===== 灰色勋章状态 =====
-gray_medal: false
+# 能力值阈值配置
+ability_thresholds:
+  hunt_power:
+    - threshold: 30
+      title: "采集达人"
+    - effect: daily_multiplier_4th_upgrade
+      threshold: 100
+  link_power:
+    - threshold: 5
+      title: "连线新手"
+    - effect: fund_bonus_extra_5
+      threshold: 20
+  output_power:
+    - effect: unlock_investment_coupon
+      threshold: 10
+    - effect: output_reward_floor_850
+      threshold: 50
 
-# ===== 周回顾 =====
-last_weekly_review: null
-weekly_review_done: false
+# 勋章配置
+medals:
+  - id: "first_capture"
+    name: "灵光乍现"
+    icon: "💡"
+    trigger: "event"
+    event: "first_capture"
+  
+  - id: "weekly_review"
+    name: "周常猎人"
+    icon: "🏹"
+    trigger: "event"
+    event: "weekly_review"
+  
+  - id: "link_5"
+    name: "连线新手"
+    icon: "🔗"
+    trigger: "ability"
+    ability: "link_power"
+    threshold: 5
+  
+  - id: "season_pioneer"
+    name: "开拓者"
+    icon: "🗺️"
+    trigger: "season"
+    season_theme: "pioneer"
 
-# ===== 月度战报 =====
-last_monthly_report: null
-monthly_report_done: false
-completed_reports: 0
-
-# ===== 兑换历史 =====
-exchange_history: []
-exchange_path: ""
-
-# ===== 基金池 =====
-fund_pool: 0
-available_star: 0
-consumption_loss_this_month: 0
-
-# ===== 路径连续 =====
-path_streak_weeks: 0
-last_path_choice: null
-
-# ===== 内容输出 =====
-published_count: 0
-total_output_star: 0
-
-# ===== 能力值 =====
-abilities:
-  hunt_power: 5.0
-  link_power: 0.1
-  output_power: 0
-
-# ===== 能力值变更日志 =====
-ability_changes: []
-
-# ===== 跨界笔记计数 =====
-cross_domain_notes_count: 0
-
-# ===== 标签共现图 =====
-tag_graph:
-  nodes: {}
-  edges: {}
-
-# ===== 当前赛季 =====
-current_season: null
-
-# ===== 赛季历史 =====
-season_history: []
-
-# ===== 版本标识 =====
-state_version: "0.22"
+# 赛季配置
+seasons:
+  auto_start: true
+  default_length_days: 90
+  themes:
+    - id: pioneer
+      name: "开拓者"
+      bonus: {}
+    - id: linker
+      name: "连线大师"
+      bonus:
+        link_power_multiplier: 1.2
+    - id: miner
+      name: "深度矿工"
+      bonus:
+        hunt_power_multiplier: 1.2
+    - id: sharer
+      name: "分享者"
+      bonus:
+        output_power_multiplier: 1.2
