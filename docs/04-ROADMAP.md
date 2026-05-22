@@ -422,6 +422,7 @@
 - [ ] **文档更新**
   - [ ] 更新 CHANGELOG.md
   - [ ] 更新 README.md（如需要）
+  - [ ] 更新 DEPLOYMENT.md（如有部署环境变更）
   - [ ] 补充使用说明
 
 ---
@@ -429,6 +430,12 @@
 ## 当前实现状态总结
 
 ### ✅ 已完成（v0.2）
+
+- [x] **Phase 0: 部署环境就绪** ✅
+  - [x] launchd 守护进程配置（FastAPI 端口 8002 + localtunnel 隧道）
+  - [x] localtunnel 公网隧道部署（替代 Cloudflare Tunnel，国内网络限制）
+  - [x] DEPLOYMENT.md 完整部署文档（docs/DEPLOYMENT.md）
+  - [x] README 部署章节 + 文档索引同步更新
 
 - [x] Phase 1: 数据结构迁移与引擎核心重构
   - [x] state.json 迁移到 v0.22
