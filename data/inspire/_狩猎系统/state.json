@@ -1,0 +1,104 @@
+{
+  "total_star": 992.0,
+  "today_count": 4,
+  "last_capture_date": "2026-05-22",
+  "streak_days": 1,
+  "active_days": 1,
+  "total_notes": 4,
+  "penalty_active": false,
+  "penalty_days": 0,
+  "medals": [
+    "灵光乍现",
+    "连线新手"
+  ],
+  "monthly_medals": 0,
+  "gray_medal": false,
+  "last_weekly_review": "",
+  "last_monthly_report": "",
+  "weekly_review_done": false,
+  "monthly_report_done": false,
+  "completed_reports": 0,
+  "exchange_history": [
+    {
+      "type": "coupon",
+      "amount": 50.0,
+      "real_value": 50.0,
+      "timestamp": "2026-05-22T11:57:17.385461"
+    }
+  ],
+  "exchange_path": "fund",
+  "fund_pool": 0.0,
+  "available_star": 992.0,
+  "consumption_loss_this_month": 25.0,
+  "path_streak_weeks": 0,
+  "last_path_choice": "2026-20",
+  "published_count": 1,
+  "total_output_star": 995,
+  "abilities": {
+    "hunt_power": 5.0,
+    "link_power": 50.0,
+    "output_power": 6.903747257584598
+  },
+  "ability_changes": [
+    {
+      "date": "2026-05-22T11:54:42.033871",
+      "ability": "hunt_power",
+      "change": 5.0,
+      "reason": "采集力计算更新"
+    },
+    {
+      "date": "2026-05-22T11:54:42.033897",
+      "ability": "link_power",
+      "change": 50.0,
+      "reason": "连接力计算更新"
+    },
+    {
+      "date": "2026-05-22T11:57:08.615102",
+      "ability": "output_power",
+      "change": 6.9,
+      "reason": "输出力计算更新"
+    }
+  ],
+  "cross_domain_notes_count": 4,
+  "tag_graph": {
+    "nodes": {
+      "#测试": {
+        "count": 2,
+        "first_seen": "2026-05-22"
+      },
+      "#开发": {
+        "count": 1,
+        "first_seen": "2026-05-22"
+      },
+      "#设计": {
+        "count": 2,
+        "first_seen": "2026-05-22"
+      },
+      "#生产力": {
+        "count": 2,
+        "first_seen": "2026-05-22"
+      },
+      "#效率": {
+        "count": 1,
+        "first_seen": "2026-05-22"
+      }
+    },
+    "edges": {
+      "#测试<->#开发": 1,
+      "#测试<->#设计": 1,
+      "#设计<->#生产力": 1,
+      "#生产力<->#效率": 1
+    }
+  },
+  "current_season": {
+    "id": 1,
+    "name": "开拓者",
+    "start_date": "2026-05-22",
+    "end_date": "",
+    "theme_tags": [],
+    "star_earned_this_season": 0,
+    "cross_domain_notes_this_season": 0,
+    "active_days_this_season": 0
+  },
+  "season_history": []
+}

@@ -1,0 +1,74 @@
+ability_thresholds:
+  hunt_power:
+  - threshold: 30
+    title: 采集达人
+  - effect: daily_multiplier_4th_upgrade
+    threshold: 100
+  link_power:
+  - threshold: 5
+    title: 连线新手
+  - effect: fund_bonus_extra_5
+    threshold: 20
+  output_power:
+  - effect: unlock_investment_coupon
+    threshold: 10
+  - effect: output_reward_floor_850
+    threshold: 50
+base_star: 10
+content_output_max_times: 5
+content_output_reward_max: 1000
+content_output_reward_min: 750
+coupon_rate: 1.0
+custom_fund_name: 我的投资账户
+daily_multipliers:
+- 1.0
+- 1.5
+- 2.0
+- 0.2
+fund:
+  base_rate: 1.5
+  lock_days: 30
+  min_withdraw: 500
+monthly_report_reward: 500
+path_bonuses:
+  coupon:
+  - rate: 0.95
+    weeks: 2
+  - rate: 0.9
+    weeks: 4
+  - rate: 0.85
+    weeks: 8
+  fund:
+  - rate: 1.55
+    weeks: 2
+  - rate: 1.6
+    weeks: 4
+  - rate: 1.65
+    weeks: 8
+seasons:
+  auto_start: true
+  default_length_days: 90
+  themes:
+  - bonus: {}
+    id: pioneer
+    name: 开拓者
+  - bonus:
+      cross_domain_bonus: 5
+    id: connector
+    name: 连线大师
+  - bonus:
+      depth_bonus: 10
+    id: miner
+    name: 深度矿工
+  - bonus:
+      publish_bonus: 100
+    id: sharer
+    name: 分享者
+streak_bonuses:
+- bonus_pct: 10
+  days: 7
+- bonus_pct: 30
+  days: 30
+- bonus_pct: 50
+  days: 90
+weekly_review_reward: 200
