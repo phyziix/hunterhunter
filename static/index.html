@@ -2041,26 +2041,16 @@
                             </div>
                         </div>
                         
-                        <!-- 能力值变化 -->
-                        <div style="display: flex; align-items: flex-start; gap: 10px; padding: 12px; background: #fef3c7; border-radius: 8px;">
-                            <span style="font-size: 1.2rem;">📈</span>
-                            <div>
-                                <div style="font-weight: 600; color: #92400e;">能力值更新</div>
-                                <div style="font-size: 0.8rem; color: #666; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 5px;">
+                        <!-- 连接力奖励通知 -->
+                        <div x-show="captureSuccessData.link_power_rewards && captureSuccessData.link_power_rewards.length > 0" style="margin-bottom: 15px;">
+                            <template x-for="reward in captureSuccessData.link_power_rewards" :key="reward.threshold">
+                                <div style="display: flex; align-items: flex-start; gap: 10px; padding: 12px; background: #dbeafe; border-radius: 8px; margin-bottom: 8px;">
+                                    <span style="font-size: 1.2rem;">🔗</span>
                                     <div>
-                                        <div style="color: #10b981;">采</div>
-                                        <div x-text="captureSuccessData.abilities.hunt_power.toFixed(1)"></div>
-                                    </div>
-                                    <div>
-                                        <div style="color: #3b82f6;">连</div>
-                                        <div x-text="captureSuccessData.abilities.link_power.toFixed(1)"></div>
-                                    </div>
-                                    <div>
-                                        <div style="color: #f59e0b;">输</div>
-                                        <div x-text="captureSuccessData.abilities.output_power.toFixed(1)"></div>
+                                        <div style="font-weight: 600; color: #1e40af;" x-text="'连接力达到 ' + reward.threshold + '，获得 ' + reward.reward + ' 星点'"></div>
                                     </div>
                                 </div>
-                            </div>
+                            </template>
                         </div>
                     </div>
                     
@@ -2126,19 +2116,6 @@
                             <div style="font-size: 1.5rem; font-weight: bold; color: #92400e;" x-text="projection.fund_projection.current.toFixed(0)"></div>
                             <div style="font-size: 1.2rem; color: #92400e; margin-top: 4px;" x-text="'→ ' + projection.fund_projection.projected.toFixed(0)"></div>
                             <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 4px;" x-text="projection.fund_projection.weekly_rate.toFixed(0) + '/周'"></div>
-                        </div>
-                    </div>
-                    
-                    <!-- 能力值预测 -->
-                    <div style="background: #f8f9fa; padding: 16px; border-radius: 12px;">
-                        <h4 style="margin: 0 0 12px 0; color: #333; font-size: 0.95rem;">📊 能力值预测</h4>
-                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
-                            <template x-for="(data, ability) in projection.abilities_projection" :key="ability">
-                                <div style="text-align: center;">
-                                    <div style="font-size: 0.8rem; color: #666;" x-text="ability === 'hunt_power' ? '采集力' : ability === 'link_power' ? '连接力' : '输出力'"></div>
-                                    <div style="font-size: 1.1rem; font-weight: bold; color: #333;" x-text="data.current + ' → ' + data.projected"></div>
-                                </div>
-                            </template>
                         </div>
                     </div>
                 </div>

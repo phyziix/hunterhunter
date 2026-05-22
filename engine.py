@@ -205,7 +205,7 @@ class HuntingEngine:
             "abilities": {
                 "link_power": 0.0
             },
-            "ability_changes": [],
+            "link_power_rewards_earned": [],  # 本季已触发的连接力奖励阈值
             
             # 标签共现图
             "cross_domain_notes_count": 0,
@@ -279,7 +279,7 @@ class HuntingEngine:
         self.state.setdefault("abilities", {
             "link_power": 0.0
         })
-        self.state.setdefault("ability_changes", [])
+        self.state.setdefault("link_power_rewards_earned", [])
         
         # 标签共现图
         self.state.setdefault("cross_domain_notes_count", 0)
@@ -396,30 +396,29 @@ class HuntingEngine:
         # 限制范围 0.1~50
         link_power = max(0.1, min(50.0, link_power))
         
-        old_value = self.state["abilities"]["link_power"]
-        change = link_power - old_value
         self.state["abilities"]["link_power"] = link_power
-        
-        if abs(change) > 0.01:
-            self._update_ability_changes("link_power", change, "连接力计算更新")
     
-    def _update_ability_changes(self, ability, change, reason):
-        """维护能力值变更日志"""
-        change_entry = {
-            "date": datetime.now().isoformat(),
-            "ability": ability,
-            "change": round(change, 2),
-            "reason": reason
-        }
+    def _check_link_power_rewards(self):
+        """检查连接力阈值星点奖励（每赛季每个阈值只触发一次）"""
+        link_power = self.state["abilities"]["link_power"]
+        earned = self.state.setdefault("link_power_rewards_earned", [])
+        rewards_config = self.config.get("link_power_rewards", [])
         
-        self.state["ability_changes"].append(change_entry)
+        newly_earned_rewards = []
+        for reward_item in rewards_config:
+            threshold = reward_item["threshold"]
+            if link_power >= threshold and threshold not in earned:
+                star_reward = reward_item["reward"]
+                self.state["available_star"] += star_reward
+                self.state["total_star"] = self.state["available_star"] + self.state["fund_pool"]
+                earned.append(threshold)
+                newly_earned_rewards.append({
+                    "threshold": threshold,
+                    "reward": star_reward
+                })
+                self._log_event("LINK_POWER_REWARD", f"连接力达到 {threshold}，获得 {star_reward} 星点")
         
-        # 只保留最近7天的记录
-        seven_days_ago = (datetime.now() - timedelta(days=7)).isoformat()
-        self.state["ability_changes"] = [
-            entry for entry in self.state["ability_changes"]
-            if entry["date"] >= seven_days_ago
-        ]
+        return newly_earned_rewards
     
     def _load_config(self):
         with open(self.config_file, 'r', encoding='utf-8') as f:
@@ -816,6 +815,7 @@ class HuntingEngine:
         self.state["total_notes"] += 1
         
         self._calculate_link_power()
+        link_power_rewards = self._check_link_power_rewards()
         self._check_medals()
         self._save_state()
         
@@ -831,7 +831,7 @@ class HuntingEngine:
             "available_star": round(self.state["available_star"], 2),
             "today_count": self.state["today_count"],
             "streak_days": self.state["streak_days"],
-            "abilities": {k: round(v, 2) for k, v in self.state["abilities"].items()},
+            "link_power_rewards": link_power_rewards,
             "new_connections": new_connections,
             "related_notes": related_notes,
             "message": "捕获成功！"
@@ -1014,8 +1014,6 @@ class HuntingEngine:
             "exchange_path": self.state["exchange_path"],
             "path_streak_weeks": self.state["path_streak_weeks"],
             "consumption_loss_this_month": round(self.state["consumption_loss_this_month"], 2),
-            "abilities": {k: round(v, 2) for k, v in self.state["abilities"].items()},
-            "ability_changes": self.state["ability_changes"],
             "current_season": self.state["current_season"],
             "total_notes": self.state["total_notes"],
             "active_days": self.state["active_days"],
@@ -1676,7 +1674,7 @@ hunt: true
             "abilities": {
                 "link_power": 0.0
             },
-            "ability_changes": [],
+            "link_power_rewards_earned": [],
             "cross_domain_notes_count": 0,
             "tag_graph": {
                 "nodes": {},
@@ -1728,6 +1726,18 @@ hunt: true
     def start_new_season(self):
         """开启新赛季"""
         self._load_state()
+        
+        # 赛季软重置：保留 50% 星点
+        soft_reset_ratio = self.config.get("season_soft_reset_ratio", 0.5)
+        carry_over = self.state["total_star"] * soft_reset_ratio
+        self.state["total_star"] = carry_over
+        self.state["available_star"] = carry_over
+        self.state["fund_pool"] = 0.0
+        self.state["fund_first_opened_at"] = None
+        
+        # 重置连接力赛季状态
+        self.state["abilities"]["link_power"] = 0.0
+        self.state["link_power_rewards_earned"] = []
         
         current_season = self.state["current_season"].copy()
         current_season["end_date"] = datetime.now().strftime("%Y-%m-%d")

@@ -49,6 +49,7 @@ def migrate_state(old_state):
     # 兑换系统
     new_state["exchange_path"] = old_state.get("exchange_path", "")
     new_state["fund_pool"] = old_state.get("fund_pool", 0.0)
+    new_state["fund_first_opened_at"] = old_state.get("fund_first_opened_at", None)
     new_state["available_star"] = old_state.get("available_star", new_state["total_star"])  # 初始时可用星点 = 总星点
     new_state["consumption_loss_this_month"] = old_state.get("consumption_loss_this_month", 0.0)
     new_state["path_streak_weeks"] = old_state.get("path_streak_weeks", 0)
@@ -61,7 +62,7 @@ def migrate_state(old_state):
     new_state["abilities"] = old_state.get("abilities", {
         "link_power": 0.0
     })
-    new_state["ability_changes"] = old_state.get("ability_changes", [])
+    new_state["link_power_rewards_earned"] = old_state.get("link_power_rewards_earned", [])
     
     # 标签共现图
     new_state["cross_domain_notes_count"] = old_state.get("cross_domain_notes_count", 0)

@@ -6,6 +6,29 @@
 
 ## v0.23（开发中）
 
+### 连接力系统完善 + 前端清理（2026-05-22）
+
+**PRODUCT.md**：
+- 2.2 连接力小节补全完整定义：计算公式（含逐项解释表）、更新规则伪代码、奖励触发表（含勋章）、前端展示规范（不展示数值/变更日志，仅 Toast+勋章墙）
+- 删除 2.3 连接力变更日志（与新规冲突），2.4 赛季星点上限重编号为 2.3
+- 星点奖励触发改为「每赛季只触发一次，赛季结算后重置」
+
+**engine.py**：
+- 新增 `_check_link_power_rewards()`：连接力阈值到达时自动发放星点，每个阈值每赛季只触发一次
+- 新增 `link_power_rewards_earned: []` 状态字段，赛季结算时重置
+- 移除 `_update_ability_changes()` 方法和所有变更日志记录
+- `get_status()` / `process_daily_capture()` 不再返回 `abilities` 和 `ability_changes`
+- `process_daily_capture()` 改为返回 `link_power_rewards`（触发奖励时前端展示 Toast）
+- `start_new_season()` 增加赛季软重置（保留 50% 星点）+ 重置连接力赛季状态
+
+**static/index.html**：
+- 移除采集成功后的「能力值变化」面板（采集力/连接力/输出力数值展示）
+- 新增连接力奖励通知（达到阈值时蓝色提示框）
+- 移除推演面板中的「能力值预测」
+
+**migrate_state.py**：
+- 同步 `ability_changes` → `link_power_rewards_earned`，补充 `fund_first_opened_at`
+
 ### 星点里程碑系统重新设计（2026-05-22）
 
 废除 v0.22 的独立能力值计算体系，改为累计星点档位制：
