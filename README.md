@@ -23,10 +23,24 @@ python3 -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 
 | 文件 | 位置 | 用途 |
 |------|------|------|
+| `VERSION` | 根目录 | 项目版本号（唯一来源，部署时自增） |
 | `config.yaml` | `data/inspire/_狩猎系统/config.yaml` | 运行时可调参数（倍率、阈值、勋章、赛季） |
 | `defaults.yaml` | `data/inspire/_狩猎系统/defaults.yaml` | 默认配置模板（重置时参考） |
 | `state.json` | `data/inspire/_狩猎系统/state.json` | 游戏运行时状态 |
 | `DEPLOYMENT.md` | `docs/DEPLOYMENT.md` | 生产部署步骤（launchd 守护 + localtunnel 隧道） |
+
+## 版本管理
+
+项目版本号存储在根目录 `VERSION` 文件，格式 `大版本.中版本.小版本`（如 `0.2.0`）。main.py 启动时自动读取，可通过 `GET /api/version` 查询。
+
+```bash
+# 发布新版本
+echo "0.2.1" > VERSION
+git add VERSION
+git commit -m "release: v0.2.1"
+git tag -a v0.2.1 -m "v0.2.1 上线"
+git push origin v0.2 --tags
+```
 
 ## 部署方式
 

@@ -7,7 +7,18 @@ from engine import HuntingEngine
 import uvicorn
 import os
 
-app = FastAPI(title="认知狩猎 API", version="2.0")
+app = FastAPI(title="认知狩猎 API")
+
+# 从 VERSION 文件读取项目版本号
+def _read_version() -> str:
+    try:
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        with open(os.path.join(base_dir, "VERSION")) as f:
+            return f.read().strip()
+    except Exception:
+        return "0.0.0"
+
+__version__ = _read_version()
 
 app.add_middleware(
     CORSMiddleware,
@@ -36,6 +47,11 @@ class ReviewSubmitRequest(BaseModel):
 
 class ExchangePathRequest(BaseModel):
     path: str
+
+@app.get("/api/version")
+async def get_version():
+    """返回项目版本号"""
+    return {"version": __version__}
 
 @app.post("/api/capture")
 async def capture(request: CaptureRequest):
