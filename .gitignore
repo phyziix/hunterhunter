@@ -21,3 +21,7 @@ Thumbs.db
 # 环境
 .env
 .env.local
+
+# 备份文件夹
+bak1/
+bak2/
