@@ -201,11 +201,9 @@ class HuntingEngine:
             "published_count": 0,
             "total_output_star": 0,
             
-            # 能力值系统
+            # 能力值系统（v0.23：仅保留连接力，采集力/输出力已废除）
             "abilities": {
-                "hunt_power": 0.0,
-                "link_power": 0.0,
-                "output_power": 0.0
+                "link_power": 0.0
             },
             "ability_changes": [],
             
@@ -277,11 +275,9 @@ class HuntingEngine:
         # 内容输出
         self.state.setdefault("total_output_star", 0)
         
-        # 能力值系统
+        # 能力值系统（v0.23：仅保留连接力）
         self.state.setdefault("abilities", {
-            "hunt_power": 0.0,
-            "link_power": 0.0,
-            "output_power": 0.0
+            "link_power": 0.0
         })
         self.state.setdefault("ability_changes", [])
         
@@ -311,7 +307,7 @@ class HuntingEngine:
         self._init_tag_graph_from_notes()
         
         # 计算初始能力值
-        self._calculate_all_abilities()
+        self._calculate_link_power()
         
         self._save_state()
     
@@ -379,33 +375,6 @@ class HuntingEngine:
         self.state["total_notes"] = total_notes
         self.state["cross_domain_notes_count"] = cross_domain_count
     
-    def _calculate_all_abilities(self):
-        """计算所有能力值"""
-        self._calculate_hunt_power()
-        self._calculate_link_power()
-        self._calculate_output_power()
-    
-    def _calculate_hunt_power(self):
-        """计算采集力"""
-        total_notes = self.state["total_notes"]
-        active_days = self.state["active_days"]
-        streak_days = self.state["streak_days"]
-        
-        if total_notes == 0:
-            hunt_power = 5.0
-        else:
-            hunt_power = (total_notes ** 0.7) * math.log(active_days + 1) * (1 + streak_days / 100)
-        
-        # 限制范围 5~200
-        hunt_power = max(5.0, min(200.0, hunt_power))
-        
-        old_value = self.state["abilities"]["hunt_power"]
-        change = hunt_power - old_value
-        self.state["abilities"]["hunt_power"] = hunt_power
-        
-        if abs(change) > 0.01:
-            self._update_ability_changes("hunt_power", change, "采集力计算更新")
-    
     def _calculate_link_power(self):
         """计算连接力"""
         nodes = self.state["tag_graph"]["nodes"]
@@ -433,27 +402,6 @@ class HuntingEngine:
         
         if abs(change) > 0.01:
             self._update_ability_changes("link_power", change, "连接力计算更新")
-    
-    def _calculate_output_power(self):
-        """计算输出力"""
-        published_count = self.state.get("published_count", 0)
-        completed_reports = self.state.get("completed_reports", 0)
-        total_output_star = self.state.get("total_output_star", 0)
-        
-        if published_count == 0:
-            output_power = 0.0
-        else:
-            output_power = (published_count ** 0.6) * (1 + completed_reports / 10) * math.log(total_output_star + 1)
-        
-        # 限制范围 0~100
-        output_power = max(0.0, min(100.0, output_power))
-        
-        old_value = self.state["abilities"]["output_power"]
-        change = output_power - old_value
-        self.state["abilities"]["output_power"] = output_power
-        
-        if abs(change) > 0.01:
-            self._update_ability_changes("output_power", change, "输出力计算更新")
     
     def _update_ability_changes(self, ability, change, reason):
         """维护能力值变更日志"""
@@ -676,9 +624,7 @@ class HuntingEngine:
         
         elif trigger == "ability":
             ability_map = {
-                "hunt_power": "采集力",
-                "link_power": "连接力",
-                "output_power": "输出力"
+                "link_power": "连接力"
             }
             ability_name = ability_map.get(medal["ability"], medal["ability"])
             return f"{ability_name} ≥ {medal.get('threshold')}"
@@ -869,7 +815,7 @@ class HuntingEngine:
         
         self.state["total_notes"] += 1
         
-        self._calculate_all_abilities()
+        self._calculate_link_power()
         self._check_medals()
         self._save_state()
         
@@ -987,17 +933,13 @@ class HuntingEngine:
         projected_connections = int(edges_count + avg_connections_per_note * daily_note_rate * days)
         projected_fund = round(current_fund + weekly_rate * (days / 7), 2)
         
-        # 能力值预测
+        # 连接力预测
         current_abilities = self.state["abilities"]
         projected_abilities = {}
         
         for ability, value in current_abilities.items():
-            if ability == "hunt_power":
-                projected = min(100, value + (daily_note_rate * days) * 0.1)
-            elif ability == "link_power":
+            if ability == "link_power":
                 projected = min(50, value + (projected_connections - edges_count) * 0.05)
-            elif ability == "output_power":
-                projected = min(100, value + (daily_note_rate * days) * 0.03)
             else:
                 projected = value
             projected_abilities[ability] = round(projected, 2)
@@ -1091,9 +1033,9 @@ class HuntingEngine:
         min_reward = self.config.get("content_output_reward_min", 750)
         max_reward = self.config.get("content_output_reward_max", 1000)
         
-        # 检查输出力阈值加成
-        output_power = self.state["abilities"]["output_power"]
-        if output_power >= 50:
+        # 检查星点里程碑阈值加成（≥2000 星点 → 输出奖励下限提升至 850）
+        total_star = self.state["total_star"]
+        if total_star >= 2000:
             min_reward = 850
         
         reward = int(min_reward + (max_reward - min_reward) * random.random())
@@ -1105,7 +1047,7 @@ class HuntingEngine:
         self.state["available_star"] += reward
         self.state["total_star"] = self.state["available_star"] + self.state["fund_pool"]
         
-        self._calculate_all_abilities()
+        self._calculate_link_power()
         self._save_state()
         
         return {
@@ -1379,7 +1321,7 @@ class HuntingEngine:
         if period_type == "周":
             narratives = [
                 f"本周你记录了 {len(notes)} 条灵感，分布在 {len(dates)} 天，涉及 {tag_count} 个不同领域",
-                f"本周采集力稳步提升，平均每天捕获 {avg_per_day:.1f} 条灵感",
+                f"本周持续探索，平均每天捕获 {avg_per_day:.1f} 条灵感",
                 f"本周你关注的核心领域是 {top_tag_names}",
             ]
         else:
@@ -1508,7 +1450,7 @@ hunt: true
         self.state["available_star"] += self.config["weekly_review_reward"]
         self.state["total_star"] = self.state["available_star"] + self.state["fund_pool"]
 
-        self._calculate_all_abilities()
+        self._calculate_link_power()
         self._save_state()
 
         return {
@@ -1588,7 +1530,7 @@ hunt: true
         self.state["available_star"] += self.config["monthly_report_reward"]
         self.state["total_star"] = self.state["available_star"] + self.state["fund_pool"]
 
-        self._calculate_all_abilities()
+        self._calculate_link_power()
         self._save_state()
 
         return {
@@ -1732,9 +1674,7 @@ hunt: true
             "published_count": 0,
             "total_output_star": 0,
             "abilities": {
-                "hunt_power": 0.0,
-                "link_power": 0.0,
-                "output_power": 0.0
+                "link_power": 0.0
             },
             "ability_changes": [],
             "cross_domain_notes_count": 0,
@@ -1848,13 +1788,22 @@ hunt: true
         lines.append(f"- 活跃天数 **{season.get('active_days_this_season', 0)}** 天")
         lines.append("")
         
-        # 能力值
-        abilities = self.state["abilities"]
-        lines.append("## 📈 当前能力值")
+        # 星点里程碑
+        total_star = self.state["total_star"]
+        link_power = self.state["abilities"].get("link_power", 0)
+        lines.append("## 📈 成长数据")
         lines.append("")
-        lines.append(f"- 采集力：{abilities.get('hunt_power', 0):.1f}")
-        lines.append(f"- 连接力：{abilities.get('link_power', 0):.1f}")
-        lines.append(f"- 输出力：{abilities.get('output_power', 0):.1f}")
+        lines.append(f"- 累计星点：**{total_star:.1f}**")
+        lines.append(f"- 连接力：**{link_power:.1f}**")
+        
+        # 当前增益档位
+        milestones = [500, 1000, 2000, 3000]
+        current_tier = sum(1 for m in milestones if total_star >= m)
+        tier_names = ["", "初露锋芒 🗡️", "采集效率提升", "输出保障", "兑换权益提升"]
+        if current_tier > 0:
+            lines.append(f"- 当前档位：**{tier_names[current_tier]}**（{milestones[current_tier-1]} 星点）")
+        else:
+            lines.append(f"- 距离「初露锋芒」还差 **{500 - total_star:.1f}** 星点")
         lines.append("")
         
         # 获得勋章

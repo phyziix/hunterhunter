@@ -280,13 +280,6 @@ medals:
     condition: "count >= 3"
     once: true
 
-  - id: "hunt_apprentice"
-    name: "采集达人"
-    icon: "📚"
-    trigger: "ability"
-    ability: "hunt_power"
-    threshold: 30
-
   - id: "link_novice"
     name: "连线新手"
     icon: "🔗"
@@ -479,11 +472,6 @@ medals:
     trigger: "event"
     event: "monthly_report_cross_domain"
     condition: "count >= 3"
-  - id: "hunt_apprentice"
-    name: "采集达人"
-    trigger: "ability"
-    ability: "hunt_power"
-    threshold: 30
   - id: "link_novice"
     name: "连线新手"
     trigger: "ability"

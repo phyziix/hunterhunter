@@ -57,11 +57,9 @@ def migrate_state(old_state):
     # 内容输出
     new_state["total_output_star"] = old_state.get("total_output_star", 0)
     
-    # 能力值系统
+    # 能力值系统（v0.23：仅保留连接力）
     new_state["abilities"] = old_state.get("abilities", {
-        "hunt_power": 0.0,
-        "link_power": 0.0,
-        "output_power": 0.0
+        "link_power": 0.0
     })
     new_state["ability_changes"] = old_state.get("ability_changes", [])
     

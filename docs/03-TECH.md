@@ -71,15 +71,14 @@
     "total_output_star": { "type": "number", "description": "内容输出总星点" },
     "abilities": {
       "type": "object",
+      "description": "能力值（v0.23：仅保留连接力，采集力/输出力已废除）",
       "properties": {
-        "hunt_power": { "type": "number", "description": "采集力" },
-        "link_power": { "type": "number", "description": "连接力" },
-        "output_power": { "type": "number", "description": "输出力" }
+        "link_power": { "type": "number", "description": "连接力" }
       }
     },
     "ability_changes": {
       "type": "array",
-      "description": "能力值变更日志",
+      "description": "连接力变更日志",
       "items": {
         "type": "object",
         "properties": {
@@ -152,9 +151,7 @@ last_path_choice: null
 published_count: 0
 total_output_star: 0
 abilities:
-  hunt_power: 5.0
   link_power: 0.1
-  output_power: 0
 ability_changes: []
 cross_domain_notes_count: 0
 tag_graph:
@@ -216,21 +213,36 @@ path_bonuses:
     - weeks: 8
       rate: 0.85
 
-# 能力值解锁
-ability_thresholds:
-  hunt_power:
-    - threshold: 30
-      title: "采集达人"
-    - threshold: 100
-      effect: "daily_multiplier_4th_upgrade"
-  link_power:
-    - threshold: 5
-      title: "连线新手"
-    - threshold: 20
-      effect: "fund_bonus_extra_5"
-  output_power:
-    - threshold: 50
-      effect: "output_reward_floor_850"
+# 星点里程碑配置 (v0.23)
+star_milestones:
+  - threshold: 500
+    effect: "title_rising_star"
+    name: "初露锋芒"
+  - threshold: 1000
+    effect: "daily_multiplier_4th_upgrade"
+    name: "采集效率提升"
+  - threshold: 2000
+    effect: "output_reward_floor_850"
+    name: "输出保障"
+  - threshold: 3000
+    effect: "fund_bonus_extra_5"
+    name: "兑换权益提升"
+
+# 连接力星点奖励 (v0.23)
+link_power_rewards:
+  - threshold: 5
+    reward: 50
+  - threshold: 20
+    reward: 100
+  - threshold: 50
+    reward: 200
+
+# 跨界采集加成 (v0.23)
+cross_domain_bonus: 5
+
+# 赛季星点限制 (v0.23)
+season_star_cap: 3000
+season_soft_reset_ratio: 0.5
 
 # 赛季
 seasons:
@@ -284,12 +296,6 @@ medals:
     event: "monthly_report_cross_domain"
     condition: "count >= 3"
     once: true
-  - id: "hunt_apprentice"
-    name: "采集达人"
-    icon: "📚"
-    trigger: "ability"
-    ability: "hunt_power"
-    threshold: 30
   - id: "link_novice"
     name: "连线新手"
     icon: "🔗"
@@ -337,9 +343,7 @@ custom_fund_name: "我的投资账户"
   "streak_bonus_pct": 10,
   "streak_bonus_amount": 1.5,
   "abilities": {
-    "hunt_power": 25.5,
-    "link_power": 3.2,
-    "output_power": 8.5
+    "link_power": 3.2
   },
   "new_connections": ["#生产力<->#冥想"],
   "related_notes": [
@@ -376,9 +380,7 @@ custom_fund_name: "我的投资账户"
   "monthly_report_done": false,
   "published_count": 3,
   "abilities": {
-    "hunt_power": 25.5,
-    "link_power": 3.2,
-    "output_power": 8.5
+    "link_power": 3.2
   },
   "current_season": {
     "id": 1,
@@ -667,11 +669,11 @@ custom_fund_name: "我的投资账户"
       "earned_at": "2026-05-20"
     },
     {
-      "id": "hunt_apprentice",
-      "name": "采集达人",
-      "icon": "📚",
+      "id": "link_novice",
+      "name": "连线新手",
+      "icon": "🔗",
       "trigger": "ability",
-      "condition": "采集力 ≥ 30",
+      "condition": "连接力 ≥ 5",
       "earned": false,
       "earned_at": null
     }
@@ -696,9 +698,9 @@ custom_fund_name: "我的投资账户"
   "checked": 3,
   "newly_earned": [
     {
-      "id": "hunt_apprentice",
-      "name": "采集达人",
-      "icon": "📚"
+      "id": "link_novice",
+      "name": "连线新手",
+      "icon": "🔗"
     }
   ]
 }
@@ -806,9 +808,7 @@ custom_fund_name: "我的投资账户"
     "weekly_rate": 50
   },
   "abilities_projection": {
-    "hunt_power": {"current": 45.2, "projected": 78.5},
-    "link_power": {"current": 12.3, "projected": 28.7},
-    "output_power": {"current": 15.0, "projected": 35.2}
+    "link_power": {"current": 12.3, "projected": 28.7}
   },
   "season_progress": {
     "current_season_days": 45,
@@ -824,40 +824,20 @@ custom_fund_name: "我的投资账户"
 
 > AI IDE 请基于现有 engine.py 补充完整函数签名、参数类型、返回类型。
 
-### 5.1 能力值计算
+### 5.1 连接力计算
 
 ```python
-def _calculate_hunt_power(self) -> float:
-    """计算采集力
-    公式：(total_notes^0.7) × log(active_days+1) × (1 + streak_days/100)
-    返回: 5~200
-    """
-    pass
-
 def _calculate_link_power(self) -> float:
-    """计算连接力
+    """计算连接力（v0.23：唯一保留的能力值）
     公式: 密度 × 100 × log₂(节点数+1) × (跨界占比+0.1)
     返回: 0.1~50
     """
     pass
 
-def _calculate_output_power(self) -> float:
-    """计算输出力
-    公式: (published_count^0.6) × (1 + reports/10) × log(输出总星点+1)
-    返回: 0~100
-    """
-    pass
-
-def get_abilities(self) -> dict:
-    """聚合三个能力值
-    返回: {"hunt_power": float, "link_power": float, "output_power": float}
-    """
-    pass
-
 def _update_ability_changes(self, ability: str, change: float, reason: str) -> None:
-    """维护能力值变更日志
+    """维护连接力变更日志
     参数:
-        ability: 能力值名称 ("hunt_power", "link_power", "output_power")
+        ability: 能力值名称（当前仅 "link_power"）
         change: 变化值（正数增加，负数减少）
         reason: 变更原因描述
     """
@@ -1175,9 +1155,7 @@ function appData() {
             monthly_report_done: false,
             published_count: 0,
             abilities: {
-                hunt_power: 0,
                 link_power: 0,
-                output_power: 0
             },
             current_season: {}
         },

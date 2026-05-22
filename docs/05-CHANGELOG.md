@@ -29,6 +29,23 @@
 - `docs/05-CHANGELOG.md` — 本条目
 - `engine.py` — `_write_default_config()` 同步替换旧 `ability_thresholds` 为新 v0.23 参数（star_milestones/link_power_rewards/cross_domain_bonus/season_star_cap/season_soft_reset_ratio），赛季主题添加 v0.3 注释
 
+### 旧能力值代码清理（2026-05-22）
+
+- **删除** `_calculate_hunt_power()` 和 `_calculate_output_power()` 函数
+- **删除** `_calculate_all_abilities()`，所有调用点改为直接调用 `_calculate_link_power()`
+- **清理** `abilities` state：移除 `hunt_power` 和 `output_power` 字段，仅保留 `link_power`
+- **更新** `process_publish()`：输出力阈值检查 → 星点里程碑检查（total_star ≥ 2000）
+- **更新** `get_projection()`：移除采集力/输出力预测，仅保留连接力预测
+- **更新** 赛季总结面板：旧能力值展示 → 星点里程碑档位展示
+- **移除** `hunt_apprentice` 勋章（已由星点里程碑「初露锋芒」替代）
+- **涉及文件**：
+  - `engine.py` — 全部清理（7 处 state/函数/调用点）
+  - `migrate_state.py` — abilities 默认值同步
+  - `data/inspire/_狩猎系统/config.yaml` — 移除 hunt_apprentice 勋章
+  - `data/inspire/_狩猎系统/defaults.yaml` — 移除 hunt_apprentice 勋章
+  - `docs/03-TECH.md` — 状态结构、API 响应、配置段、函数签名同步更新
+  - `docs/02-PRODUCT.MD.md` — 勋章配置示例移除 hunt_apprentice
+
 ---
 
 ## v0.22（开发中）

@@ -65,12 +65,6 @@ medals:
   name: 连线大师
   once: true
   trigger: event
-- ability: hunt_power
-  icon: 📚
-  id: hunt_apprentice
-  name: 采集达人
-  threshold: 30
-  trigger: ability
 - ability: link_power
   icon: 🔗
   id: link_novice
