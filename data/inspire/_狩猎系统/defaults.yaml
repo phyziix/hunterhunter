@@ -63,32 +63,43 @@ ability_thresholds:
     - effect: fund_bonus_extra_5
       threshold: 20
   output_power:
-    - effect: unlock_investment_coupon
-      threshold: 10
     - effect: output_reward_floor_850
       threshold: 50
 
 # 勋章配置
 medals:
-  - id: "first_capture"
+  - id: "first_triple"
     name: "灵光乍现"
     icon: "💡"
     trigger: "event"
-    event: "first_capture"
-  
-  - id: "weekly_review"
+    event: "daily_capture_count"
+    condition: "count >= 3"
+    once: true
+  - id: "weekly_hunter"
     name: "周常猎人"
     icon: "🏹"
     trigger: "event"
-    event: "weekly_review"
-  
-  - id: "link_5"
+    event: "weekly_review_streak"
+    condition: "streak >= 4"
+  - id: "link_master"
+    name: "连线大师"
+    icon: "🕸️"
+    trigger: "event"
+    event: "monthly_report_cross_domain"
+    condition: "count >= 3"
+    once: true
+  - id: "hunt_apprentice"
+    name: "采集达人"
+    icon: "📚"
+    trigger: "ability"
+    ability: "hunt_power"
+    threshold: 30
+  - id: "link_novice"
     name: "连线新手"
     icon: "🔗"
     trigger: "ability"
     ability: "link_power"
     threshold: 5
-  
   - id: "season_pioneer"
     name: "开拓者"
     icon: "🗺️"

@@ -135,7 +135,6 @@ class HuntingEngine:
                     {"threshold": 20, "effect": "fund_bonus_extra_5"}
                 ],
                 "output_power": [
-                    {"threshold": 10, "effect": "unlock_investment_coupon"},
                     {"threshold": 50, "effect": "output_reward_floor_850"}
                 ]
             },
@@ -182,6 +181,7 @@ class HuntingEngine:
             # 兑换系统
             "exchange_path": "",
             "fund_pool": 0.0,
+            "fund_first_opened_at": None,  # 基金首次开通日期，用于30天锁定期校验
             "available_star": 0.0,
             "consumption_loss_this_month": 0.0,
             "path_streak_weeks": 0,
@@ -258,6 +258,7 @@ class HuntingEngine:
         # 兑换系统
         self.state.setdefault("exchange_path", "")
         self.state.setdefault("fund_pool", 0.0)
+        self.state.setdefault("fund_first_opened_at", None)  # 基金首次开通日期
         self.state.setdefault("available_star", old_total_star)  # 初始时可用星点 = 总星点
         self.state.setdefault("consumption_loss_this_month", 0.0)
         self.state.setdefault("path_streak_weeks", 0)
@@ -778,6 +779,11 @@ class HuntingEngine:
     
     def process_daily_capture(self, content, tags=None, folder="Inbox"):
         tags = tags or []
+        
+        # PRD 1.1：必须添加至少一个标签
+        if not tags or len(tags) == 0:
+            return {"error": "必须添加至少一个标签，标签由 AI 生成、你粘贴即可"}
+        
         today = self._get_today_str()
         
         self._load_state()
@@ -1164,10 +1170,24 @@ class HuntingEngine:
         if self.state["available_star"] < amount:
             return {"error": "可用星点不足"}
         
-        # 检查基金门槛
+        # 检查基金门槛：最低额度
         min_withdraw = self.config["fund"].get("min_withdraw", 500)
         if amount < min_withdraw:
             return {"error": f"基金兑换最低额度为 {min_withdraw} 星点"}
+        
+        # 检查基金门槛：30天锁定期
+        lock_days = self.config["fund"].get("lock_days", 30)
+        first_opened = self.state.get("fund_first_opened_at")
+        if first_opened:
+            first_dt = datetime.strptime(first_opened, "%Y-%m-%d").date()
+            days_since = (datetime.now().date() - first_dt).days
+            if days_since < lock_days:
+                remaining = lock_days - days_since
+                return {"error": f"基金首次开通后锁定 {lock_days} 天，还需 {remaining} 天解锁"}
+        
+        # 记录首次开通日期
+        if not first_opened:
+            self.state["fund_first_opened_at"] = self._get_today_str()
         
         self.state["available_star"] -= amount
         self.state["fund_pool"] += amount
@@ -1694,6 +1714,7 @@ hunt: true
             "exchange_history": [],
             "exchange_path": "",
             "fund_pool": 0.0,
+            "fund_first_opened_at": None,
             "available_star": 0.0,
             "consumption_loss_this_month": 0.0,
             "path_streak_weeks": 0,

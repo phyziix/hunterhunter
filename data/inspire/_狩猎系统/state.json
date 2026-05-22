@@ -1,10 +1,10 @@
 {
-  "total_star": 1114.0,
-  "today_count": 17,
+  "total_star": 2000.0,
+  "today_count": 21,
   "last_capture_date": "2026-05-22",
   "streak_days": 1,
   "active_days": 1,
-  "total_notes": 17,
+  "total_notes": 21,
   "penalty_active": false,
   "penalty_days": 0,
   "medals": [
@@ -24,20 +24,32 @@
       "amount": 50.0,
       "real_value": 50.0,
       "timestamp": "2026-05-22T11:57:17.385461"
+    },
+    {
+      "type": "coupon",
+      "amount": 50.0,
+      "real_value": 50.0,
+      "timestamp": "2026-05-22T17:59:12.803389"
+    },
+    {
+      "type": "fund",
+      "amount": 500,
+      "real_value": 750.0,
+      "timestamp": "2026-05-22T18:14:04.406822"
     }
   ],
   "exchange_path": "fund",
-  "fund_pool": 0.0,
-  "available_star": 1114.0,
-  "consumption_loss_this_month": 25.0,
+  "fund_pool": 500.0,
+  "available_star": 1500,
+  "consumption_loss_this_month": 50.0,
   "path_streak_weeks": 0,
   "last_path_choice": "2026-20",
-  "published_count": 1,
-  "total_output_star": 995,
+  "published_count": 2,
+  "total_output_star": 1754,
   "abilities": {
-    "hunt_power": 5.08699229457548,
-    "link_power": 33.654722536682264,
-    "output_power": 6.903747257584598
+    "hunt_power": 5.897939877774275,
+    "link_power": 29.461203589390667,
+    "output_power": 11.3227424783294
   },
   "ability_changes": [
     {
@@ -99,9 +111,63 @@
       "ability": "link_power",
       "change": -2.38,
       "reason": "连接力计算更新"
+    },
+    {
+      "date": "2026-05-22T17:58:45.219550",
+      "ability": "hunt_power",
+      "change": 0.21,
+      "reason": "采集力计算更新"
+    },
+    {
+      "date": "2026-05-22T17:58:45.219568",
+      "ability": "link_power",
+      "change": -0.72,
+      "reason": "连接力计算更新"
+    },
+    {
+      "date": "2026-05-22T17:58:47.178683",
+      "ability": "hunt_power",
+      "change": 0.2,
+      "reason": "采集力计算更新"
+    },
+    {
+      "date": "2026-05-22T17:58:47.178703",
+      "ability": "link_power",
+      "change": -1.58,
+      "reason": "连接力计算更新"
+    },
+    {
+      "date": "2026-05-22T17:59:40.073408",
+      "ability": "output_power",
+      "change": 4.42,
+      "reason": "输出力计算更新"
+    },
+    {
+      "date": "2026-05-22T17:59:40.108075",
+      "ability": "hunt_power",
+      "change": 0.2,
+      "reason": "采集力计算更新"
+    },
+    {
+      "date": "2026-05-22T17:59:40.108094",
+      "ability": "link_power",
+      "change": -1.42,
+      "reason": "连接力计算更新"
+    },
+    {
+      "date": "2026-05-22T18:14:04.394441",
+      "ability": "hunt_power",
+      "change": 0.2,
+      "reason": "采集力计算更新"
+    },
+    {
+      "date": "2026-05-22T18:14:04.394456",
+      "ability": "link_power",
+      "change": -0.48,
+      "reason": "连接力计算更新"
     }
   ],
-  "cross_domain_notes_count": 17,
+  "cross_domain_notes_count": 19,
   "tag_graph": {
     "nodes": {
       "#测试": {
@@ -177,7 +243,7 @@
         "first_seen": "2026-05-22"
       },
       "技术": {
-        "count": 1,
+        "count": 2,
         "first_seen": "2026-05-22"
       },
       "敏捷": {
@@ -247,6 +313,14 @@
       "创造力": {
         "count": 1,
         "first_seen": "2026-05-22"
+      },
+      "Python": {
+        "count": 2,
+        "first_seen": "2026-05-22"
+      },
+      "Tech": {
+        "count": 1,
+        "first_seen": "2026-05-22"
       }
     },
     "edges": {
@@ -284,7 +358,9 @@
       "工具<->开发": 1,
       "灵感<->睡眠": 1,
       "灵感<->创造力": 1,
-      "睡眠<->创造力": 1
+      "睡眠<->创造力": 1,
+      "技术<->Python": 1,
+      "Python<->Tech": 1
     }
   },
   "current_season": {
@@ -297,5 +373,6 @@
     "cross_domain_notes_this_season": 0,
     "active_days_this_season": 0
   },
-  "season_history": []
+  "season_history": [],
+  "fund_first_opened_at": "2026-05-22"
 }

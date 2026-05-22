@@ -229,8 +229,6 @@ ability_thresholds:
     - threshold: 20
       effect: "fund_bonus_extra_5"
   output_power:
-    - threshold: 10
-      effect: "unlock_investment_coupon"
     - threshold: 50
       effect: "output_reward_floor_850"
 

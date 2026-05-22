@@ -91,7 +91,6 @@
 | 采集力 ≥ 100 | 第 4 条采集倍数从 0.2 提升至 0.4 |
 | 连接力 ≥ 5 | 解锁称号「连线新手」🕸️ |
 | 连接力 ≥ 20 | 基金加成额外 +5% |
-| 输出力 ≥ 10 | 解锁「内容投资券」（高汇率，锁定 30 天） |
 | 输出力 ≥ 50 | 内容输出奖励下限提升至 850 星点 |
 
 ### 2.4 能力值变更日志
@@ -437,7 +436,7 @@ medals:
 ability_thresholds:
   hunt_power: [{threshold: 30, title: "采集达人"}, {threshold: 100, effect: "第4条倍率提升"}]
   link_power: [{threshold: 5, title: "连线新手"}, {threshold: 20, effect: "基金加成+5%"}]
-  output_power: [{threshold: 10, effect: "解锁内容投资券"}, {threshold: 50, effect: "输出奖励下限850"}]
+  output_power: [{threshold: 50, effect: "输出奖励下限850"}]
 
 # 连续加成
 streak_bonuses: [{days: 7, bonus: 10%}, {days: 30, bonus: 30%}, {days: 90, bonus: 50%}]

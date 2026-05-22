@@ -6,7 +6,39 @@
 
 ## v0.22（开发中）
 
+### PRD 合规检查（2026-05-22）
+
+对 v0.22 实现与 `docs/02-PRODUCT.MD.md` 进行逐项对比，共发现 **5 个问题**（原 8 个，内容投资券已取消）：
+
+| # | 严重度 | 问题 | 状态 |
+|---|--------|------|------|
+| 1 | 🔴 功能缺失 | 能力值解锁效果 2 项未实现：采集力≥100 第4条倍率 0.2→0.4、连接力≥20 基金加成+5% | PRD 空白，待设计 |
+| 2 | 🔴 功能缺失 | 赛季主题加成 3 项未应用（连线大师跨界+5星、深度矿工500字+10星、分享者发布+100星） | PRD 空白，待设计 |
+| 3 | 🟡 功能缺失 | 基金 30 天锁定期未校验 | ✅ 已修复（2026-05-22） |
+| 4 | 🟡 校验缺失 | 标签必填未校验，允许提交空标签采集 | ✅ 已修复（2026-05-22） |
+| 5 | 🟢 配置不同步 | `defaults.yaml` 勋章只有 4 个，`config.yaml` 有 6 个 | ✅ 已修复（2026-05-22） |
+
+完整对比详见 `docs/02-PRODUCT.MD.md` 与 `docs/04-ROADMAP.md`。
+
+### 文档更新（2026-05-22）
+
+- **移除「内容投资券」**：从以下 6 个文件中删除输出力 ≥ 10 解锁内容投资券的定义
+  - `docs/02-PRODUCT.MD.md` — 能力值解锁表 + 配置参数节
+  - `docs/03-TECH.md` — output_power 阈值配置
+  - `docs/04-ROADMAP.md` — Phase 2 任务清单
+  - `data/inspire/_狩猎系统/defaults.yaml` — ability_thresholds.output_power
+  - `data/inspire/_狩猎系统/config.yaml` — ability_thresholds.output_power
+  - `engine.py` — 硬编码的默认 ability_thresholds
+  - 原因：PRD 只定义了概念无详细规则，取消后输出力仅保留"≥50 奖励下限 850"一个解锁效果
+
 ### Bug修复（2026-05-22）
+
+- **标签必填校验**：`process_daily_capture()` 中新增判断，`tags` 为空时返回错误提示"必须添加至少一个标签"
+- **基金 30 天锁定期**：`exchange_fund()` 中新增锁定期校验
+  - 新增 `fund_first_opened_at` 状态字段，首次基金兑换时记录日期
+  - 锁定期内再次兑换返回错误：`基金首次开通后锁定 {lock_days} 天，还需 X 天解锁`
+  - 在 `_write_default_state`、`_migrate_state_v022`、`reset_all` 中同步新增该字段
+- **defaults.yaml 勋章同步**：将 `defaults.yaml` 的 4 个勋章定义替换为与 `config.yaml` 一致的 6 个勋章（first_triple / weekly_hunter / link_master / hunt_apprentice / link_novice / season_pioneer），确保重置后勋章列表完整
 
 - **镜像对比弹窗完善**：兑换确认页新增三层信息展示
   - 等值对比：消费券 vs 基金金额实时对比
