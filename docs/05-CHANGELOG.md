@@ -27,6 +27,7 @@
 - `data/inspire/_狩猎系统/defaults.yaml` — 同步上述配置更新
 - `docs/04-ROADMAP.md` — Phase 2 任务清单更新 + 新增 v0.3 规划条目
 - `docs/05-CHANGELOG.md` — 本条目
+- `engine.py` — `_write_default_config()` 同步替换旧 `ability_thresholds` 为新 v0.23 参数（star_milestones/link_power_rewards/cross_domain_bonus/season_star_cap/season_soft_reset_ratio），赛季主题添加 v0.3 注释
 
 ---
 
