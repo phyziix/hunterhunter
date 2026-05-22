@@ -50,21 +50,36 @@ path_bonuses:
     - rate: 1.65
       weeks: 8
 
-# 能力值阈值配置
-ability_thresholds:
-  hunt_power:
-    - threshold: 30
-      title: "采集达人"
-    - effect: daily_multiplier_4th_upgrade
-      threshold: 100
-  link_power:
-    - threshold: 5
-      title: "连线新手"
-    - effect: fund_bonus_extra_5
-      threshold: 20
-  output_power:
-    - effect: output_reward_floor_850
-      threshold: 50
+# 星点里程碑系统 (v0.23)
+star_milestones:
+  - threshold: 500
+    effect: "title_rising_star"
+    name: "初露锋芒"
+  - threshold: 1000
+    effect: "daily_multiplier_4th_upgrade"
+    name: "采集效率提升"
+  - threshold: 2000
+    effect: "output_reward_floor_850"
+    name: "输出保障"
+  - threshold: 3000
+    effect: "fund_bonus_extra_5"
+    name: "兑换权益提升"
+
+# 连接力星点奖励 (v0.23)
+link_power_rewards:
+  - threshold: 5
+    reward: 50
+  - threshold: 20
+    reward: 100
+  - threshold: 50
+    reward: 200
+
+# 跨界采集加成 (v0.23)
+cross_domain_bonus: 5
+
+# 赛季星点限制 (v0.23)
+season_star_cap: 3000
+season_soft_reset_ratio: 0.5
 
 # 勋章配置
 medals:
@@ -114,15 +129,18 @@ seasons:
     - id: pioneer
       name: "开拓者"
       bonus: {}
-    - id: linker
+    # v0.3 延展，当前不激活
+    - id: connector
       name: "连线大师"
       bonus:
-        link_power_multiplier: 1.2
+        cross_domain_bonus: 5
+    # v0.3 延展，当前不激活
     - id: miner
       name: "深度矿工"
       bonus:
-        hunt_power_multiplier: 1.2
+        depth_bonus: 10
+    # v0.3 延展，当前不激活
     - id: sharer
       name: "分享者"
       bonus:
-        output_power_multiplier: 1.2
+        publish_bonus: 100
