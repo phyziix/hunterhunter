@@ -19,7 +19,8 @@
 │   ├── PRODUCT.md
 │   ├── TECH.md            # 本文档
 │   ├── ROADMAP.md
-│   └── CHANGELOG.md
+│   ├── CHANGELOG.md
+│   └── DEPLOYMENT.md      # 生产环境部署配置
 ├── static/
 │   └── index.html         # 单页前端（Alpine.js）
 └── data/inspire/
@@ -28,7 +29,8 @@
         ├── state.json     # 游戏状态持久化
         ├── config.yaml    # 系统配置参数（运行时可调）
         ├── defaults.yaml  # 初始值模板（首次启动/重置时使用）
-        └── exchange_log.md # 兑换记录
+        ├── exchange_log.md # 兑换记录
+        └── system_log.md   # 系统运行日志
 ```
 
 ---

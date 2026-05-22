@@ -17,6 +17,23 @@ python3 -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 - `TECH.md` - 技术实现规格（数据结构 + API + 前端组件）
 - `ROADMAP.md` - 实施路径与开发进度
 - `CHANGELOG.md` - 版本变更历史
+- `DEPLOYMENT.md` - 生产环境部署配置（launchd + localtunnel）
+
+## 配置文件
+
+| 文件 | 位置 | 用途 |
+|------|------|------|
+| `config.yaml` | `data/inspire/_狩猎系统/config.yaml` | 运行时可调参数（倍率、阈值、勋章、赛季） |
+| `defaults.yaml` | `data/inspire/_狩猎系统/defaults.yaml` | 默认配置模板（重置时参考） |
+| `state.json` | `data/inspire/_狩猎系统/state.json` | 游戏运行时状态 |
+| `DEPLOYMENT.md` | `docs/DEPLOYMENT.md` | 生产部署步骤（launchd 守护 + localtunnel 隧道） |
+
+## 部署方式
+
+- **开发模式**: `python3 -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload`
+- **生产模式**: launchd 管理 FastAPI 进程（端口 8002），通过 localtunnel 暴露公网地址
+- **公网访问**: `https://<YOUR_SUBDOMAIN>.loca.lt`（首次访问需验证 IP）
+- **详细配置**: 见 [DEPLOYMENT.md](docs/DEPLOYMENT.md)
 
 ## 技术栈
 
