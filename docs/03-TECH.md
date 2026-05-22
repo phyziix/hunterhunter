@@ -26,7 +26,8 @@
     ├── Inbox/             # 灵感笔记存储（.md）
     └── _狩猎系统/
         ├── state.json     # 游戏状态持久化
-        ├── config.yaml    # 系统配置参数
+        ├── config.yaml    # 系统配置参数（运行时可调）
+        ├── defaults.yaml  # 初始值模板（首次启动/重置时使用）
         └── exchange_log.md # 兑换记录
 ```
 
@@ -49,8 +50,8 @@
     "streak_days": { "type": "integer", "description": "连续采集天数" },
     "active_days": { "type": "integer", "description": "总活跃天数" },
     "total_notes": { "type": "integer", "description": "总笔记数" },
-    "penalty_active": { "type": "boolean", "description": "惩罚激活状态（已废弃，保留兼容）" },
-    "penalty_days": { "type": "integer", "description": "惩罚天数（已废弃，保留兼容）" },
+    "penalty_active": { "type": "boolean", "description": "惩罚激活状态（已废弃，仅保留兼容）" },
+    "penalty_days": { "type": "integer", "description": "惩罚天数（已废弃，仅保留兼容）" },
     "medals": { "type": "array", "items": { "type": "string" }, "description": "已获得勋章列表" },
     "monthly_medals": { "type": "integer", "description": "月度勋章数" },
     "gray_medal": { "type": "boolean", "description": "灰色勋章状态" },
@@ -121,7 +122,49 @@
 }
 ```
 
-### 2.2 config.yaml 关键参数
+### 2.2 defaults.yaml 初始值模板
+
+> `data/inspire/_狩猎系统/defaults.yaml` 定义首次启动或重置时的初始值模板。迁移脚本和重置接口从这里读取默认值，不在代码中硬编码。
+
+```yaml
+# defaults.yaml 示例结构
+total_star: 0
+today_count: 0
+last_capture_date: null
+streak_days: 0
+active_days: 0
+total_notes: 0
+medals: []
+monthly_medals: 0
+gray_medal: false
+last_weekly_review: null
+last_monthly_report: null
+weekly_review_done: false
+monthly_report_done: false
+completed_reports: 0
+exchange_history: []
+exchange_path: ""
+fund_pool: 0
+available_star: 0
+consumption_loss_this_month: 0
+path_streak_weeks: 0
+last_path_choice: null
+published_count: 0
+total_output_star: 0
+abilities:
+  hunt_power: 5.0
+  link_power: 0.1
+  output_power: 0
+ability_changes: []
+cross_domain_notes_count: 0
+tag_graph:
+  nodes: {}
+  edges: {}
+current_season: null
+season_history: []
+```
+
+### 2.3 config.yaml 关键参数
 
 > ⚠️ **核心约束**：以下配置项必须支持。AI IDE 请补充完整 YAML 定义。
 
@@ -220,6 +263,46 @@ seasons:
       medal_condition:
         type: "publish_count"
         threshold: 10
+
+# 勋章配置表
+medals:
+  - id: "first_triple"
+    name: "灵光乍现"
+    icon: "💡"
+    trigger: "event"
+    event: "daily_capture_count"
+    condition: "count >= 3"
+    once: true
+  - id: "weekly_hunter"
+    name: "周常猎人"
+    icon: "🏹"
+    trigger: "event"
+    event: "weekly_review_streak"
+    condition: "streak >= 4"
+  - id: "link_master"
+    name: "连线大师"
+    icon: "🕸️"
+    trigger: "event"
+    event: "monthly_report_cross_domain"
+    condition: "count >= 3"
+    once: true
+  - id: "hunt_apprentice"
+    name: "采集达人"
+    icon: "📚"
+    trigger: "ability"
+    ability: "hunt_power"
+    threshold: 30
+  - id: "link_novice"
+    name: "连线新手"
+    icon: "🔗"
+    trigger: "ability"
+    ability: "link_power"
+    threshold: 5
+  - id: "season_pioneer"
+    name: "开拓者勋章"
+    icon: "🗺️"
+    trigger: "season"
+    season_theme: "pioneer"
 
 # 兑换
 coupon_rate: 1.0
@@ -554,7 +637,62 @@ custom_fund_name: "我的投资账户"
 }
 ```
 
-### 3.7 赛季
+### 3.7 勋章
+
+#### GET `/api/medals`
+
+**响应**：
+```json
+{
+  "medals": [
+    {
+      "id": "first_triple",
+      "name": "灵光乍现",
+      "icon": "💡",
+      "trigger": "event",
+      "condition": "单日完成3条采集",
+      "earned": true,
+      "earned_at": "2026-05-20"
+    },
+    {
+      "id": "hunt_apprentice",
+      "name": "采集达人",
+      "icon": "📚",
+      "trigger": "ability",
+      "condition": "采集力 ≥ 30",
+      "earned": false,
+      "earned_at": null
+    }
+  ]
+}
+```
+
+#### POST `/api/medals/check`
+
+**说明**：触发勋章检查（通常由系统自动调用，也可手动触发）
+
+**请求体**：
+```json
+{
+  "trigger_type": "ability"
+}
+```
+
+**响应**：
+```json
+{
+  "checked": 3,
+  "newly_earned": [
+    {
+      "id": "hunt_apprentice",
+      "name": "采集达人",
+      "icon": "📚"
+    }
+  ]
+}
+```
+
+### 3.8 赛季
 
 #### GET `/api/season/status`
 
@@ -664,7 +802,57 @@ def _update_ability_changes(self, ability: str, change: float, reason: str) -> N
     pass
 ```
 
-### 4.2 标签图更新
+### 4.2 勋章系统
+
+```python
+def check_medals(self, trigger_type: str = None) -> list:
+    """检查并发放勋章
+    参数:
+        trigger_type: 触发类型筛选 ("event", "ability", "season")，None 表示检查所有
+    返回:
+        [
+            {
+                "id": str,
+                "name": str,
+                "icon": str,
+                "earned": bool,
+                "earned_at": str or None
+            }
+        ]
+    """
+    pass
+
+def get_all_medals(self) -> list:
+    """获取所有勋章定义和状态
+    返回:
+        [
+            {
+                "id": str,
+                "name": str,
+                "icon": str,
+                "trigger": str,
+                "condition": str or None,
+                "earned": bool,
+                "earned_at": str or None
+            }
+        ]
+    """
+    pass
+
+def get_medal_status(self, medal_id: str) -> dict:
+    """获取指定勋章状态
+    参数:
+        medal_id: 勋章 ID
+    返回:
+        {
+            "earned": bool,
+            "earned_at": str or None
+        }
+    """
+    pass
+```
+
+### 4.3 标签图更新
 
 ```python
 def _update_tag_graph(self, tags: list) -> None:
@@ -705,7 +893,7 @@ def get_notes_by_tag(self, tag: str) -> list:
     pass
 ```
 
-### 4.3 兑换相关
+### 4.4 兑换相关
 
 ```python
 def _calculate_exchange_rate(self, path: str) -> float:
@@ -743,7 +931,7 @@ def _update_path_streak(self, path: str) -> None:
     pass
 ```
 
-### 4.4 赛季相关
+### 4.5 赛季相关
 
 ```python
 def _init_season(self) -> None:
@@ -778,7 +966,7 @@ def _get_season_comparison(self) -> dict:
     pass
 ```
 
-### 4.5 采集/回顾/战报
+### 4.6 采集/回顾/战报
 
 ```python
 def process_daily_capture(self, content: str, tags: list = None, folder: str = "Inbox") -> dict:

@@ -83,11 +83,13 @@
 
 ### 2.3 能力值解锁
 
+能力值达到阈值后自动解锁对应效果，解锁触发由勋章系统统一管理（见第八章）。
+
 | 条件 | 解锁效果 |
 |------|---------|
-| 采集力 ≥ 30 | 称号「采集达人」🏹 |
+| 采集力 ≥ 30 | 解锁称号「采集达人」🏹 |
 | 采集力 ≥ 100 | 第 4 条采集倍数从 0.2 提升至 0.4 |
-| 连接力 ≥ 5 | 称号「连线新手」🕸️ |
+| 连接力 ≥ 5 | 解锁称号「连线新手」🕸️ |
 | 连接力 ≥ 20 | 基金加成额外 +5% |
 | 输出力 ≥ 10 | 解锁「内容投资券」（高汇率，锁定 30 天） |
 | 输出力 ≥ 50 | 内容输出奖励下限提升至 850 星点 |
@@ -257,14 +259,72 @@
 
 ## 八、勋章系统
 
-| 勋章名称 | 获得条件 |
-|---------|---------|
-| 灵光乍现 | 首次单日完成 3 条灵感采集 |
-| 周常猎人 | 连续 4 周完成每周回顾 |
-| 连线大师 | 单篇月度战报中连接 3 个以上不同领域碎片 |
-| 采集达人 | 采集力 ≥ 30 |
-| 连线新手 | 连接力 ≥ 5 |
-| 赛季专属勋章 | 完成赛季主题目标 |
+所有勋章统一归入本章管理，不再区分来源。新增勋章只需在 `config.yaml` 的 `medals` 配置表添加条目，无需修改引擎代码。
+
+### 8.1 勋章配置表（config.yaml）
+
+```yaml
+medals:
+  - id: "first_triple"
+    name: "灵光乍现"
+    icon: "💡"
+    trigger: "event"
+    event: "daily_capture_count"
+    condition: "count >= 3"
+    once: true
+
+  - id: "weekly_hunter"
+    name: "周常猎人"
+    icon: "🏹"
+    trigger: "event"
+    event: "weekly_review_streak"
+    condition: "streak >= 4"
+
+  - id: "link_master"
+    name: "连线大师"
+    icon: "🕸️"
+    trigger: "event"
+    event: "monthly_report_cross_domain"
+    condition: "count >= 3"
+    once: true
+
+  - id: "hunt_apprentice"
+    name: "采集达人"
+    icon: "📚"
+    trigger: "ability"
+    ability: "hunt_power"
+    threshold: 30
+
+  - id: "link_novice"
+    name: "连线新手"
+    icon: "🔗"
+    trigger: "ability"
+    ability: "link_power"
+    threshold: 5
+
+  - id: "season_pioneer"
+    name: "开拓者勋章"
+    icon: "🗺️"
+    trigger: "season"
+    season_theme: "pioneer"
+```
+
+### 8.2 勋章触发类型
+
+| 触发类型 | 说明 |
+|---------|------|
+| `event` | 特定事件触发（如单日采集3条、连续4周完成回顾） |
+| `ability` | 能力值达到阈值时触发 |
+| `season` | 完成赛季主题目标时触发 |
+
+### 8.3 勋章检查机制
+
+引擎实现 `check_medals()` 函数，在以下时机检查并发放勋章：
+- 每次采集成功后（event 类型）
+- 能力值更新后（ability 类型）
+- 赛季结算时（season 类型）
+
+`once: true` 的勋章只能获得一次，不可重复发放。
 
 ---
 
@@ -319,7 +379,39 @@
 
 ---
 
-## 十一、配置参数（机制相关）
+## 十一、三层配置体系
+
+系统使用三层配置文件，分离静态模板、运行时配置和用户数据：
+
+| 文件 | 定位 | 修改方式 |
+|------|------|---------|
+| `defaults.yaml` | 静态模板：首次启动或重置时的初始值 | 手动编辑 |
+| `config.yaml` | 运行时可调：倍率、阈值、汇率、解锁条件 | 编辑或 `/api/config` |
+| `state.json` | 运行时累积：用户实际数据 | 系统自动更新 |
+
+### 11.1 defaults.yaml（初始值模板）
+
+`data/inspire/_狩猎系统/defaults.yaml` 定义首次启动或重置时的初始值模板。迁移脚本和重置接口从这里读取默认值，不在代码中硬编码。
+
+### 11.2 config.yaml（运行时配置）
+
+`data/inspire/_狩猎系统/config.yaml` 定义运行时可调整的参数，包括：
+- 采集倍率（base_star, daily_multipliers）
+- 任务奖励（weekly_review_reward, monthly_report_reward 等）
+- 连续加成（streak_bonuses）
+- 基金参数（fund.base_rate, fund.lock_days 等）
+- 路径选择奖惩（path_bonuses）
+- 能力值阈值（ability_thresholds）
+- 勋章配置（medals）
+- 赛季配置（seasons）
+
+### 11.3 state.json（用户数据）
+
+`data/inspire/_狩猎系统/state.json` 是运行时累积的用户数据，由系统自动更新。首次启动时由 `defaults.yaml` 生成。
+
+---
+
+## 十二、配置参数（机制相关）
 
 ```yaml
 # 能力值解锁阈值
@@ -341,12 +433,40 @@ path_bonuses:
 
 # 赛季
 seasons: {default_length_days: 90, auto_start: true}
+
+# 勋章配置表
+medals:
+  - id: "first_triple"
+    name: "灵光乍现"
+    trigger: "event"
+    event: "daily_capture_count"
+    condition: "count >= 3"
+  - id: "weekly_hunter"
+    name: "周常猎人"
+    trigger: "event"
+    event: "weekly_review_streak"
+    condition: "streak >= 4"
+  - id: "link_master"
+    name: "连线大师"
+    trigger: "event"
+    event: "monthly_report_cross_domain"
+    condition: "count >= 3"
+  - id: "hunt_apprentice"
+    name: "采集达人"
+    trigger: "ability"
+    ability: "hunt_power"
+    threshold: 30
+  - id: "link_novice"
+    name: "连线新手"
+    trigger: "ability"
+    ability: "link_power"
+    threshold: 5
 ```
 
 ---
 
-> **版本**：v0.22
+> **版本**：v0.22.1
 >
-> **与之前版本的区别**：明确标签截断规则（最多5取前3）、兑换路径从永久改为每周循环、新增连续选择奖惩、废除基金永久绑定、明确镜像对比为核心干预机制、删除"储蓄凭证可晒"方案、连接力设计意图明确为引导收敛思考。
+> **与之前版本的区别**：v0.22.1 新增三层配置体系（defaults.yaml/config.yaml/state.json）、勋章系统独立配置表、确认废除惩罚机制。能力值解锁触发统一由勋章系统管理。
 >
 > **关联文档**：`PHILOSOPHY.md`（为什么这样设计）、`TECH.md`（技术实现细节）

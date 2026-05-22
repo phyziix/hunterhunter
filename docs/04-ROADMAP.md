@@ -14,12 +14,18 @@
 
 ### 任务清单
 
+- [ ] **创建 defaults.yaml 初始值模板**
+  - [ ] 创建 `data/inspire/_狩猎系统/defaults.yaml`
+  - [ ] 定义首次启动/重置时的初始值（与 state.json 结构对应）
+  - [ ] 包含所有字段的默认值
+
 - [ ] **state.json 迁移脚本**
   - [ ] 在 `engine.py` 中新增 `_migrate_state_v022()` 函数
   - [ ] 补充缺失字段：`active_days`, `total_notes`, `fund_pool`, `available_star`, `consumption_loss_this_month`, `path_streak_weeks`, `last_path_choice`, `total_output_star`, `abilities`, `ability_changes`, `cross_domain_notes_count`, `tag_graph`, `current_season`, `season_history`, `completed_reports`
   - [ ] 保留已有数据（`total_star`, `today_count`, `last_capture_date`, `streak_days`, `medals`, `monthly_medals`, `gray_medal`, `last_weekly_review`, `last_monthly_report`, `weekly_review_done`, `monthly_report_done`, `exchange_history`, `published_count`）
   - [ ] 初始化新增字段的默认值（特别注意：`available_star = total_star`，`fund_pool = 0`）
   - [ ] 在 `_load_state()` 中调用迁移脚本（检测版本号）
+  - [ ] **迁移脚本从 `defaults.yaml` 读取默认值，不硬编码**
 
 - [ ] **config.yaml 升级**
   - [ ] 新增 `streak_bonuses` 配置（7天/30天/90天加成）
@@ -27,6 +33,7 @@
   - [ ] 新增 `path_bonuses.fund` 和 `path_bonuses.coupon` 配置（连续选择奖惩）
   - [ ] 新增 `ability_thresholds` 配置（采集力/连接力/输出力解锁阈值）
   - [ ] 新增 `seasons` 配置（默认90天、自动开始、主题列表）
+  - [ ] 新增 `medals` 配置表（勋章系统独立配置）
 
 - [ ] **tag_graph 初始化**
   - [ ] 扫描 Inbox/ 中所有现有笔记
@@ -42,11 +49,15 @@
   - [ ] **镜像对比**：实现 `calculate_opportunity_cost(amount, from_path)` 函数
   - [ ] **路径选择**：实现 `_update_path_streak(path)` 函数
 
+- [ ] **重置接口 `/api/reset`**
+  - [ ] 从 `defaults.yaml` 重新生成初始 state.json
+  - [ ] 不依赖硬编码的默认值
+
 ---
 
-## Phase 2: 能力值系统
+## Phase 2: 能力值系统 + 勋章系统独立
 
-**阶段目标**：实现采集力、连接力、输出力三个能力值的计算和展示。
+**阶段目标**：实现采集力、连接力、输出力三个能力值的计算和展示；将勋章系统从引擎代码中抽离，改为读取 `config.yaml` 的 `medals` 配置表。
 
 **依赖**：Phase 1（数据结构迁移完成）
 
@@ -90,6 +101,18 @@
   - [ ] 连接力 ≥ 20：基金加成额外 +5%
   - [ ] 输出力 ≥ 10：解锁「内容投资券」（高汇率，锁定30天）
   - [ ] 输出力 ≥ 50：内容输出奖励下限提升至 850 星点
+
+- [ ] **勋章系统独立（从引擎抽离）**
+  - [ ] 实现 `check_medals()` 函数，读取 `config.yaml` 的 `medals` 配置表
+  - [ ] 原能力值解锁任务改为调用 `check_medals()`
+  - [ ] 实现 `get_all_medals()` 函数，返回所有勋章定义（含已获得/未获得状态）
+  - [ ] 实现 `get_medal_status(medal_id)` 函数，检查勋章是否已获得
+  - [ ] 勋章触发时机：
+    - 采集成功后检查 event 类型勋章（如 `daily_capture_count`）
+    - 能力值更新后检查 ability 类型勋章（如 `hunt_power >= 30`）
+    - 赛季结算时检查 season 类型勋章
+  - [ ] `once: true` 的勋章只能获得一次
+  - [ ] 前端勋章墙从 `get_all_medals()` 获取勋章列表
 
 ---
 

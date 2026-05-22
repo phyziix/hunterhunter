@@ -1,0 +1,76 @@
+# 认知狩猎 - 初始值模板
+# 首次启动或重置系统时，从本文件读取默认值生成 state.json
+# 本文件定义所有字段的初始值，迁移脚本和重置接口从这里读取，不硬编码
+
+# ===== 星点与采集 =====
+total_star: 0
+today_count: 0
+last_capture_date: null
+
+# ===== 连续记录 =====
+streak_days: 0
+
+# ===== 统计 =====
+active_days: 0
+total_notes: 0
+
+# ===== 勋章（已获得列表）=====
+medals: []
+
+# ===== 月度勋章计数 =====
+monthly_medals: 0
+
+# ===== 灰色勋章状态 =====
+gray_medal: false
+
+# ===== 周回顾 =====
+last_weekly_review: null
+weekly_review_done: false
+
+# ===== 月度战报 =====
+last_monthly_report: null
+monthly_report_done: false
+completed_reports: 0
+
+# ===== 兑换历史 =====
+exchange_history: []
+exchange_path: ""
+
+# ===== 基金池 =====
+fund_pool: 0
+available_star: 0
+consumption_loss_this_month: 0
+
+# ===== 路径连续 =====
+path_streak_weeks: 0
+last_path_choice: null
+
+# ===== 内容输出 =====
+published_count: 0
+total_output_star: 0
+
+# ===== 能力值 =====
+abilities:
+  hunt_power: 5.0
+  link_power: 0.1
+  output_power: 0
+
+# ===== 能力值变更日志 =====
+ability_changes: []
+
+# ===== 跨界笔记计数 =====
+cross_domain_notes_count: 0
+
+# ===== 标签共现图 =====
+tag_graph:
+  nodes: {}
+  edges: {}
+
+# ===== 当前赛季 =====
+current_season: null
+
+# ===== 赛季历史 =====
+season_history: []
+
+# ===== 版本标识 =====
+state_version: "0.22"
