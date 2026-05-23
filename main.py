@@ -260,6 +260,14 @@ async def get_season_history():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.get("/api/income/history")
+async def get_income_history():
+    """获取星点获取记录"""
+    try:
+        return {"records": engine.get_star_income_history()}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.post("/api/season/check")
 async def check_season_end():
     """检查赛季是否结束并自动开启新赛季"""

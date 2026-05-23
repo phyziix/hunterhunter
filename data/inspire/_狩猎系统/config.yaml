@@ -30,10 +30,12 @@ daily_multipliers:
 - 2.0
 - 0.2
 fund:
-  base_rate: 1.5
+  base_rate: 1.0
+  base_bonus: 0.5
   lock_days: 30
   min_withdraw: 500
-fund_base_rate: 1.5
+fund_base_rate: 1.0
+fund_base_bonus: 0.5
 medals:
 - condition: count >= 3
   event: daily_capture_count
@@ -65,18 +67,18 @@ medals:
 monthly_report_reward: 500
 path_bonuses:
   coupon:
-  - rate: 0.95
+  - rate: -0.05
     weeks: 2
-  - rate: 0.9
+  - rate: -0.1
     weeks: 4
-  - rate: 0.85
+  - rate: -0.15
     weeks: 8
   fund:
-  - rate: 1.55
+  - rate: 0.05
     weeks: 2
-  - rate: 1.6
+  - rate: 0.1
     weeks: 4
-  - rate: 1.65
+  - rate: 0.15
     weeks: 8
 # 赛季配置 (v0.24)
 seasons:

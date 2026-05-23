@@ -1,5 +1,5 @@
 {
-  "total_star": 2000.0,
+  "total_star": 1100.0,
   "today_count": 21,
   "last_capture_date": "2026-05-22",
   "streak_days": 1,
@@ -36,12 +36,43 @@
       "amount": 500,
       "real_value": 750.0,
       "timestamp": "2026-05-22T18:14:04.406822"
+    },
+    {
+      "type": "coupon",
+      "amount": 100.0,
+      "real_value": 100.0,
+      "timestamp": "2026-05-23T14:53:15.299186"
+    },
+    {
+      "type": "coupon",
+      "amount": 500.0,
+      "real_value": 500.0,
+      "timestamp": "2026-05-23T14:54:03.828792"
+    },
+    {
+      "type": "coupon",
+      "amount": 200.0,
+      "real_value": 200.0,
+      "timestamp": "2026-05-23T14:54:24.544570"
+    },
+    {
+      "type": "fund",
+      "amount": 500.0,
+      "real_value": 750.0,
+      "timestamp": "2026-05-23T15:10:31.686022"
+    },
+    {
+      "type": "coupon",
+      "amount": 100.0,
+      "real_value": 100.0,
+      "timestamp": "2026-05-23T15:17:14.996658"
     }
   ],
   "exchange_path": "fund",
-  "fund_pool": 500.0,
-  "available_star": 1500,
-  "consumption_loss_this_month": 50.0,
+  "fund_pool": 1000.0,
+  "coupon_pool": 200.0,
+  "available_star": 100.0,
+  "consumption_loss_this_month": 500.0,
   "path_streak_weeks": 0,
   "last_path_choice": "2026-20",
   "published_count": 2,
@@ -366,7 +397,7 @@
   "current_season": {
     "id": 1,
     "name": "开拓者",
-    "start_date": "2026-05-22",
+    "start_date": "2026-05-16",
     "end_date": "",
     "theme_tags": [],
     "star_earned_this_season": 0,
@@ -374,5 +405,8 @@
     "active_days_this_season": 0
   },
   "season_history": [],
-  "fund_first_opened_at": "2026-05-22"
+  "star_income_history": [],
+  "fund_first_opened_at": "2026-05-22",
+  "version": "0.1",
+  "last_exchange_date": "2026-05-23"
 }

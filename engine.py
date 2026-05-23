@@ -177,6 +177,8 @@ class HuntingEngine:
             "exchange_path": "",
             "fund_pool": 0.0,
             "fund_first_opened_at": None,  # 基金首次开通日期，用于30天锁定期校验
+            "coupon_pool": 0.0,  # 消费券兑换累计星点
+            "last_exchange_date": None,  # 上次兑换日期，用于动态锁定
             "available_star": 0.0,
             "consumption_loss_this_month": 0.0,
             "path_streak_weeks": 0,
@@ -203,14 +205,16 @@ class HuntingEngine:
             "current_season": {
                 "id": 1,
                 "name": "开拓者",
-                "start_date": today,
+                "start_date": self._get_season_start_date(),
                 "end_date": "",
                 "theme_tags": [],
                 "star_earned_this_season": 0,
                 "cross_domain_notes_this_season": 0,
                 "active_days_this_season": 0
             },
-            "season_history": []
+            "season_history": [],
+            # 星点获取记录
+            "star_income_history": []
         }
         with open(self.state_file, 'w', encoding='utf-8') as f:
             json.dump(default_state, f, ensure_ascii=False, indent=2)
@@ -252,6 +256,8 @@ class HuntingEngine:
         self.state.setdefault("exchange_path", "")
         self.state.setdefault("fund_pool", 0.0)
         self.state.setdefault("fund_first_opened_at", None)  # 基金首次开通日期
+        self.state.setdefault("coupon_pool", 0.0)  # 消费券兑换累计星点
+        self.state.setdefault("last_exchange_date", None)  # 上次兑换日期，用于动态锁定
         self.state.setdefault("available_star", old_total_star)  # 初始时可用星点 = 总星点
         self.state.setdefault("consumption_loss_this_month", 0.0)
         self.state.setdefault("path_streak_weeks", 0)
@@ -279,7 +285,7 @@ class HuntingEngine:
         self.state.setdefault("current_season", {
             "id": 1,
             "name": "开拓者",
-            "start_date": today,
+            "start_date": self._get_season_start_date(),
             "end_date": "",
             "theme_tags": [],
             "star_earned_this_season": 0,
@@ -402,6 +408,7 @@ class HuntingEngine:
                     "reward": star_reward
                 })
                 self._log_event("LINK_POWER_REWARD", f"连接力达到 {threshold}，获得 {star_reward} 星点")
+                self._log_star_income("连接力奖励", star_reward, f"连接力达到{threshold}")
         
         return newly_earned_rewards
     
@@ -456,6 +463,21 @@ class HuntingEngine:
     
     def _get_today_str(self):
         return datetime.now().strftime("%Y-%m-%d")
+    
+    def _get_season_start_date(self):
+        """计算赛季起始日期：每月1日、15日、16日至本月最后一日"""
+        today = datetime.now()
+        day = today.day
+        
+        if day <= 14:
+            # 1-14日，赛季从本月1日开始
+            return today.replace(day=1).strftime("%Y-%m-%d")
+        elif day == 15:
+            # 15日，赛季从15日开始
+            return today.strftime("%Y-%m-%d")
+        else:
+            # 16日至月底，赛季从16日开始
+            return today.replace(day=16).strftime("%Y-%m-%d")
     
     def _get_week_str(self):
         today = datetime.now()
@@ -665,6 +687,19 @@ class HuntingEngine:
             timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             f.write(f"- {timestamp} | {type_} | 扣除星点: {amount} | 实际价值: {real_value}\n")
     
+    def _log_star_income(self, source, amount, details=""):
+        """记录星点获取"""
+        self.state.setdefault("star_income_history", [])
+        self.state["star_income_history"].append({
+            "source": source,
+            "amount": amount,
+            "details": details,
+            "timestamp": datetime.now().isoformat()
+        })
+        # 只保留最近100条记录
+        if len(self.state["star_income_history"]) > 100:
+            self.state["star_income_history"] = self.state["star_income_history"][-100:]
+    
     def _update_tag_graph(self, tags):
         """灵感提交时更新标签共现图"""
         tags = tags[:5]  # 只取前5个
@@ -691,20 +726,23 @@ class HuntingEngine:
             self.state["cross_domain_notes_count"] += 1
     
     def _calculate_exchange_rate(self, path):
-        """计算当前汇率（含连续选择奖惩）"""
+        """计算当前汇率（含连续选择奖惩，所有增益减益都是加减关系）"""
         path_bonuses = self.config.get("path_bonuses", {}).get(path, [])
         streak_weeks = self.state["path_streak_weeks"]
         
         if path == "fund":
             base_rate = self.config["fund"]["base_rate"]
+            # 基金基础奖励（常设，任何情况下都有）
+            base_bonus = self.config["fund"].get("base_bonus", 0.5)
+            rate = base_rate + base_bonus
         else:
             base_rate = self.config["coupon_rate"]
+            rate = base_rate
         
-        rate = base_rate
-        
+        # 连续选择奖惩（加减关系，path_bonuses 中存储的是增量值）
         for bonus in path_bonuses:
             if streak_weeks >= bonus["weeks"]:
-                rate = bonus["rate"]
+                rate += bonus["rate"]
         
         return rate
     
@@ -785,6 +823,10 @@ class HuntingEngine:
         
         self.state["available_star"] += total_stars
         self.state["total_star"] = self.state["available_star"] + self.state["fund_pool"]
+        
+        # 记录星点获取
+        details = f"基础{base_stars} + 连续奖励{streak_bonus_amount:.1f}（{streak_days}天）"
+        self._log_star_income("灵感采集", total_stars, details)
         
         date_str = datetime.now().strftime("%Y%m%d")
         time_str = datetime.now().strftime("%H%M%S")
@@ -1015,6 +1057,7 @@ class HuntingEngine:
             "total_star": round(self.state["total_star"], 2),
             "available_star": round(self.state["available_star"], 2),
             "fund_pool": round(self.state["fund_pool"], 2),
+            "coupon_pool": round(self.state.get("coupon_pool", 0), 2),
             "today_count": self.state["today_count"],
             "streak_days": self.state["streak_days"],
             "streak_bonus_pct": streak_bonus_pct,
@@ -1058,6 +1101,8 @@ class HuntingEngine:
         self.state["available_star"] += reward
         self.state["total_star"] = self.state["available_star"] + self.state["fund_pool"]
         
+        self._log_star_income("内容发布", reward, f"第{self.state['published_count']}次发布")
+        
         self._calculate_link_power()
         self._save_state()
         
@@ -1091,11 +1136,20 @@ class HuntingEngine:
         """消费券兑换"""
         self._load_state()
         
+        # 检查动态锁定：今日是否已兑换
+        today = self._get_today_str()
+        last_exchange = self.state.get("last_exchange_date")
+        if last_exchange == today:
+            return {"error": "今日已兑换，请明天再来"}
+        
         if self.state["available_star"] < amount:
             return {"error": "可用星点不足"}
         
+        # 更新星点
         self.state["available_star"] -= amount
+        self.state["coupon_pool"] += amount  # 记录消费兑换累计
         self.state["total_star"] = self.state["available_star"] + self.state["fund_pool"]
+        self.state["last_exchange_date"] = today  # 更新最后兑换日期
         
         rate = self._calculate_exchange_rate("coupon")
         real_value = amount * rate
@@ -1130,6 +1184,12 @@ class HuntingEngine:
         """基金兑换"""
         self._load_state()
         
+        # 检查动态锁定：今日是否已兑换
+        today = self._get_today_str()
+        last_exchange = self.state.get("last_exchange_date")
+        if last_exchange == today:
+            return {"error": "今日已兑换，请明天再来"}
+        
         if self.state["available_star"] < amount:
             return {"error": "可用星点不足"}
         
@@ -1138,23 +1198,11 @@ class HuntingEngine:
         if amount < min_withdraw:
             return {"error": f"基金兑换最低额度为 {min_withdraw} 星点"}
         
-        # 检查基金门槛：30天锁定期
-        lock_days = self.config["fund"].get("lock_days", 30)
-        first_opened = self.state.get("fund_first_opened_at")
-        if first_opened:
-            first_dt = datetime.strptime(first_opened, "%Y-%m-%d").date()
-            days_since = (datetime.now().date() - first_dt).days
-            if days_since < lock_days:
-                remaining = lock_days - days_since
-                return {"error": f"基金首次开通后锁定 {lock_days} 天，还需 {remaining} 天解锁"}
-        
-        # 记录首次开通日期
-        if not first_opened:
-            self.state["fund_first_opened_at"] = self._get_today_str()
-        
+        # 更新星点
         self.state["available_star"] -= amount
         self.state["fund_pool"] += amount
         self.state["total_star"] = self.state["available_star"] + self.state["fund_pool"]
+        self.state["last_exchange_date"] = today  # 更新最后兑换日期
         
         rate = self._calculate_exchange_rate("fund")
         real_value = amount * rate
@@ -1460,6 +1508,8 @@ hunt: true
         self.state["weekly_review_done"] = True
         self.state["available_star"] += self.config["weekly_review_reward"]
         self.state["total_star"] = self.state["available_star"] + self.state["fund_pool"]
+        
+        self._log_star_income("周回顾", self.config["weekly_review_reward"], "完成周回顾")
 
         self._calculate_link_power()
         self._save_state()
@@ -1540,6 +1590,8 @@ hunt: true
         self.state["completed_reports"] += 1
         self.state["available_star"] += self.config["monthly_report_reward"]
         self.state["total_star"] = self.state["available_star"] + self.state["fund_pool"]
+        
+        self._log_star_income("月度战报", self.config["monthly_report_reward"], f"第{self.state['completed_reports']}次完成")
 
         self._calculate_link_power()
         self._save_state()
@@ -1777,7 +1829,7 @@ hunt: true
             "id": self.state["current_season"]["id"] + 1,
             "name": next_theme["name"],
             "theme_id": next_theme["id"],
-            "start_date": datetime.now().strftime("%Y-%m-%d"),
+            "start_date": self._get_season_start_date(),
             "end_date": "",
             "theme_tags": [],
             "star_earned_this_season": 0,
@@ -1881,6 +1933,11 @@ hunt: true
         """获取赛季历史记录"""
         self._load_state()
         return self.state["season_history"]
+    
+    def get_star_income_history(self):
+        """获取星点获取记录"""
+        self._load_state()
+        return self.state.get("star_income_history", [])
     
     def _update_season_stats(self, stars_earned=0, is_cross_domain=False, is_active_day=False):
         """更新赛季统计数据"""

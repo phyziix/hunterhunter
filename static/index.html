@@ -708,7 +708,15 @@
         </div>
 
         <div class="card">
-            <h3>📊 仪表盘</h3>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3>📊 仪表盘</h3>
+                <button 
+                    x-on:click="openIncomeHistory"
+                    style="padding: 6px 12px; font-size: 0.75rem; border: 1px solid #ddd; border-radius: 6px; background: #f8fafc; cursor: pointer; color: #666;"
+                >
+                    📋 获取记录
+                </button>
+            </div>
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-value" :class="{ 'earned-animation': showEarned }" x-text="formatNumber(status.total_star)"></div>
@@ -798,6 +806,8 @@
 
         <div class="card">
             <h3>🔄 兑换中心</h3>
+            <p style="font-size: 0.8rem; color: #64748b; margin-top: 0; margin-bottom: 15px;">选择消费券即时兑换或存入基金池获取更高倍率，连续选择同一路径可获得额外加成。</p>
+            
             <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
                 <div style="text-align: center;">
                     <button 
@@ -822,10 +832,108 @@
                         💰 基金充值
                     </button>
                     <div style="margin-top: 6px; font-size: 0.9rem; color: #666;">
-                        <div style="font-weight: 600; color: #333;">1星点 = <span x-text="(config.fund_base_rate * (1 + (status.fund_bonus || 0) / 100)).toFixed(2)"></span>元</div>
+                        <div style="font-weight: 600; color: #333;">1星点 = <span x-text="(config.fund_base_rate + (config.fund_base_bonus || 0) + ((status.fund_bonus || 0) / 100)).toFixed(2)"></span>元</div>
                         <div style="font-size: 0.8rem; color: #888;">基础: 1星点 = <span x-text="config.fund_base_rate"></span>元</div>
-                        <div style="font-size: 0.8rem; color: #888;">基金加成: +<span x-text="status.fund_bonus || 0"></span>%</div>
+                        <div style="font-size: 0.8rem; color: #888;">基金奖励: +<span x-text="((config.fund_base_bonus || 0) * 100).toFixed(0)"></span>%</div>
+                        <div style="font-size: 0.8rem; color: #888;">连续加成: +<span x-text="status.fund_bonus || 0"></span>%</div>
                     </div>
+                </div>
+            </div>
+            
+            <div style="margin-top: 20px; padding: 16px; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
+                <div style="margin-bottom: 15px; padding-bottom: 12px; border-bottom: 1px solid #e2e8f0;">
+                    <div style="font-size: 0.95rem; font-weight: 600; margin-bottom: 2px; color: #1e293b;">本赛季兑换情况</div>
+                    <div style="font-size: 0.75rem; color: #64748b;">
+                        <span x-text="status.current_season?.start_date || '-'"></span> ~ 
+                        <span x-text="(() => { if (!status.current_season?.start_date) return '-'; const d = new Date(status.current_season.start_date); d.setDate(d.getDate() + 15); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); })()"></span>
+                    </div>
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <div>
+                        <div style="font-size: 0.85rem; color: #64748b;">消费兑换星点</div>
+                        <div style="font-size: 1.5rem; font-weight: bold; color: #1e293b;">⭐ <span x-text="(status.coupon_pool || 0).toFixed(0)"></span></div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 0.7rem; color: #94a3b8;">倍率: 1.0 (连续选择减益: <span x-text="status.path_streak_weeks >= 2 ? '-' + ((status.path_streak_weeks - 1) * 5) + '%' : '0%'"></span>)</div>
+                        <div style="font-size: 1.2rem; font-weight: bold; color: #64748b;">¥<span x-text="((status.coupon_pool || 0) * 1 * (status.path_streak_weeks >= 2 ? (100 - (status.path_streak_weeks - 1) * 5) / 100 : 1)).toFixed(2)"></span></div>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: #64748b; margin-bottom: 4px;">
+                        <span>消费水位</span>
+                        <span x-text="Math.round((status.coupon_pool || 0) / 5000 * 100) + '%'"></span>
+                    </div>
+                    <div style="height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden;">
+                        <div 
+                            x-bind:style="{ 
+                                height: '100%', 
+                                background: 'linear-gradient(90deg, #ec4899 0%, #f472b6 50%, #f9a8d4 100%)',
+                                width: ((status.coupon_pool || 0) / 5000 * 100) + '%',
+                                transition: 'width 0.5s ease'
+                            }"
+                        ></div>
+                    </div>
+                    <div style="font-size: 0.7rem; color: #94a3b8; margin-top: 4px;">基于上限5000星点</div>
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <div>
+                        <div style="font-size: 0.85rem; color: #64748b;">基金兑换星点</div>
+                        <div style="font-size: 1.5rem; font-weight: bold; color: #1e293b;">⭐ <span x-text="(status.fund_pool || 0).toFixed(0)"></span></div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 0.7rem; color: #94a3b8;">倍率: <span x-text="(config.fund_base_rate + (config.fund_base_bonus || 0)).toFixed(2)"></span> (连续选择加成: +<span x-text="status.fund_bonus || 0"></span>%)</div>
+                        <div style="font-size: 1.2rem; font-weight: bold; color: #64748b;">¥<span x-text="(status.fund_pool * (config.fund_base_rate + (config.fund_base_bonus || 0) + ((status.fund_bonus || 0) / 100))).toFixed(2)"></span></div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 8px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: #64748b; margin-bottom: 4px;">
+                        <span>基金水位</span>
+                        <span x-text="Math.round((status.fund_pool || 0) / 5000 * 100) + '%'"></span>
+                    </div>
+                    <div style="height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden;">
+                        <div 
+                            x-bind:style="{ 
+                                height: '100%', 
+                                background: 'linear-gradient(90deg, #3b82f6 0%, #60a5fa 50%, #93c5fd 100%)',
+                                width: ((status.fund_pool || 0) / 5000 * 100) + '%',
+                                transition: 'width 0.5s ease'
+                            }"
+                        ></div>
+                    </div>
+                    <div style="font-size: 0.7rem; color: #94a3b8; margin-top: 4px;">基于上限5000星点</div>
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; margin-top: 12px; padding-top: 12px; border-top: 1px solid #e2e8f0;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 0.7rem; color: #64748b;">今日兑换</div>
+                        <div style="font-size: 0.9rem; font-weight: bold;" 
+                            :style="status.last_exchange_date === new Date().toISOString().split('T')[0] ? 'color: #ef4444;' : 'color: #10b981;'">
+                            <span x-text="status.last_exchange_date === new Date().toISOString().split('T')[0] ? '已兑换' : '可兑换'"></span>
+                        </div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 0.7rem; color: #64748b;">最低提取</div>
+                        <div style="font-size: 0.9rem; font-weight: bold; color: #8b5cf6;">⭐<span x-text="config.fund.min_withdraw"></span></div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 0.7rem; opacity: 0.7;">基金加成</div>
+                        <div style="font-size: 0.9rem; font-weight: bold; color: #10b981;">+<span x-text="status.fund_bonus || 0"></span>%</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span style="color: #666;">本月消费损失</span>
+                    <span style="color: #dc2626; font-weight: 600;">-¥<span x-text="(status.consumption_loss_this_month || 0).toFixed(2)"></span></span>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span style="color: #666;">基金累计收益</span>
+                    <span style="color: #16a34a; font-weight: 600;">+¥<span x-text="(status.fund_pool || 0).toFixed(2)"></span></span>
                 </div>
             </div>
         </div>
@@ -851,6 +959,164 @@
                     📈 月度战报
                     <span x-show="status.monthly_report_done" class="completion-badge">已完成</span>
                 </button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>🏷️ 标签宇宙</h3>
+            <p style="font-size: 0.8rem; color: #64748b; margin-top: 0; margin-bottom: 12px;">记录你所有灵感笔记的标签，标签云展示频次分布，点击标签查看相关笔记，跨领域标签可获得额外星点加成。</p>
+            <div style="display: flex; gap: 8px; margin-bottom: 15px;">
+                <button 
+                    @click="tagViewMode = 'cloud'" 
+                    :style="{ padding: '6px 12px', borderRadius: '8px', border: 'none', cursor: 'pointer', backgroundColor: tagViewMode === 'cloud' ? '#667eea' : '#f0f0f0', color: tagViewMode === 'cloud' ? 'white' : '#666' }"
+                >云视图</button>
+                <button 
+                    @click="tagViewMode = 'list'" 
+                    :style="{ padding: '6px 12px', borderRadius: '8px', border: 'none', cursor: 'pointer', backgroundColor: tagViewMode === 'list' ? '#667eea' : '#f0f0f0', color: tagViewMode === 'list' ? 'white' : '#666' }"
+                >排行榜</button>
+            </div>
+            
+            <!-- 标签云视图 -->
+            <div x-show="tagViewMode === 'cloud'" style="padding: 15px; background: #f8fafc; border-radius: 12px; min-height: 150px;">
+                <template x-if="Object.keys(tagCloudData).length > 0">
+                    <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
+                        <template x-for="[tag, data] in Object.entries(tagCloudData)" :key="tag">
+                            <span 
+                                @click="openTagDetail(tag)"
+                                :style="{
+                                    padding: '8px 14px',
+                                    borderRadius: '20px',
+                                    fontSize: getTagSize(data.count) + 'rem',
+                                    background: getTagColor(data.count),
+                                    color: 'white',
+                                    cursor: 'pointer',
+                                    transition: 'transform 0.2s',
+                                    boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
+                                }"
+                                onmouseover="this.style.transform='scale(1.1)'"
+                                onmouseout="this.style.transform='scale(1)'"
+                            >
+                                <span x-text="tag"></span> (<span x-text="data.count"></span>)
+                            </span>
+                        </template>
+                    </div>
+                </template>
+                <div x-else style="text-align: center; color: #94a3b8; padding: 40px;">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">🏷️</div>
+                    <p>暂无标签数据</p>
+                </div>
+            </div>
+            
+            <!-- 排行榜视图 -->
+            <div x-show="tagViewMode === 'list'" style="max-height: 250px; overflow-y: auto;">
+                <template x-if="sortedTags.length > 0">
+                    <template x-for="([tag, data], index) in sortedTags.slice(0, 10)" :key="tag">
+                        <div 
+                            @click="openTagDetail(tag)"
+                            style="display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; border-bottom: 1px solid #eee; cursor: pointer;"
+                            onmouseover="this.style.background='#f8fafc'"
+                            onmouseout="this.style.background='white'"
+                        >
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <span :style="{ width: '20px', textAlign: 'center', fontSize: '0.85rem', fontWeight: '600', color: index < 3 ? '#f59e0b' : '#94a3b8' }" x-text="index + 1"></span>
+                                <span style="font-weight: 500;" x-text="tag"></span>
+                            </div>
+                            <span style="color: #667eea; font-weight: 600;" x-text="data.count + ' 次'"></span>
+                        </div>
+                    </template>
+                </template>
+                <div x-else style="text-align: center; color: #94a3b8; padding: 40px;">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">📊</div>
+                    <p>暂无标签数据</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>📅 赛季信息</h3>
+            <p style="font-size: 0.8rem; color: #64748b; margin-top: 0; margin-bottom: 12px;">每15天为一个赛季，赛季结束时结算收益，星点上限3000，重置时保留50%星点。</p>
+            <button 
+                @click="checkSeasonEnd"
+                style="padding: 6px 14px; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; border: none; border-radius: 8px; font-size: 0.85rem; cursor: pointer; margin-bottom: 15px;"
+            >
+                检查赛季
+            </button>
+            
+            <div style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); padding: 20px; border-radius: 12px; color: white;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <div>
+                        <div style="font-size: 0.85rem; opacity: 0.8;">当前赛季</div>
+                        <div style="font-size: 1.3rem; font-weight: bold;" x-text="status.current_season?.name || '开拓者'"></div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 0.85rem; opacity: 0.8;">赛季进度</div>
+                        <div style="font-size: 1.3rem; font-weight: bold;" x-text="(status.current_season?.active_days_this_season || 0) + '/15 天'"></div>
+                    </div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; text-align: center;">
+                    <div style="background: rgba(255,255,255,0.15); padding: 12px; border-radius: 8px;">
+                        <div style="font-size: 0.8rem; opacity: 0.8;">赛季星点</div>
+                        <div style="font-size: 1.2rem; font-weight: bold;" x-text="status.current_season?.star_earned_this_season || 0"></div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.15); padding: 12px; border-radius: 8px;">
+                        <div style="font-size: 0.8rem; opacity: 0.8;">跨界笔记</div>
+                        <div style="font-size: 1.2rem; font-weight: bold;" x-text="status.current_season?.cross_domain_notes_this_season || 0"></div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.15); padding: 12px; border-radius: 8px;">
+                        <div style="font-size: 0.8rem; opacity: 0.8;">赛季上限</div>
+                        <div style="font-size: 1.2rem; font-weight: bold;" x-text="config.season_star_cap || 3000"></div>
+                    </div>
+                </div>
+                
+                <!-- 赛季进度条 -->
+                <div style="margin-top: 15px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.8rem; opacity: 0.8; margin-bottom: 5px;">
+                        <span>赛季进度</span>
+                        <span x-text="Math.round((status.current_season?.active_days_this_season || 0) / 15 * 100) + '%'"></span>
+                    </div>
+                    <div style="height: 6px; background: rgba(255,255,255,0.3); border-radius: 3px; overflow: hidden;">
+                        <div 
+                            x-bind:style="{ 
+                                height: '100%', 
+                                background: 'linear-gradient(90deg, #fbbf24 0%, #f59e0b 100%)',
+                                width: ((status.current_season?.active_days_this_season || 0) / 15 * 100) + '%',
+                                transition: 'width 0.3s ease'
+                            }"
+                        ></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>🔮 长期推演</h3>
+            <p style="font-size: 0.8rem; color: #64748b; margin-top: 0; margin-bottom: 12px;">基于你的采集习惯，预测未来6个月的灵感成长趋势，帮助你制定长期计划。</p>
+            <button 
+                @click="openProjectionModal"
+                style="padding: 6px 14px; background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; border: none; border-radius: 8px; font-size: 0.85rem; cursor: pointer; margin-bottom: 15px;"
+            >
+                查看预测
+            </button>
+            
+            <div style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); padding: 20px; border-radius: 12px; color: white;">
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; text-align: center;">
+                    <div>
+                        <div style="font-size: 0.85rem; opacity: 0.8;">当前笔记</div>
+                        <div style="font-size: 1.5rem; font-weight: bold;" x-text="status.total_notes"></div>
+                    </div>
+                    <div>
+                        <div style="font-size: 0.85rem; opacity: 0.8;">活跃天数</div>
+                        <div style="font-size: 1.5rem; font-weight: bold;" x-text="status.active_days"></div>
+                    </div>
+                    <div>
+                        <div style="font-size: 0.85rem; opacity: 0.8;">总星点</div>
+                        <div style="font-size: 1.5rem; font-weight: bold;" x-text="status.total_star.toFixed(0)"></div>
+                    </div>
+                </div>
+                <div style="margin-top: 15px; text-align: center; font-size: 0.9rem; opacity: 0.9;">
+                    点击「查看预测」了解6个月后的你
+                </div>
             </div>
         </div>
 
@@ -1145,20 +1411,79 @@
         </div>
     </div>
 
+    <!-- 获取记录模态框 -->
+    <div x-show="showIncomeModal" style="display: none;" class="modal-overlay" @click.self="closeIncomeModal">
+        <div class="modal" @click.stop style="max-width: 600px;">
+            <h3 style="margin-bottom: 15px;">📋 星点获取记录</h3>
+            
+            <div style="max-height: 400px; overflow-y: auto;">
+                <template x-if="incomeRecords.length === 0">
+                    <div style="text-align: center; padding: 30px; color: #999;">暂无获取记录</div>
+                </template>
+                <template x-for="record in incomeRecords" :key="record.timestamp">
+                    <div style="padding: 12px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-weight: 600; color: #333;" x-text="record.source"></div>
+                            <div style="font-size: 0.8rem; color: #888;" x-text="record.details"></div>
+                            <div style="font-size: 0.75rem; color: #aaa;" x-text="new Date(record.timestamp).toLocaleString('zh-CN')"></div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 1.2rem; font-weight: bold; color: #10b981;">+<span x-text="record.amount"></span></div>
+                        </div>
+                    </div>
+                </template>
+            </div>
+            
+            <div class="modal-buttons" style="margin-top: 15px;">
+                <button class="btn btn-secondary" @click="closeIncomeModal">关闭</button>
+            </div>
+        </div>
+    </div>
+
     <!-- 兑换模态框 -->
     <div x-show="showExchangeModal" style="display: none;" class="modal-overlay" @click.self="closeExchangeModal">
-        <div class="modal" @click.stop style="max-width: 550px;">
-            <h3 x-text="exchangeType === 'coupon' ? '🎫 消费券兑换' : '💰 基金充值'" style="margin-bottom: 15px;"></h3>
+        <div class="modal" @click.stop style="max-width: 480px;">
+            <h3 x-text="exchangeType === 'coupon' ? '🎫 消费券兑换' : '💰 基金充值'" style="margin-bottom: 12px;"></h3>
             
             <!-- 当前余额 -->
-            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 12px; border-radius: 8px; margin-bottom: 15px; text-align: center;">
-                <div style="color: rgba(255,255,255,0.8); font-size: 0.85rem;">当前星点余额</div>
-                <div style="color: white; font-size: 1.8rem; font-weight: bold;">⭐ <span x-text="formatNumber(status.total_star)"></span></div>
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 10px; border-radius: 8px; margin-bottom: 12px; text-align: center;">
+                <div style="color: rgba(255,255,255,0.8); font-size: 0.8rem;">当前星点余额</div>
+                <div style="color: white; font-size: 1.5rem; font-weight: bold;">⭐ <span x-text="formatNumber(status.total_star)"></span></div>
+            </div>
+            
+            <!-- 每日兑换提示 -->
+            <div style="padding: 8px; background: #fef3c7; border-radius: 6px; margin-bottom: 12px; text-align: center; font-size: 0.8rem; color: #92400e;">
+                💡 每日限制兑换一次，每日24时重置
+            </div>
+            
+            <!-- 路径选择 -->
+            <div style="margin-bottom: 12px;">
+                <h4 style="margin: 0 0 8px 0; font-size: 0.9rem; color: #333;">📌 选择路径</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                    <button 
+                        x-on:click="exchangeType = 'coupon'"
+                        style="padding: 10px; border: 2px solid #ddd; border-radius: 8px; cursor: pointer; transition: all 0.3s;"
+                        :style="exchangeType === 'coupon' ? 'border-color: #3b82f6; background: #eff6ff;' : 'background: #fff;'"
+                    >
+                        <div style="font-size: 1.1rem;">🎫</div>
+                        <div style="font-weight: 600; color: #333; font-size: 0.9rem;">消费券</div>
+                        <div style="font-size: 0.7rem; color: #666;">倍率: 1.0</div>
+                    </button>
+                    <button 
+                        x-on:click="exchangeType = 'fund'"
+                        style="padding: 10px; border: 2px solid #ddd; border-radius: 8px; cursor: pointer; transition: all 0.3s;"
+                        :style="exchangeType === 'fund' ? 'border-color: #d97706; background: #fef3c7;' : 'background: #fff;'"
+                    >
+                        <div style="font-size: 1.1rem;">💰</div>
+                        <div style="font-weight: 600; color: #333; font-size: 0.9rem;">基金</div>
+                        <div style="font-size: 0.7rem; color: #666;">倍率: 1.5+</div>
+                    </button>
+                </div>
             </div>
             
             <!-- 输入数量 -->
-            <div class="form-group">
-                <label>兑换星点数量</label>
+            <div class="form-group" style="margin-bottom: 12px;">
+                <label style="font-size: 0.9rem;">兑换星点数量</label>
                 <input 
                     type="number" 
                     x-model.number="exchangeAmount" 
@@ -1167,66 +1492,46 @@
                 />
             </div>
             
-            <!-- 镜像对比：等值对比 -->
-            <div x-show="exchangeAmount" style="margin-bottom: 15px;">
-                <h4 style="margin: 0 0 10px 0; font-size: 0.95rem; color: #333;">⚖️ 等值对比</h4>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                    <div style="background: #eff6ff; padding: 12px; border-radius: 8px; text-align: center;">
-                        <div style="font-size: 1.1rem; font-weight: bold; color: #3b82f6;">🎫 消费券</div>
-                        <div style="font-size: 0.85rem; color: #666;">立即可用</div>
-                        <div style="font-size: 1.3rem; font-weight: bold; color: #1e40af; margin-top: 5px;">
+            <!-- 等值对比 -->
+            <div x-show="exchangeAmount" style="margin-bottom: 12px;">
+                <h4 style="margin: 0 0 8px 0; font-size: 0.9rem; color: #333;">⚖️ 等值对比</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                    <div style="background: #eff6ff; padding: 10px; border-radius: 6px; text-align: center;">
+                        <div style="font-size: 0.9rem; font-weight: bold; color: #3b82f6;">消费券</div>
+                        <div style="font-size: 1.1rem; font-weight: bold; color: #1e40af;">
                             <span x-text="(exchangeAmount * config.coupon_rate).toFixed(2)"></span> 元
                         </div>
                     </div>
-                    <div style="background: #fef3c7; padding: 12px; border-radius: 8px; text-align: center;">
-                        <div style="font-size: 1.1rem; font-weight: bold; color: #d97706;">💰 基金</div>
-                        <div style="font-size: 0.85rem; color: #666;">锁定30天</div>
-                        <div style="font-size: 1.3rem; font-weight: bold; color: #92400e; margin-top: 5px;">
-                            <span x-text="(exchangeAmount * config.fund_base_rate * (1 + (status.fund_bonus || 0) / 100)).toFixed(2)"></span> 元
+                    <div style="background: #fef3c7; padding: 10px; border-radius: 6px; text-align: center;">
+                        <div style="font-size: 0.9rem; font-weight: bold; color: #d97706;">基金</div>
+                        <div style="font-size: 1.1rem; font-weight: bold; color: #92400e;">
+                            <span x-text="(exchangeAmount * (config.fund_base_rate + (config.fund_base_bonus || 0) + ((status.fund_bonus || 0) / 100))).toFixed(2)"></span> 元
                         </div>
                     </div>
                 </div>
             </div>
             
-            <!-- 镜像对比：时间维度延伸 -->
-            <div x-show="exchangeAmount" style="margin-bottom: 15px;">
-                <h4 style="margin: 0 0 10px 0; font-size: 0.95rem; color: #333;">⏰ 时间维度</h4>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                    <div style="background: #fef2f2; padding: 12px; border-radius: 8px;">
-                        <div style="font-size: 0.85rem; color: #666; margin-bottom: 5px;">🎫 消费券</div>
-                        <div style="font-size: 0.9rem; color: #dc2626;">即时消费，无增值</div>
-                    </div>
-                    <div style="background: #f0fdf4; padding: 12px; border-radius: 8px;">
-                        <div style="font-size: 0.85rem; color: #666; margin-bottom: 5px;">💰 基金</div>
-                        <div style="font-size: 0.9rem; color: #16a34a;">30天后可提取，预计增值 <span x-text="((status.fund_bonus || 0) + 50).toFixed(0)"></span>%</div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- 镜像对比：历史累计 -->
-            <div x-show="exchangeAmount" style="margin-bottom: 15px;">
-                <h4 style="margin: 0 0 10px 0; font-size: 0.95rem; color: #333;">📊 本月累计</h4>
-                <div style="background: #f8fafc; padding: 12px; border-radius: 8px;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                        <span style="color: #666;">本月消费支出</span>
+            <!-- 本月累计 -->
+            <div style="margin-bottom: 12px;">
+                <h4 style="margin: 0 0 8px 0; font-size: 0.9rem; color: #333;">📊 本月累计</h4>
+                <div style="background: #f8fafc; padding: 10px; border-radius: 6px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 0.85rem;">
+                        <span style="color: #666;">消费支出</span>
                         <span style="color: #dc2626; font-weight: 600;">-<span x-text="(status.consumption_loss_this_month || 0).toFixed(2)"></span> 元</span>
                     </div>
-                    <div style="display: flex; justify-content: space-between;">
-                        <span style="color: #666;">基金累计收益</span>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
+                        <span style="color: #666;">基金收益</span>
                         <span style="color: #16a34a; font-weight: 600;">+<span x-text="(status.fund_pool || 0).toFixed(2)"></span> 元</span>
                     </div>
                 </div>
             </div>
             
-            <!-- 当前路径选择 -->
-            <div x-show="status.exchange_path" style="margin-bottom: 15px; padding: 10px; background: #f0fdf4; border-radius: 8px;">
+            <!-- 当前选择 -->
+            <div style="margin-bottom: 15px; padding: 10px; background: #f8fafc; border-radius: 6px;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <span style="color: #666;">当前选择路径</span>
-                    <span style="font-weight: 600; color: #166534;">
-                        <span x-text="status.exchange_path === 'fund' ? '💰 基金' : '🎫 消费券'"></span>
-                        <span x-show="status.path_streak_weeks > 0" style="margin-left: 8px; font-size: 0.8rem; color: #3b82f6;">
-                            连续 <span x-text="status.path_streak_weeks"></span> 周
-                        </span>
+                    <span style="color: #666; font-size: 0.85rem;">当前选择路径</span>
+                    <span style="font-weight: 600; font-size: 0.9rem;" :style="exchangeType === 'fund' ? 'color: #d97706;' : 'color: #3b82f6;'">
+                        <span x-text="exchangeType === 'fund' ? '💰 基金' : '🎫 消费券'"></span>
                     </span>
                 </div>
             </div>
@@ -1267,7 +1572,8 @@
                     content_output_reward_max: 1000,
                     content_output_max_times: 5,
                     coupon_rate: 1.0,
-                    fund_base_rate: 1.5,
+                    fund_base_rate: 1.0,
+                    fund_base_bonus: 0.5,
                     custom_fund_name: "我的投资账户"
                 },
                 showNotification: false,
@@ -1277,6 +1583,8 @@
                 showExchangeModal: false,
                 exchangeType: 'coupon',
                 exchangeAmount: '',
+                showIncomeModal: false,
+                incomeRecords: [],
                 showEarned: false,
                 ui: {
                     editing: {
@@ -1390,6 +1698,24 @@
                         console.error('Failed to load tags:', error);
                     }
                 },
+                // ===== 获取记录 =====
+                showIncomeModal: false,
+                incomeRecords: [],
+                async openIncomeHistory() {
+                    try {
+                        const response = await fetch('/api/income/history');
+                        if (response.ok) {
+                            const data = await response.json();
+                            this.incomeRecords = data.records || [];
+                            this.showIncomeModal = true;
+                        }
+                    } catch (error) {
+                        console.error('Failed to load income records:', error);
+                    }
+                },
+                closeIncomeModal() {
+                    this.showIncomeModal = false;
+                },
                 get tagCloudData() {
                     return this._tagCloudData || {};
                 },
@@ -1415,6 +1741,17 @@
                 },
                 get sortedTags() {
                     return Object.entries(this.tagCloudData).sort((a, b) => b[1].count - a[1].count);
+                },
+                getSeasonEndDate() {
+                    if (this.status.current_season?.end_date) {
+                        return this.status.current_season.end_date;
+                    }
+                    if (!this.status.current_season?.start_date) {
+                        return '-';
+                    }
+                    const start = new Date(this.status.current_season.start_date);
+                    start.setDate(start.getDate() + 15);
+                    return start.toISOString().split('T')[0];
                 },
                 async openTagDetail(tag) {
                     try {
@@ -1511,6 +1848,21 @@
                     this.showExchangeModal = false;
                     this.exchangeAmount = '';
                 },
+                async openIncomeModal() {
+                    try {
+                        const response = await fetch('/api/income/history');
+                        if (response.ok) {
+                            const data = await response.json();
+                            this.incomeRecords = data.records || [];
+                            this.showIncomeModal = true;
+                        }
+                    } catch (error) {
+                        console.error('Failed to load income records:', error);
+                    }
+                },
+                closeIncomeModal() {
+                    this.showIncomeModal = false;
+                },
                 calculateRealValue() {
                     if (!this.exchangeAmount) return 0;
                     
@@ -1518,7 +1870,7 @@
                         return (this.exchangeAmount * this.config.coupon_rate).toFixed(2);
                     } else {
                         const bonus = this.status.fund_bonus / 100;
-                        return (this.exchangeAmount * this.config.fund_base_rate * (1 + bonus)).toFixed(2);
+                        return (this.exchangeAmount * (this.config.fund_base_rate + (this.config.fund_base_bonus || 0) + bonus)).toFixed(2);
                     }
                 },
                 async submitPublish() {
@@ -1565,11 +1917,11 @@
                     }
                     
                     try {
-                        const response = await fetch('/api/exchange', {
+                        const endpoint = this.exchangeType === 'fund' ? '/api/exchange/fund' : '/api/exchange/coupon';
+                        const response = await fetch(endpoint, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
-                                type: this.exchangeType,
                                 amount: this.exchangeAmount
                             })
                         });
@@ -1971,10 +2323,10 @@
     </script>
     
     <!-- 标签详情弹窗 -->
-    <div x-show="showTagModal" class="modal-overlay" @click.self="closeTagModal()">
+    <div x-show="showTagModal" style="display: none;" class="modal-overlay" @click.self="closeTagModal()">
         <div class="modal-content" style="max-width: 500px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <h3 style="margin: 0;">📋 {{ selectedTag }} 的笔记</h3>
+                <h3 style="margin: 0;">📋 <span x-text="selectedTag"></span> 的笔记</h3>
                 <button @click="closeTagModal()" class="btn-close">✕</button>
             </div>
             
@@ -1995,7 +2347,7 @@
     </div>
     
     <!-- 采集成功弹窗 -->
-    <div x-show="showCaptureSuccessModal" class="modal-overlay" @click.self="closeCaptureSuccessModal()">
+    <div x-show="showCaptureSuccessModal" style="display: none;" class="modal-overlay" @click.self="closeCaptureSuccessModal()">
         <div class="modal-content" style="max-width: 480px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h3 style="margin: 0; color: #667eea;">🎉 捕获成功</h3>
@@ -2080,7 +2432,7 @@
     </div>
     
     <!-- 长期推演弹窗 -->
-    <div x-show="showProjectionModal" class="modal-overlay" @click.self="closeProjectionModal()">
+    <div x-show="showProjectionModal" style="display: none;" class="modal-overlay" @click.self="closeProjectionModal()">
         <div class="modal-content" style="max-width: 600px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h3 style="margin: 0; color: #667eea;">🔮 6个月后的你</h3>
@@ -2124,7 +2476,7 @@
     </div>
     
     <!-- 赛季结算弹窗 -->
-    <div x-show="showSeasonSettlementModal" class="modal-overlay" @click.self="closeSeasonSettlementModal()">
+    <div x-show="showSeasonSettlementModal" style="display: none;" class="modal-overlay" @click.self="closeSeasonSettlementModal()">
         <div class="modal-content" style="max-width: 550px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h3 style="margin: 0; color: #f59e0b;">🏆 赛季更替</h3>
