@@ -664,9 +664,26 @@
                 font-size: 0.7rem;
             }
 
-            /* 兑换中心双列改为单列 */
+            /* 兑换中心双列改为单列，按钮缩小 */
             .card .exchange-grid {
                 grid-template-columns: 1fr !important;
+            }
+            .card .exchange-grid button {
+                font-size: 0.85rem !important;
+                padding: 10px 12px !important;
+            }
+
+            /* 媒体发布：输入框+按钮保持横排但缩小间距 */
+            .publish-row {
+                gap: 6px !important;
+            }
+            .publish-row input {
+                font-size: 0.8rem !important;
+                padding: 8px 10px !important;
+            }
+            .publish-row button {
+                font-size: 0.8rem !important;
+                padding: 8px 10px !important;
             }
 
             /* 仪表盘三列保留但缩小间距 */
@@ -873,23 +890,23 @@
                 <span style="font-size: 0.95rem;">发布进度: <span style="font-weight: 600; color: #667eea;" x-text="status.published_count"></span>/<span x-text="config.content_output_max_times"></span></span>
                 <span style="font-size: 0.85rem; color: #888;">奖励: <span style="color: #f5576c; font-weight: 600;" x-text="'+' + config.content_output_reward_min + '-' + config.content_output_reward_max + ' 星点/次'"></span></span>
             </div>
-            <div style="display: flex; gap: 10px;">
+            <div class="publish-row" style="display: flex; gap: 8px;">
                 <input 
                     type="text" 
                     x-model="publishUrl"
                     placeholder="输入发布链接地址..."
-                    style="flex: 1; padding: 12px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 0.95rem;"
+                    style="flex: 1; padding: 10px 12px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 0.85rem; min-width: 0;"
                 />
                 <button 
                     @click="submitPublish"
-                    style="padding: 12px 20px; border: none; border-radius: 10px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-weight: 600; font-size: 1rem; cursor: pointer; transition: transform 0.2s;"
+                    style="padding: 10px 14px; border: none; border-radius: 10px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: transform 0.2s; white-space: nowrap; flex-shrink: 0;"
                     onmouseover="this.style.transform='scale(1.02)'"
                     onmouseout="this.style.transform='scale(1)'"
                 >
                     提交发布
                 </button>
             </div>
-            <div style="font-size: 0.8rem; color: #888; margin-top: 8px;">
+            <div style="font-size: 0.75rem; color: #888; margin-top: 6px;">
                 每次发布可获得 <span style="color: #f5576c; font-weight: 600;" x-text="(config.publish_reward || 100) + ' 星点'"></span>，最多可获得 5 次奖励
             </div>
         </div>
@@ -898,34 +915,34 @@
             <h3>🔄 兑换中心</h3>
             <p style="font-size: 0.8rem; color: #64748b; margin-top: 0; margin-bottom: 15px;">选择消费券即时兑换或存入基金池获取更高倍率，连续选择同一路径可获得额外加成。</p>
             
-            <div class="exchange-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+            <div class="exchange-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
                 <div style="text-align: center;">
                     <button 
                         @click="openExchangeModal('coupon')"
-                        style="width: 100%; padding: 14px 20px; font-size: 1.1rem; font-weight: 600; border: none; border-radius: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;"
+                        style="width: 100%; padding: 10px 14px; font-size: 0.9rem; font-weight: 600; border: none; border-radius: 10px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; white-space: nowrap;"
                         onmouseover="this.style.transform='scale(1.02)'; this.style.boxShadow='0 4px 12px rgba(102, 126, 234, 0.4)'"
                         onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none'"
                     >
                         🎫 消费券兑换
                     </button>
-                    <div style="margin-top: 6px; font-size: 0.9rem; color: #666;">
+                    <div style="margin-top: 4px; font-size: 0.8rem; color: #666;">
                         1星点 = 1元
                     </div>
                 </div>
                 <div style="text-align: center;">
                     <button 
                         @click="openExchangeModal('fund')"
-                        style="width: 100%; padding: 14px 20px; font-size: 1.1rem; font-weight: 600; border: none; border-radius: 12px; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); color: white; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;"
+                        style="width: 100%; padding: 10px 14px; font-size: 0.9rem; font-weight: 600; border: none; border-radius: 10px; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); color: white; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; white-space: nowrap;"
                         onmouseover="this.style.transform='scale(1.02)'; this.style.boxShadow='0 4px 12px rgba(59, 130, 246, 0.4)'"
                         onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none'"
                     >
                         💰 基金充值
                     </button>
-                    <div style="margin-top: 6px; font-size: 0.9rem; color: #666;">
+                    <div style="margin-top: 4px; font-size: 0.8rem; color: #666;">
                         <div style="font-weight: 600; color: #333;">1星点 = <span x-text="(config.fund_base_rate + (config.fund_base_bonus || 0) + ((status.fund_bonus || 0) / 100)).toFixed(2)"></span>元</div>
-                        <div style="font-size: 0.8rem; color: #888;">基础: 1星点 = <span x-text="config.fund_base_rate"></span>元</div>
-                        <div style="font-size: 0.8rem; color: #888;">基金奖励: +<span x-text="((config.fund_base_bonus || 0) * 100).toFixed(0)"></span>%</div>
-                        <div style="font-size: 0.8rem; color: #888;">连续加成: +<span x-text="status.fund_bonus || 0"></span>%</div>
+                        <div style="font-size: 0.72rem; color: #888;">基础: 1星点 = <span x-text="config.fund_base_rate"></span>元</div>
+                        <div style="font-size: 0.72rem; color: #888;">基金奖励: +<span x-text="((config.fund_base_bonus || 0) * 100).toFixed(0)"></span>%</div>
+                        <div style="font-size: 0.72rem; color: #888;">连续加成: +<span x-text="status.fund_bonus || 0"></span>%</div>
                     </div>
                 </div>
             </div>
