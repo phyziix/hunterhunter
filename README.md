@@ -8,7 +8,7 @@
 python3 -m uvicorn main:app --host 0.0.0.0 --port 8003 --reload
 ```
 
-访问：http://localhost:8000
+访问：http://localhost:8003
 
 ## 技术栈
 
