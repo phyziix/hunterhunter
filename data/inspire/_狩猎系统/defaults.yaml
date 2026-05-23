@@ -20,8 +20,8 @@ coupon_rate: 1.0
 
 # 基金配置
 fund:
-  base_rate: 1.5
-  lock_days: 30
+  base_rate: 1.0
+  base_bonus: 0.5
   min_withdraw: 500
 
 # 自定义名称
@@ -36,21 +36,21 @@ streak_bonuses:
   - days: 90
     bonus_pct: 50
 
-# 路径选择奖惩
+# 路径选择奖惩（增量值，加减关系）
 path_bonuses:
   coupon:
-    - rate: 0.95
+    - rate: -0.05
       weeks: 2
-    - rate: 0.9
+    - rate: -0.1
       weeks: 4
-    - rate: 0.85
+    - rate: -0.15
       weeks: 8
   fund:
-    - rate: 1.55
+    - rate: 0.05
       weeks: 2
-    - rate: 1.6
+    - rate: 0.1
       weeks: 4
-    - rate: 1.65
+    - rate: 0.15
       weeks: 8
 
 # 星点里程碑系统 (v0.23)
@@ -121,7 +121,7 @@ medals:
 # 赛季配置
 seasons:
   auto_start: true
-  default_length_days: 90
+  default_length_days: 15
   themes:
     - id: pioneer
       name: "开拓者"
