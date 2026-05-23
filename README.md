@@ -5,7 +5,7 @@
 ## 快速启动
 
 ```bash
-python3 -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+python3 -m uvicorn main:app --host 0.0.0.0 --port 8003 --reload
 ```
 
 访问：http://localhost:8000
@@ -97,7 +97,7 @@ git push origin <DEV_BRANCH>
 
 > 以下是快速摘要。完整部署步骤、踩坑记录、数据流说明见 **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)**（新设备部署必读）。
 
-- 代码仓库 ≠ 运行目录，修改后需 `cp` 到 `<PRODUCTION>/v0.1/` 并重启
+- 代码仓库 ≠ 运行目录，修改后需 `cp` 到 `<PRODUCTION>/v0.2.4/` 并重启
 - launchd 守护：FastAPI 服务 + localtunnel 隧道，两个 plist
 - 公网：localtunnel（Cloudflare Tunnel 国内下载被墙）
 - `static/index.html` 需单独部署，忘拷首页 404
