@@ -325,6 +325,145 @@ seasons:
 | `config.yaml` | 运行时可调：倍率、阈值、汇率、解锁条件 | 编辑或 `/api/config` |
 | `state.json` | 运行时累积：用户实际数据 | 系统自动更新 |
 
+**读取顺序**：首次启动从 `defaults.yaml` 生成 `state.json`；迁移脚本从 `defaults.yaml` 读取默认值；运行时优先使用 `config.yaml`，缺失项回退到 `defaults.yaml`。
+
+---
+
+## 六、技术架构与工程约定
+
+### 6.1 Pydantic 数据模型
+
+当前 `state.json` 使用裸字典操作，后续将引入 Pydantic 模型实现类型安全：
+
+```python
+class TagNode(BaseModel):
+    count: int
+    first_seen: str
+
+class TagGraph(BaseModel):
+    nodes: Dict[str, TagNode] = {}
+    edges: Dict[str, int] = {}  # key: "tagA<->tagB", value: weight
+
+class AbilityState(BaseModel):
+    link_power: float = 0.0
+
+class SeasonState(BaseModel):
+    id: int = 0
+    name: str = "开拓者"
+    start_date: str = ""
+    end_date: str = ""
+    star_earned: float = 0.0
+    active_days: int = 0
+
+class GameState(BaseModel):
+    total_star: float = 0.0
+    available_star: float = 0.0
+    fund_pool: float = 0.0
+    streak_days: int = 0
+    active_days: int = 0
+    total_notes: int = 0
+    exchange_path: str = ""          # "coupon" / "fund"
+    path_streak_weeks: int = 0
+    fund_first_opened_at: Optional[str] = None
+    link_power_rewards_earned: List[int] = []
+    consumption_loss_this_month: float = 0.0
+    medals: List[str] = []
+    tag_graph: TagGraph = TagGraph()
+    abilities: AbilityState = AbilityState()
+    current_season: SeasonState = SeasonState()
+    season_history: List[SeasonState] = []
+    exchange_history: List[dict] = []
+    published_count: int = 0
+    completed_reports: int = 0
+    total_output_star: float = 0.0
+    cross_domain_notes_count: int = 0
+```
+
+**收益**：IDE 自动补全、类型检查、重构安全。
+
+---
+
+### 6.2 engine.py 拆解计划
+
+当前 `engine.py` 承担多类职责，计划拆分为：
+
+```
+app/
+├── engine.py          # 核心调度器：状态加载/保存、模块协调
+├── capture.py         # 灵感采集：_calculate_stars、process_daily_capture
+├── exchange.py        # 兑换逻辑：exchange、_calculate_exchange_rate
+├── connection.py      # 连接力：_calculate_link_power、_update_tag_graph
+├── season.py          # 赛季管理：_init_season、_settle_season
+├── migration.py       # 数据迁移：_migrate_state_v022
+├── review.py          # 回顾与战报：generate_weekly_review
+├── projection.py      # 长期推演：calculate_long_term_projection
+└── models.py          # Pydantic 数据模型
+```
+
+**拆解时机**：所有 v0.24 功能稳定后、Phase 8 之前，预计工期 1-2 天。
+
+---
+
+### 6.3 前端组件化方向
+
+```
+static/
+├── index.html          # 主入口 + Alpine.js 全局状态
+├── js/
+│   ├── capture.js      # 采集模块
+│   ├── exchange.js     # 兑换模块
+│   ├── tagcloud.js     # 标签云组件
+│   ├── season.js       # 赛季面板
+│   └── dashboard.js    # 仪表盘
+└── css/
+    └── main.css        # 独立样式
+```
+
+**Tab 导航**：Phase 8 实现，使用 Alpine.js `x-show` 切换。
+
+---
+
+### 6.4 API 端点规范
+
+| 端点 | 方法 | 状态 | 说明 |
+|------|------|------|------|
+| `/api/status` | GET | ✅ | 获取当前状态 |
+| `/api/capture` | POST | ✅ | 采集灵感 |
+| `/api/exchange` | POST | ✅ | 星点兑换 |
+| `/api/exchange/path` | POST | ✅ | 设置兑换路径 |
+| `/api/publish` | POST | ✅ | 内容发布 |
+| `/api/review/{type}` | POST | ✅ | 生成回顾 |
+| `/api/projection` | GET | ✅ | 长期推演 |
+| `/api/tags` | GET | ✅ | 获取标签数据 |
+| `/api/medals` | GET | ✅ | 获取勋章数据 |
+| `/api/season/check` | POST | ✅ | 检查赛季结束 |
+| `/api/season/status` | GET | ✅ | 获取赛季状态 |
+| `/api/config` | GET/PUT | ✅ | 获取/更新配置 |
+| `/api/reset` | POST | ✅ | 重置数据 |
+| `/api/version` | GET | ✅ | 获取版本信息 |
+
+---
+
+### 6.5 state.json 关键字段
+
+| 字段 | 类型 | 用途 | 状态 |
+|------|------|------|------|
+| `total_star` | float | 累计星点 | ✅ 使用中 |
+| `available_star` | float | 可用星点 | ✅ 使用中 |
+| `fund_pool` | float | 基金池 | ✅ 使用中 |
+| `streak_days` | int | 连续天数 | ✅ 使用中 |
+| `active_days` | int | 活跃天数 | ✅ 使用中 |
+| `total_notes` | int | 总笔记数 | ✅ 使用中 |
+| `exchange_path` | str | 当前兑换路径 | ✅ 使用中 |
+| `path_streak_weeks` | int | 路径连续周数 | ✅ 使用中 |
+| `tag_graph` | dict | 标签共现图 | ✅ 使用中 |
+| `abilities` | dict | 能力值状态 | ✅ 使用中 |
+| `current_season` | dict | 当前赛季 | ✅ 使用中 |
+| `season_history` | list | 赛季历史 | ✅ 使用中 |
+| `medals` | list | 已获得勋章 | ✅ 使用中 |
+| `penalty_active` | bool | 惩罚激活（废弃） | ⚠️ 保留 |
+| `penalty_days` | int | 惩罚天数（废弃） | ⚠️ 保留 |
+
 ---
 
 > **版本**：v0.24
