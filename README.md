@@ -8,33 +8,38 @@
 python3 -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-访问地址：http://localhost:8000
+访问：http://localhost:8000
 
-## 文档索引
+## 技术栈
 
-- `PHILOSOPHY.md` - 底层心理机制：对抗与诱导（只读）
-- `PRODUCT.md` - 产品规格说明书（开发唯一依据）
-- `TECH.md` - 技术实现规格（数据结构 + API + 前端组件）
-- `ROADMAP.md` - 实施路径与开发进度
-- `CHANGELOG.md` - 版本变更历史
-- `DEPLOYMENT.md` - 生产环境部署配置（launchd + localtunnel）
+- 前端：Alpine.js
+- 后端：FastAPI + uvicorn
+- 存储：Markdown(灵感) + YAML(配置) + JSON(状态)
+- 仓库：https://github.com/phyziix/hunterhunter
+
+## 文档
+
+| 文件 | 用途 |
+|------|------|
+| `docs/PHILOSOPHY.md` | 设计理念与心理机制（只读） |
+| `docs/CHANGELOG.md` | 版本发展脉络（AI 接手必读） |
+| `docs/STATUS.md` | 当前进度与下一步计划 |
 
 ## 配置文件
 
-| 文件 | 位置 | 用途 |
-|------|------|------|
-| `VERSION` | 根目录 | 项目版本号（唯一来源，部署时自增） |
-| `config.yaml` | `data/inspire/_狩猎系统/config.yaml` | 运行时可调参数（倍率、阈值、勋章、赛季） |
-| `defaults.yaml` | `data/inspire/_狩猎系统/defaults.yaml` | 默认配置模板（重置时参考） |
-| `state.json` | `data/inspire/_狩猎系统/state.json` | 游戏运行时状态 |
-| `DEPLOYMENT.md` | `docs/DEPLOYMENT.md` | 生产部署步骤（launchd 守护 + localtunnel 隧道） |
+| 文件 | 用途 |
+|------|------|
+| `VERSION` | 版本号（纯数字单行，如 `0.2.4`） |
+| `data/inspire/_狩猎系统/config.yaml` | 运行时参数（倍率/阈值/勋章/赛季） |
+| `data/inspire/_狩猎系统/defaults.yaml` | 默认配置模板（重置时参考） |
+| `data/inspire/_狩猎系统/state.json` | 运行时状态（系统自动维护） |
 
 ## 版本管理
 
-项目版本号存储在根目录 `VERSION` 文件，纯数字单行（如 `0.2.4`）。`main.py` 启动时自动读取，可通过 `GET /api/version` 查询。版本历史详见 `docs/CHANGELOG.md`。
+版本号在 `VERSION` 文件，纯数字单行。`main.py` 启动时自动读取。版本历史和分支对应关系见 `docs/CHANGELOG.md`。
 
 ```bash
-# 发布新版本（将 X.Y.Z 替换为实际版本号，<DEV_BRANCH> 替换为当前开发分支名）
+# 发布新版本（<DEV_BRANCH> 替换为当前开发分支）
 echo "X.Y.Z" > VERSION
 git add VERSION
 git commit -m "release: vX.Y.Z"
@@ -42,57 +47,106 @@ git tag -a vX.Y.Z -m "vX.Y.Z 上线"
 git push origin <DEV_BRANCH> --tags
 ```
 
-## 部署方式
-
-- **开发模式**: `python3 -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload`
-- **生产模式**: launchd 管理 FastAPI 进程（端口 8002），通过 localtunnel 暴露公网地址
-- **公网访问**: `https://<YOUR_SUBDOMAIN>.loca.lt`（首次访问需验证 IP）
-- **详细配置**: 见 [DEPLOYMENT.md](docs/DEPLOYMENT.md)
-
-## 技术栈
-
-- **前端**：Alpine.js
-- **后端**：FastAPI
-- **存储**：Markdown / JSON / YAML
-
-## GitHub
-
-仓库地址：https://github.com/phyziix/hunterhunter
-
-### 分支管理
+## 分支管理
 
 ```
 main ─── 稳定发布版（仅合入稳定版本）
-  └── <DEV_BRANCH> ─── 当前开发分支（活跃开发）
+  └── <DEV_BRANCH> ─── 当前开发分支
 ```
 
-> 当前开发分支名见 `VERSION` 文件对应关系（如 `0.2.4` → `v0.24`，在 `docs/CHANGELOG.md` 版本速览中可查）。
+| 分支 | 用途 |
+|------|------|
+| `main` | 稳定发布版，仅合入完整版本 |
+| `<DEV_BRANCH>` | 活跃开发分支（当前所有工作在此） |
+| `tag: vX.Y.Z` | 版本存档 |
 
-| 分支 | 用途 | 说明 |
-|------|------|------|
-| `main` | 稳定发布版 | 仅合入完整的稳定版本，由维护者手动合并 |
-| `<DEV_BRANCH>` | **活跃开发分支** | ✅ 当前所有开发工作在此分支进行 |
-| `tag: vX.Y.Z` | 版本存档 | 历史版本的 Git 标记点 |
-
-### 跨终端开发操作指南
+### 日常操作
 
 ```bash
-# === 首次克隆（新设备上） ===
 git clone git@github.com:phyziix/hunterhunter.git
 cd hunterhunter
-git checkout <DEV_BRANCH>    # 切换到开发分支
+git checkout <DEV_BRANCH>
 
-# === 日常开发（每天开始时） ===
-git pull origin <DEV_BRANCH> # 拉取最新代码
+# 每天开始
+git pull origin <DEV_BRANCH>
 
-# === 提交代码（每天结束时） ===
+# 每天结束
 git add -A
-git commit -m "feat: 说明改了什么"
-git push origin <DEV_BRANCH> # 推送到开发分支
+git commit -m "feat: 说明"
+git push origin <DEV_BRANCH>
 
-# === ❌ 不要这样做 ===
-git push                     # 可能推错分支
-git push origin main         # main 只合入稳定版本
+# ❌ 不要 git push origin main——main 只合入稳定版本
 ```
 
-**核心规则**：所有操作明确指定 `origin <DEV_BRANCH>`，避免误操作 main 分支。`<DEV_BRANCH>` 替换为当前开发分支名。
+## 生产部署
+
+### 目录结构
+
+```
+<PRODUCTION>/v0.1/          # 生产运行目录（与 workspace 分离）
+├── main.py
+├── engine.py
+├── static/index.html
+├── venv/                   # Python 虚拟环境
+├── data/inspire/
+│   ├── Inbox/              # 灵感文件 *.md
+│   └── _狩猎系统/          # 状态/配置
+└── logs/
+```
+
+**重要**：代码仓库 ≠ 运行目录。修改在 workspace 下进行，改完 cp 到 production 并重启。
+
+### 初始化
+
+```bash
+mkdir -p <PRODUCTION>/v0.1
+cp main.py engine.py requirements.txt <PRODUCTION>/v0.1/
+cp -R static/ <PRODUCTION>/v0.1/static/
+python3 -m venv <PRODUCTION>/v0.1/venv
+<PRODUCTION>/v0.1/venv/bin/pip install -r requirements.txt
+mkdir -p <PRODUCTION>/v0.1/data/inspire/Inbox
+mkdir -p <PRODUCTION>/v0.1/data/inspire/_狩猎系统
+mkdir -p <PRODUCTION>/v0.1/logs
+```
+
+### launchd 守护（开机自启）
+
+FastAPI 服务 plist：`~/Library/LaunchAgents/<BUNDLE_ID>.hunterhunter-v0.1.plist`
+
+localtunnel 隧道 plist：`~/Library/LaunchAgents/com.hunterhunter.tunnel.plist`
+
+### localtunnel 公网访问
+
+```bash
+npm install -g localtunnel --registry=https://registry.npmmirror.com
+lt --port 8002 --subdomain <YOUR_SUBDOMAIN>
+# 外网地址：https://<YOUR_SUBDOMAIN>.loca.lt
+```
+
+原因：Cloudflare Tunnel 因国内 GitHub 下载链路被墙，改用 localtunnel。
+
+### 常用命令
+
+```bash
+# 进程管理
+launchctl list | grep hunterhunter
+launchctl unload ~/Library/LaunchAgents/<BUNDLE_ID>.hunterhunter-v0.1.plist
+launchctl load ~/Library/LaunchAgents/<BUNDLE_ID>.hunterhunter-v0.1.plist
+
+# 日志
+tail -f <PRODUCTION>/v0.1/logs/stdout.log
+
+# 健康检查
+curl http://localhost:8002/api/status
+
+# iCloud 同步
+curl -X POST http://localhost:8002/api/sync/icloud
+```
+
+### 踩坑速记
+
+- 修改代码后需 `cp` 到 production 并重启，workspace 下的修改不直接生效
+- `static/index.html` 需单独部署，忘拷会导致首页 404
+- launchd 默认 PATH 不含 npm 全局 bin，tunnel.sh 需显式设置 PATH
+- localtunnel 首次访问需验证服务器公网 IP（反滥用机制，每 7 天一次）
+- iCloud 同步有数秒~数十秒延迟（macOS iCloud Drive 守护进程上传），属正常
