@@ -150,6 +150,8 @@ class HuntingEngine:
     def _write_default_state(self):
         today = datetime.now().strftime("%Y-%m-%d")
         default_state = {
+            "version": "0.24",  # v0.24 新增：版本号字段，用于数据迁移
+            
             "total_star": 0.0,
             "today_count": 0,
             "last_capture_date": "",
@@ -404,16 +406,44 @@ class HuntingEngine:
         return newly_earned_rewards
     
     def _load_config(self):
+        # v0.24 预留：配置合并逻辑
+        # 读取用户 config.yaml
         with open(self.config_file, 'r', encoding='utf-8') as f:
-            self.config = yaml.safe_load(f)
+            config = yaml.safe_load(f)
+        
+        # v0.25 将从 defaults.yaml 补全缺失配置项
+        # defaults = yaml.safe_load(open(defaults_path))
+        # for key, value in defaults.items():
+        #     config.setdefault(key, value)
+        
+        self.config = config
         
         # 确保 fund_base_rate 字段存在（兼容配置结构）
         if 'fund' in self.config and 'base_rate' in self.config['fund']:
             self.config['fund_base_rate'] = self.config['fund']['base_rate']
     
+    def _get_data_path(self, relative_path=""):
+        """v0.24 预留：数据路径解析函数"""
+        # 读取配置中的数据根路径，默认为 "./data/inspire"
+        data_root = self.config.get('data_root', "./data/inspire")
+        if relative_path:
+            return os.path.join(data_root, relative_path)
+        return data_root
+    
     def _load_state(self):
         with open(self.state_file, 'r', encoding='utf-8') as f:
-            self.state = json.load(f)
+            raw = json.load(f)
+        
+        # v0.24 预留：迁移链骨架
+        version = raw.get("version", "0.1")
+        
+        # v0.25 在此处插入迁移链
+        # if version == "0.1": self._migrate_v01_to_v02(raw); version = "0.2"
+        # if version == "0.2": self._migrate_v02_to_v024(raw); version = "0.24"
+        # if version == "0.24": self._migrate_v024_to_v025(raw); version = "0.25"
+        
+        raw["version"] = version
+        self.state = raw
     
     def _save_state(self):
         with self.lock:

@@ -1,6 +1,9 @@
 # 默认初始值配置文件
 # 用于首次启动和重置时初始化状态
 
+# 数据根路径 (v0.24 预留)
+data_root: "./data/inspire"
+
 # 基础配置
 base_star: 10
 daily_multipliers:

@@ -1,3 +1,7 @@
+# 数据根路径 (v0.24 预留)
+# v0.25 将支持用户自定义数据目录
+data_root: "./data/inspire"
+
 # 赛季星点限制 (v0.24)
 season_star_cap: 3000
 season_soft_reset_ratio: 0.5
