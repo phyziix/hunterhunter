@@ -69,7 +69,7 @@
 ```bash
 git clone <REPO_URL> <WORKSPACE>/hunterhunter
 cd <WORKSPACE>/hunterhunter
-git checkout v0.2    # 或其他目标分支
+git checkout <目标分支>    # 如 v0.24
 ```
 
 ### 2. 建立运行目录

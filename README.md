@@ -13,7 +13,7 @@ python3 -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ## 文档索引
 
 - `PHILOSOPHY.md` - 底层心理机制：对抗与诱导（只读）
-- `PRODUCT.md` - 产品规格说明书（v0.24，开发唯一依据）
+- `PRODUCT.md` - 产品规格说明书（开发唯一依据）
 - `TECH.md` - 技术实现规格（数据结构 + API + 前端组件）
 - `ROADMAP.md` - 实施路径与开发进度
 - `CHANGELOG.md` - 版本变更历史
@@ -31,15 +31,15 @@ python3 -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 
 ## 版本管理
 
-项目版本号存储在根目录 `VERSION` 文件，格式 `大版本.中版本.小版本`（如 `0.2.0`）。main.py 启动时自动读取，可通过 `GET /api/version` 查询。
+项目版本号存储在根目录 `VERSION` 文件，纯数字单行（如 `0.2.4`）。`main.py` 启动时自动读取，可通过 `GET /api/version` 查询。版本历史详见 `docs/CHANGELOG.md`。
 
 ```bash
-# 发布新版本
-echo "0.2.1" > VERSION
+# 发布新版本（将 X.Y.Z 替换为实际版本号，<DEV_BRANCH> 替换为当前开发分支名）
+echo "X.Y.Z" > VERSION
 git add VERSION
-git commit -m "release: v0.2.1"
-git tag -a v0.2.1 -m "v0.2.1 上线"
-git push origin v0.24 --tags
+git commit -m "release: vX.Y.Z"
+git tag -a vX.Y.Z -m "vX.Y.Z 上线"
+git push origin <DEV_BRANCH> --tags
 ```
 
 ## 部署方式
@@ -63,14 +63,16 @@ git push origin v0.24 --tags
 
 ```
 main ─── 稳定发布版（仅合入稳定版本）
-  └── v0.24 ─── 当前开发分支（活跃开发）← 我们在这里
+  └── <DEV_BRANCH> ─── 当前开发分支（活跃开发）
 ```
+
+> 当前开发分支名见 `VERSION` 文件对应关系（如 `0.2.4` → `v0.24`，在 `docs/CHANGELOG.md` 版本速览中可查）。
 
 | 分支 | 用途 | 说明 |
 |------|------|------|
 | `main` | 稳定发布版 | 仅合入完整的稳定版本，由维护者手动合并 |
-| `v0.24` | **活跃开发分支** | ✅ 当前所有开发工作在此分支进行 |
-| `tag: v0.1` | 历史版本存档 | v0.1 初始版本的标记点 |
+| `<DEV_BRANCH>` | **活跃开发分支** | ✅ 当前所有开发工作在此分支进行 |
+| `tag: vX.Y.Z` | 版本存档 | 历史版本的 Git 标记点 |
 
 ### 跨终端开发操作指南
 
@@ -78,19 +80,19 @@ main ─── 稳定发布版（仅合入稳定版本）
 # === 首次克隆（新设备上） ===
 git clone git@github.com:phyziix/hunterhunter.git
 cd hunterhunter
-git checkout v0.24         # 切换到开发分支
+git checkout <DEV_BRANCH>    # 切换到开发分支
 
 # === 日常开发（每天开始时） ===
-git pull origin v0.24      # 拉取最新代码
+git pull origin <DEV_BRANCH> # 拉取最新代码
 
 # === 提交代码（每天结束时） ===
 git add -A
 git commit -m "feat: 说明改了什么"
-git push origin v0.24      # 推送到 v0.24
+git push origin <DEV_BRANCH> # 推送到开发分支
 
 # === ❌ 不要这样做 ===
-git push                   # 如果不在 v0.24 分支上，可能推错
-git push origin main       # 不要直接推 main，main 只合入稳定版本
+git push                     # 可能推错分支
+git push origin main         # main 只合入稳定版本
 ```
 
-**核心规则：始终在 `v0.24` 分支上操作。** push 和 pull 都明确指定 `origin v0.24`，避免误操作 main 分支。
+**核心规则**：所有操作明确指定 `origin <DEV_BRANCH>`，避免误操作 main 分支。`<DEV_BRANCH>` 替换为当前开发分支名。

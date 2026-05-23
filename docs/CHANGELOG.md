@@ -4,6 +4,19 @@
 
 ---
 
+## 版本速览
+
+| 版本号 | 分支 | 日期 | 主要变更 |
+|--------|------|------|----------|
+| 0.2.4 | v0.24 | 2026-05-23 | 基金池系统重构、动态锁定、获取记录功能、UI改进 |
+| 0.2.3 | v0.23 | 2026-05-21 | 新增星点里程碑系统、连接力奖励、跨界采集加成、赛季星点上限 |
+| 0.2.2 | v0.22 | 2026-05-20 | 三层反馈体系、赛季系统、连续加成、兑换系统重构 |
+| 0.2.1 | v0.21 | 2026-05-19 | 能力值系统、标签宇宙、勋章配置表驱动 |
+| 0.2.0 | v0.2  | 2026-05-18 | Phase 1 数据结构迁移、基金池分离、废除惩罚机制 |
+| 0.1.0 | v0.1  | 2026-05-17 | 初始版本：灵感采集、任务奖励、兑换系统、勋章系统 |
+
+---
+
 ## v0.24（2026-05-23）
 
 ### 灵感捕获：正文标签提取
@@ -135,11 +148,11 @@
 - **赛季主题标注**：连线大师/深度矿工/分享者标注为 v0.3 延展，当前版本仅使用开拓者主题
 
 **涉及文件**：
-- `docs/02-PRODUCT.MD.md` — 第二章全文替换 + 1.1 新增跨界规则 + 赛季章节修改 + 配置参数节更新
+- `docs/PRODUCT.md` — 第二章全文替换 + 1.1 新增跨界规则 + 赛季章节修改 + 配置参数节更新
 - `data/inspire/_狩猎系统/config.yaml` — 替换 `ability_thresholds` 为 `star_milestones` + `link_power_rewards` + `cross_domain_bonus` + `season_star_cap`/`season_soft_reset_ratio`；赛季主题添加 v0.3 注释
 - `data/inspire/_狩猎系统/defaults.yaml` — 同步上述配置更新
-- `docs/04-ROADMAP.md` — Phase 2 任务清单更新 + 新增 v0.3 规划条目
-- `docs/05-CHANGELOG.md` — 本条目
+- `docs/ROADMAP.md` — Phase 2 任务清单更新 + 新增 v0.3 规划条目
+- `docs/CHANGELOG.md` — 本条目
 - `engine.py` — `_write_default_config()` 同步替换旧 `ability_thresholds` 为新 v0.23 参数（star_milestones/link_power_rewards/cross_domain_bonus/season_star_cap/season_soft_reset_ratio），赛季主题添加 v0.3 注释
 
 ### 旧能力值代码清理（2026-05-22）
@@ -156,8 +169,8 @@
   - `migrate_state.py` — abilities 默认值同步
   - `data/inspire/_狩猎系统/config.yaml` — 移除 hunt_apprentice 勋章
   - `data/inspire/_狩猎系统/defaults.yaml` — 移除 hunt_apprentice 勋章
-  - `docs/03-TECH.md` — 状态结构、API 响应、配置段、函数签名同步更新
-  - `docs/02-PRODUCT.MD.md` — 勋章配置示例移除 hunt_apprentice
+  - `docs/TECH.md` — 状态结构、API 响应、配置段、函数签名同步更新
+  - `docs/PRODUCT.md` — 勋章配置示例移除 hunt_apprentice
 
 ---
 
@@ -165,7 +178,7 @@
 
 ### PRD 合规检查（2026-05-22）
 
-对 v0.22 实现与 `docs/02-PRODUCT.MD.md` 进行逐项对比，共发现 **5 个问题**（原 8 个，内容投资券已取消）：
+对 v0.22 实现与 `docs/PRODUCT.md` 进行逐项对比，共发现 **5 个问题**（原 8 个，内容投资券已取消）：
 
 | # | 严重度 | 问题 | 状态 |
 |---|--------|------|------|
@@ -175,14 +188,14 @@
 | 4 | 🟡 校验缺失 | 标签必填未校验，允许提交空标签采集 | ✅ 已修复（2026-05-22） |
 | 5 | 🟢 配置不同步 | `defaults.yaml` 勋章只有 4 个，`config.yaml` 有 6 个 | ✅ 已修复（2026-05-22） |
 
-完整对比详见 `docs/02-PRODUCT.MD.md` 与 `docs/04-ROADMAP.md`。
+完整对比详见 `docs/PRODUCT.md` 与 `docs/ROADMAP.md`。
 
 ### 文档更新（2026-05-22）
 
 - **移除「内容投资券」**：从以下 6 个文件中删除输出力 ≥ 10 解锁内容投资券的定义
-  - `docs/02-PRODUCT.MD.md` — 能力值解锁表 + 配置参数节
-  - `docs/03-TECH.md` — output_power 阈值配置
-  - `docs/04-ROADMAP.md` — Phase 2 任务清单
+  - `docs/PRODUCT.md` — 能力值解锁表 + 配置参数节
+  - `docs/TECH.md` — output_power 阈值配置
+  - `docs/ROADMAP.md` — Phase 2 任务清单
   - `data/inspire/_狩猎系统/defaults.yaml` — ability_thresholds.output_power
   - `data/inspire/_狩猎系统/config.yaml` — ability_thresholds.output_power
   - `engine.py` — 硬编码的默认 ability_thresholds
