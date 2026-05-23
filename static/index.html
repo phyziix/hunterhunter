@@ -1899,7 +1899,9 @@
                     // 匹配 #标签 格式：以#开头，后跟非空格、非标点的中文/英文/数字/斜杠
                     const tagPattern = /#[^\s.,;:!?，。；：！？、\n]+/g;
                     const matches = content.match(tagPattern) || [];
-                    const extracted = matches.map(t => t.replace(/^#/, '').trim());
+                    const extracted = matches
+                        .map(t => t.replace(/^#/, '').trim())
+                        .filter(t => t.length > 0 && t !== '#');
                     
                     // 去重 + 合并到现有标签（不替换，只追加）
                     const allTags = new Set([...this.captureForm.tags, ...extracted]);
