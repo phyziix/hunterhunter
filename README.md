@@ -39,7 +39,7 @@ echo "0.2.1" > VERSION
 git add VERSION
 git commit -m "release: v0.2.1"
 git tag -a v0.2.1 -m "v0.2.1 上线"
-git push origin v0.2 --tags
+git push origin v0.24 --tags
 ```
 
 ## 部署方式

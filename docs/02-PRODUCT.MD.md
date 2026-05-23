@@ -534,4 +534,4 @@ static/
 
 > **版本**：v0.24
 >
-> **关联文档**：`PHILOSOPHY.md`（为什么这样设计）、`TECH.md`（技术实现细节）、`ROADMAP.md`（开发进度）
+> **关联文档**：`PHILOSOPHY.md`（为什么这样设计）、`TECH.md`（技术实现细节）、`ROADMAP.md`（开发进度）、`DEPLOYMENT.md`（部署配置）
