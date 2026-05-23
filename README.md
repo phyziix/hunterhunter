@@ -25,6 +25,7 @@ python3 -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 | `docs/PRODUCT.md` | 产品需求文档（功能规格/配置参数/未来计划） |
 | `docs/CHANGELOG.md` | 版本发展脉络（AI 接手必读） |
 | `docs/STATUS.md` | 当前进度与下一步计划 |
+| `docs/AI_WORKFLOW.md` | AI 操作规则（文档维护/部署/调试/方法论） |
 | `docs/DEPLOYMENT.md` | 部署运维手册（踩坑记录/完整步骤） |
 
 ## 配置文件
