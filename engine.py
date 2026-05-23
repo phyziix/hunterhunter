@@ -124,41 +124,24 @@ class HuntingEngine:
                 ]
             },
             
-            # 星点里程碑系统 (v0.23)
-            "star_milestones": [
-                {"threshold": 500, "effect": "title_rising_star", "name": "初露锋芒"},
-                {"threshold": 1000, "effect": "daily_multiplier_4th_upgrade", "name": "采集效率提升"},
-                {"threshold": 2000, "effect": "output_reward_floor_850", "name": "输出保障"},
-                {"threshold": 3000, "effect": "fund_bonus_extra_5", "name": "兑换权益提升"}
-            ],
-            
-            # 连接力星点奖励 (v0.23)
+            # 连接力星点奖励 (v0.24)
             "link_power_rewards": [
                 {"threshold": 5, "reward": 50},
                 {"threshold": 20, "reward": 100},
                 {"threshold": 50, "reward": 200}
             ],
             
-            # 跨界采集加成 (v0.23)
+            # 跨界采集加成 (v0.24)
             "cross_domain_bonus": 5,
             
-            # 赛季星点限制 (v0.23)
+            # 赛季星点限制 (v0.24)
             "season_star_cap": 3000,
             "season_soft_reset_ratio": 0.5,
             
-            # 赛季配置
+            # 赛季配置 (v0.24)
             "seasons": {
-                "default_length_days": 90,
-                "auto_start": True,
-                "themes": [
-                    {"name": "开拓者", "id": "pioneer", "bonus": {}},
-                    # v0.3 延展，当前不激活
-                    {"name": "连线大师", "id": "connector", "bonus": {"cross_domain_bonus": 5}},
-                    # v0.3 延展，当前不激活
-                    {"name": "深度矿工", "id": "miner", "bonus": {"depth_bonus": 10}},
-                    # v0.3 延展，当前不激活
-                    {"name": "分享者", "id": "sharer", "bonus": {"publish_bonus": 100}}
-                ]
+                "default_length_days": 15,
+                "auto_start": True
             }
         }
         with open(self.config_file, 'w', encoding='utf-8') as f:
