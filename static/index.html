@@ -18,11 +18,13 @@
             min-height: 100vh;
             padding: 20px;
             color: #333;
+            overflow-x: hidden;
         }
 
         .container {
             max-width: 600px;
             margin: 0 auto;
+            overflow-x: hidden;
         }
 
         .header {
@@ -629,6 +631,85 @@
             color: #94a3b8;
             margin-top: 4px;
         }
+
+        /* ===== 移动端适配 ===== */
+        @media (max-width: 480px) {
+            body {
+                padding: 12px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .card {
+                padding: 14px;
+                border-radius: 12px;
+                margin-bottom: 12px;
+            }
+
+            .stats-grid {
+                gap: 8px;
+            }
+
+            .stat-card {
+                padding: 10px;
+            }
+
+            .stat-value {
+                font-size: 1.2rem;
+            }
+
+            .stat-label {
+                font-size: 0.7rem;
+            }
+
+            /* 兑换中心双列改为单列 */
+            .card .exchange-grid {
+                grid-template-columns: 1fr !important;
+            }
+
+            /* 仪表盘三列保留但缩小间距 */
+            .stats-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 6px;
+            }
+
+            .modal {
+                width: 90%;
+                max-width: 320px;
+                padding: 18px;
+            }
+
+            .modal-content {
+                width: 95%;
+                padding: 18px;
+                max-width: 340px;
+            }
+
+            .modal h3 {
+                font-size: 1.1rem;
+            }
+
+            .btn {
+                padding: 12px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 360px) {
+            body {
+                padding: 8px;
+            }
+
+            .card {
+                padding: 10px;
+            }
+
+            .header h1 {
+                font-size: 1.3rem;
+            }
+        }
     </style>
 </head>
 <body x-data="appData()" x-init="init()">
@@ -817,7 +898,7 @@
             <h3>🔄 兑换中心</h3>
             <p style="font-size: 0.8rem; color: #64748b; margin-top: 0; margin-bottom: 15px;">选择消费券即时兑换或存入基金池获取更高倍率，连续选择同一路径可获得额外加成。</p>
             
-            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+            <div class="exchange-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
                 <div style="text-align: center;">
                     <button 
                         @click="openExchangeModal('coupon')"
