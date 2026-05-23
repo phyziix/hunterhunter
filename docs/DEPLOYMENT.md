@@ -1,7 +1,7 @@
 # 部署与运维手册
 
-> 记录时间：2026-05-22
-> 状态：✅ v0.1 已生效 / 🔧 v0.2.4 开发中
+> 记录时间：2026-05-22 / 最后维护：2026-05-23
+> 状态：✅ v0.1 已下线 / ✅ v0.2.4 已上线 (8003端口)
 > 
 > 本文档是部署的唯一事实来源。README 的部署部分是摘要，这里才是完整步骤和踩坑记录。**新设备部署必读。**
 
@@ -30,7 +30,8 @@
 | 用途 | 路径 | 说明 |
 |------|------|------|
 | 代码仓库 | `<WORKSPACE>/hunterhunter/` | Git 管理，源码在此 |
-| 运行目录 | `<PRODUCTION>/v0.1/` | 实际服务运行位置，有独立 venv |
+| 运行目录 (当前) | `<PRODUCTION>/v0.2.4/` | **当前上线版本**，端口 8003 |
+| 运行目录 (旧版) | `<PRODUCTION>/v0.1/` | 已下线，端口 8002 |
 
 > **重要**：修改代码要在 `<WORKSPACE>` 下，改完后复制到 `<PRODUCTION>` 并重启服务才生效。
 
@@ -137,21 +138,24 @@ for file in sorted(self.inbox_folder.glob("灵感-*.md")):
 
 ### FastAPI 服务
 
-plist 文件：`~/Library/LaunchAgents/<BUNDLE_ID>.hunterhunter-v0.1.plist`
+plist 文件：`~/Library/LaunchAgents/<BUNDLE_ID>.hunterhunter-v<version>.plist`
 
-关键配置：
-- `WorkingDirectory`：`<PRODUCTION>/v0.1/`
-- `ProgramArguments`：`<PRODUCTION>/v0.1/venv/bin/python3 -m uvicorn main:app --host 0.0.0.0 --port 8002`
+当前 v0.2.4 关键配置：
+- `WorkingDirectory`：`<PRODUCTION>/v0.2.4/`
+- `ProgramArguments`：`<PRODUCTION>/v0.2.4/venv/bin/python3 -m uvicorn main:app --host 0.0.0.0 --port 8003`
 - `KeepAlive`：true
-- `StandardOutPath` / `StandardErrorPath`：`<PRODUCTION>/v0.1/logs/`
+- `StandardOutPath` / `StandardErrorPath`：`<PRODUCTION>/v0.2.4/logs/`
+
+旧版 v0.1 配置（已下线，仅供参考）：
+- 端口 8002，路径 `<PRODUCTION>/v0.1/`
 
 ### localtunnel 隧道
 
 plist 文件：`~/Library/LaunchAgents/com.hunterhunter.tunnel.plist`
 
 关键配置：
-- `WorkingDirectory`：`<PRODUCTION>/v0.1/`
-- `ProgramArguments`：`/bin/bash <PRODUCTION>/v0.1/tunnel.sh`
+- `WorkingDirectory`：`<PRODUCTION>/v0.2.4/`
+- `ProgramArguments`：`/bin/bash <PRODUCTION>/v0.2.4/tunnel.sh`
 - **必须在 tunnel.sh 中显式设置 PATH**（见踩坑 3）
 
 ---
@@ -160,7 +164,7 @@ plist 文件：`~/Library/LaunchAgents/com.hunterhunter.tunnel.plist`
 
 ```bash
 npm install -g localtunnel --registry=https://registry.npmmirror.com
-lt --port 8002 --subdomain <YOUR_SUBDOMAIN>
+lt --port 8003 --subdomain <YOUR_SUBDOMAIN>
 # 外网地址：https://<YOUR_SUBDOMAIN>.loca.lt
 ```
 
@@ -170,7 +174,7 @@ lt --port 8002 --subdomain <YOUR_SUBDOMAIN>
 
 部署后按顺序验证以下 5 项：
 
-- [ ] FastAPI 服务监听端口：`curl http://localhost:8002/api/status`
+- [ ] FastAPI 服务监听端口：`curl http://localhost:8003/api/status`
 - [ ] launchd 进程在跑：`launchctl list | grep hunterhunter`
 - [ ] localtunnel 进程在跑：`launchctl list | grep hunterhunter.tunnel`
 - [ ] 外网可访问首页：`https://<YOUR_SUBDOMAIN>.loca.lt/`
@@ -242,9 +246,9 @@ lt --port 8002 --subdomain <YOUR_SUBDOMAIN>
 # 查看所有相关进程
 launchctl list | grep hunterhunter
 
-# 重启 FastAPI 服务
-launchctl unload ~/Library/LaunchAgents/<BUNDLE_ID>.hunterhunter-v0.1.plist
-launchctl load ~/Library/LaunchAgents/<BUNDLE_ID>.hunterhunter-v0.1.plist
+# 重启 FastAPI 服务 (v0.2.4)
+launchctl unload ~/Library/LaunchAgents/<BUNDLE_ID>.hunterhunter-v0.2.4.plist
+launchctl load ~/Library/LaunchAgents/<BUNDLE_ID>.hunterhunter-v0.2.4.plist
 
 # 重启 tunnel
 launchctl unload ~/Library/LaunchAgents/com.hunterhunter.tunnel.plist
@@ -252,22 +256,22 @@ launchctl load ~/Library/LaunchAgents/com.hunterhunter.tunnel.plist
 
 # ===== 日志查看 =====
 
-tail -f <PRODUCTION>/v0.1/logs/stdout.log      # 服务日志
-tail -f <PRODUCTION>/v0.1/logs/tunnel.log       # tunnel 日志
+tail -f <PRODUCTION>/v0.2.4/logs/stdout.log      # 服务日志
+tail -f <PRODUCTION>/v0.2.4/logs/tunnel.log       # tunnel 日志
 
 # ===== 验证 =====
 
 # 本地服务健康检查
-curl http://localhost:8002/api/status
+curl http://localhost:8003/api/status
 
 # 手动触发 iCloud 同步
-curl -X POST http://localhost:8002/api/sync/icloud
+curl -X POST http://localhost:8003/api/sync/icloud
 
 # 手动触发备份
-curl -X POST http://localhost:8002/api/backup
+curl -X POST http://localhost:8003/api/backup
 
 # 查看备份列表
-curl http://localhost:8002/api/backup/list
+curl http://localhost:8003/api/backup/list
 ```
 
 ---
