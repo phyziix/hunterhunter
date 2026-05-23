@@ -21,7 +21,7 @@
 > 6. **数据迁移**（首次部署必须）：复制旧版数据 → 迁移 state.json → 替换 config.yaml（保留用户自定义字段）
 > 7. **启动 + 验证**：launchctl load → curl 版本号 + 关键 API + 前端关键字
 > 8. **切换隧道**（如端口有变）
-> 9. **维护部署文档**：部署完成后更新 `docs/DEPLOYMENT.md`（版本状态、端口、目录结构等如有变化），commit + push
+> 9. **维护文档**：先更新 `docs/DEPLOYMENT.md`（版本状态、端口、目录结构等），再执行「同步文档」规则（覆盖 CHANGELOG/PRODUCT/STATUS/README），最终 commit + push
 >
 > ⚠️ **调试规则**：用户说「调试」或贴了报错截图时，执行以下全部操作：
 > 1. **启动运行时环境**：`python3 main.py &` 启动后端 + `playwright-cli open` 打开浏览器
