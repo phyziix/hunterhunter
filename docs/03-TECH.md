@@ -63,12 +63,15 @@
     "monthly_report_done": { "type": "boolean", "description": "本月战报完成状态" },
     "completed_reports": { "type": "integer", "description": "已完成战报数" },
     "exchange_history": { "type": "array", "description": "兑换历史记录" },
-    "exchange_path": { "type": "string", "enum": ["coupon", "fund", ""], "description": "本周选择的兑换路径" },
+    "exchange_path": { "type": "string", "enum": ["coupon", "fund", ""], "description": "当前选择的兑换路径" },
     "fund_pool": { "type": "number", "description": "基金独立池星点数" },
+    "coupon_pool": { "type": "number", "description": "消费券兑换累计星点" },
     "available_star": { "type": "number", "description": "可自由支配星点数" },
     "consumption_loss_this_month": { "type": "number", "description": "本月消费损失累计" },
     "path_streak_weeks": { "type": "integer", "description": "当前路径连续选择周数" },
     "last_path_choice": { "type": "string", "format": "date", "description": "上次路径选择日期" },
+    "last_exchange_date": { "type": [ "string", "null" ], "format": "date", "description": "上次兑换日期，用于每日锁定校验" },
+    "star_income_history": { "type": "array", "description": "星点获取记录" },
     "published_count": { "type": "integer", "description": "内容输出发布次数" },
     "total_output_star": { "type": "number", "description": "内容输出总星点" },
     "abilities": {
@@ -146,10 +149,13 @@ completed_reports: 0
 exchange_history: []
 exchange_path: ""
 fund_pool: 0
+coupon_pool: 0
 available_star: 0
 consumption_loss_this_month: 0
 path_streak_weeks: 0
 last_path_choice: null
+last_exchange_date: null
+star_income_history: []
 published_count: 0
 total_output_star: 0
 abilities:
@@ -194,26 +200,26 @@ streak_bonuses:
 
 # 基金
 fund:
-  base_rate: 1.5
-  lock_days: 30
+  base_rate: 1.0
+  base_bonus: 0.5
   min_withdraw: 500
 
-# 连续选择奖惩
+# 连续选择奖惩（增量值，加减关系）
 path_bonuses:
   fund:
     - weeks: 2
-      rate: 1.55
+      rate: 0.05
     - weeks: 4
-      rate: 1.60
+      rate: 0.10
     - weeks: 8
-      rate: 1.65
+      rate: 0.15
   coupon:
     - weeks: 2
-      rate: 0.95
+      rate: -0.05
     - weeks: 4
-      rate: 0.90
+      rate: -0.10
     - weeks: 8
-      rate: 0.85
+      rate: -0.15
 
 # 星点里程碑配置 (v0.23)
 star_milestones:
