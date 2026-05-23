@@ -300,26 +300,35 @@
 
 | 版本 | 功能 | 状态 |
 |------|------|------|
-| v0.2.5 | 前端文件拆分：index.html CSS/JS 分离为 styles.css + app.js | ❌ |
-| v0.3 | 赛季主题系统（开拓者/连线大师/深度矿工/分享者） | ❌ |
+| v0.2.5 | （方案A）前端文件按语言分离：CSS→styles.css, JS→app.js，零逻辑改动 | ❌ |
+| v0.3 | 赛季主题系统 + （方案B）app.js 按模块拆分（capture/exchange/review） | ❌ |
 | v0.4 | 自定义挑战 | ❌ |
 | v0.5 | 能力值系统完整上线 - 星点里程碑档位制 + 能力面板前端展示 | ❌ |
 | Phase 8 | 前端 Tab 导航 | ❌ |
 | Phase 7.5 | engine.py 按功能拆分为子模块 | ❌ |
 
-**v0.2.5 前端拆分详情**：
+**v0.2.5 方案A：按语言分离（纯工程整理）**：
 - `index.html` 当前超 2200 行，单文件难以维护
 - `<style>...</style>` 全部提取到 `static/styles.css`
 - `<script>...</script>` 全部 JavaScript（含 `appData()` 等）提取到 `static/app.js`
 - `index.html` 仅保留 HTML 结构 + Alpine.js CDN + 外链 CSS/JS
+- **零逻辑改动**，纯剪切粘贴
 - 拆分后验证：Console 无报错，核心按钮可点击
 
-**v0.3 赛季主题系统详情**：
+**v0.3 赛季主题系统 + 方案B：app.js 按模块拆分**：
+
+**赛季主题**：
 - 每个赛季随机分配主题，赋予不同加成策略
 - 开拓者（pioneer）：基础主题，无特殊加成
 - 连线大师（connector）：跨界采集额外 +10 星点
 - 深度矿工（miner）：连接力奖励 ×120%
 - 分享者（sharer）：内容发布额外 +100 星点
+
+**方案B：app.js 按模块拆分**：
+- v0.2.5 已实现按语言分离（index.html / styles.css / app.js）
+- 进一步将 `app.js` 按功能拆为 `capture.js`、`exchange.js`、`review.js` 等
+- 需解决 Alpine.js `x-data` 作用域问题，涉及组件化调整
+- 此为架构级改动，不与业务功能耦合，独立排期
 
 **v0.4 自定义挑战详情**：
 - 用户自行设定挑战目标（如"一周采集10条"）和自定义奖励

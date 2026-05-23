@@ -37,8 +37,9 @@
 
 ### 暂缓
 - [ ] **Phase 8 Tab 导航**：前端 6 个 Tab(采集/概览/成长/标签/行动/规则)，Alpine.js x-show 切换
+- [ ] **v0.3 app.js 模块拆分**：capture.js / exchange.js / review.js，需解决 Alpine x-data 作用域
 
-> **未来版本详情**（v0.3 赛季主题 / v0.4 自定义挑战 / v0.5 能力面板）见 `docs/PRODUCT.md#三后续版本计划`。
+> **未来版本详情**（v0.3 赛季主题+模块拆分 / v0.4 自定义挑战 / v0.5 能力面板）见 `docs/PRODUCT.md#三后续版本计划`。
 
 ---
 
