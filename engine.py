@@ -4,6 +4,7 @@ import re
 import yaml
 import math
 import random
+import hashlib
 import logging
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -853,6 +854,14 @@ class HuntingEngine:
                 frontmatter_lines.append(f"{key}: {value}")
         frontmatter_lines.append("---")
         
+        # 保存原始内容用于去重和相似笔记匹配
+        original_content = content
+        
+        # 去重检测
+        dup_result = self._check_duplicate(original_content, folder_path)
+        if dup_result:
+            return dup_result
+        
         content = "\n".join(frontmatter_lines) + "\n\n" + content
         
         with open(folder_path / filename, 'w', encoding='utf-8') as f:
@@ -875,7 +884,7 @@ class HuntingEngine:
         self._save_state()
         
         # 查找相似笔记
-        related_notes = self._find_related_notes(tags, limit=3)
+        related_notes = self._find_related_notes(tags, content=original_content, limit=3)
         
         return {
             "earned": round(total_stars, 2),
@@ -906,8 +915,8 @@ class HuntingEngine:
         
         return new_connections
     
-    def _find_related_notes(self, tags, limit=3):
-        """查找相似笔记（基于标签重叠）"""
+    def _find_related_notes(self, tags, content="", limit=3):
+        """查找相似笔记（基于标签Jaccard + 内容相似度）"""
         related_notes = []
         inbox_folder = self.base_path / "Inbox"
         
@@ -915,16 +924,23 @@ class HuntingEngine:
             return related_notes
         
         tag_set = set([t.strip('#').lower() for t in tags if t.strip()])
+        if not tag_set:
+            return related_notes
+        
+        # 对输入内容做简单分词（中文2字词、英文3字母词）
+        input_words = set()
+        if content:
+            input_words = set(re.findall(r'[\u4e00-\u9fff]{2,}|[a-zA-Z]{3,}', content.lower()))
         
         for note_file in inbox_folder.glob("*.md"):
             try:
                 with open(note_file, 'r', encoding='utf-8') as f:
-                    content = f.read()
+                    note_content = f.read()
                 
-                if content.startswith("---"):
-                    end = content.find("\n---\n", 4)
+                if note_content.startswith("---"):
+                    end = note_content.find("\n---\n", 4)
                     if end != -1:
-                        frontmatter = content[4:end]
+                        frontmatter = note_content[4:end]
                         lines = frontmatter.split('\n')
                         note_tags = []
                         for line in lines:
@@ -939,34 +955,88 @@ class HuntingEngine:
                                 break
                         
                         note_tag_set = set([t.strip('#').lower() for t in note_tags if t.strip()])
-                        overlap = len(tag_set & note_tag_set)
+                        if not note_tag_set:
+                            continue
                         
-                        if overlap > 0:
-                            title = content[end+4:].strip().split('\n')[0][:30]
+                        overlap = len(tag_set & note_tag_set)
+                        # Jaccard 相似度
+                        tag_jaccard = overlap / len(tag_set | note_tag_set)
+                        
+                        # 内容相似度
+                        body = note_content[end+4:].strip()
+                        nl = body.find('\n')
+                        body = body[nl+1:].strip() if nl != -1 else ""
+                        note_words = set(re.findall(r'[\u4e00-\u9fff]{2,}|[a-zA-Z]{3,}', body[:300].lower()))
+                        all_words = input_words | note_words
+                        content_jaccard = len(input_words & note_words) / len(all_words) if all_words else 0
+                        
+                        # 综合得分
+                        score = tag_jaccard * 0.7 + content_jaccard * 0.3
+                        
+                        # 阈值：至少 2 个标签重叠 或 标签Jaccard >= 0.25
+                        if overlap >= 2 or tag_jaccard >= 0.25:
+                            title = body.split('\n')[0][:40] if body else ""
                             if not title:
                                 title = note_file.stem.replace("灵感-", "").split("-")[-1]
                             
-                            # 提取正文片段（去 frontmatter 后的前 120 字）
-                            body = ""
-                            if end != -1:
-                                body = content[end+4:].strip()
-                                # 跳过标题行
-                                nl = body.find('\n')
-                                body = body[nl+1:].strip() if nl != -1 else ""
-                            snippet = body[:120]
+                            snippet = body[:200]
                             
                             related_notes.append({
                                 "title": title,
-                                "date": note_file.stem.split("-")[1],
+                                "date": note_file.stem.split("-")[1] if "-" in note_file.stem else "",
                                 "file_path": str(note_file),
                                 "tag_overlap": overlap,
+                                "score": round(score, 2),
                                 "snippet": snippet
                             })
             except:
                 continue
         
-        related_notes.sort(key=lambda x: x["tag_overlap"], reverse=True)
+        related_notes.sort(key=lambda x: (x["tag_overlap"], x["score"]), reverse=True)
         return related_notes[:limit]
+    
+    def _check_duplicate(self, content, folder_path):
+        """检查是否与已有笔记重复"""
+        # 标准化内容：去除空白、取前200字做指纹
+        normalized = re.sub(r'\s+', '', content)[:200]
+        if len(normalized) < 20:
+            return None  # 太短不检查
+        
+        for note_file in folder_path.glob("*.md"):
+            try:
+                with open(note_file, 'r', encoding='utf-8') as f:
+                    existing = f.read()
+                
+                # 提取正文（跳过 frontmatter）
+                if existing.startswith("---"):
+                    end = existing.find("\n---\n", 4)
+                    if end != -1:
+                        existing_body = existing[end+4:].strip()
+                        # 跳过标题行
+                        nl = existing_body.find('\n')
+                        existing_body = existing_body[nl+1:].strip() if nl != -1 else existing_body
+                        existing_normalized = re.sub(r'\s+', '', existing_body)[:200]
+                        
+                        # 完全相同
+                        if normalized == existing_normalized:
+                            return {
+                                "error": "已存在相同内容的笔记，请勿重复提交",
+                                "detail": f"与 {note_file.name} 内容一致"
+                            }
+                        
+                        # 高相似度（>85% 逐字匹配）
+                        if len(normalized) > 40 and len(existing_normalized) > 40:
+                            min_len = min(len(normalized), len(existing_normalized))
+                            match_chars = sum(1 for i in range(min_len) if normalized[i] == existing_normalized[i])
+                            similarity = match_chars / min_len
+                            if similarity > 0.85:
+                                return {
+                                    "error": "存在高度相似的笔记，请检查是否重复提交",
+                                    "detail": f"与 {note_file.name} 相似度 {similarity:.0%}"
+                                }
+            except:
+                continue
+        return None
     
     def calculate_long_term_projection(self, days=180):
         """长期推演计算，基于当前速度预测未来状态"""
