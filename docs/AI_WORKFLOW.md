@@ -48,7 +48,7 @@
 > 6. **数据迁移**（首次部署必须）：复制旧版数据 → 迁移 state.json → 替换 config.yaml（保留用户自定义字段）
 > 7. **特征连续性检查**（首次部署必须）：对比上一版本的 feature set，确保没有功能遗漏。逐项验：旧版所有 API 端点是否存在、旧版所有后台线程是否启动、旧版外部文件（如 tunnel.sh / sync_to_icloud.py）是否随部署复制。**禁止假设"代码抄过来就行"——必须以 API curl + 进程检查做实际验证。**
 > 8. **启动 + 验证**：launchctl load → curl 版本号 + 关键 API + 前端关键字
-> 9. **切换隧道**（如端口有变）
+> 9. **重启隧道**（每次部署必须，否则 localtunnel 持续 503）：`launchctl unload ~/Library/LaunchAgents/com.hunterhunter.tunnel.plist; sleep 2; launchctl load ~/Library/LaunchAgents/com.hunterhunter.tunnel.plist`。验证：`launchctl list | grep tunnel` 确认进程在跑
 > 10. **维护文档**：先更新 `docs/DEPLOYMENT.md`（版本状态、端口、目录结构等），再执行「同步文档」规则（覆盖 CHANGELOG/PRODUCT/STATUS/README，该规则末尾已含 commit+push）
 
 > ⚠️ **调试规则**：用户说「调试」或贴了报错截图时，执行以下全部操作：
