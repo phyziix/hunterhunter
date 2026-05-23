@@ -303,12 +303,11 @@
 | 版本 | 功能 | 状态 |
 |------|------|------|
 | v0.2.5 | Bug 修复：兑换模块下线、重复提交检测/提示、标签提取过滤 `##`、相关灵感匹配规则优化 | 📋 |
-| v0.3 | 结构调整：兑换模块剥离（engine_exchange.py + feature flag）、采集+星点清理、前端精简 | 📋 |
-| v0.4 | CSS/JS 从 index.html 分离 + engine.py 子模块拆分 | ❌ |
-| v0.5 | 赛季主题系统 + app.js 按模块拆分 | ❌ |
-| v0.6 | 自定义挑战 | ❌ |
-| v0.7 | 能力值系统完整上线 | ❌ |
-| v0.8 | 前端 Tab 导航 | ❌ |
+| v0.3 | 结构调整：兑换模块剥离（engine_exchange.py + feature flag）、采集+星点清理、前端精简、HTML/CSS/JS 拆分、engine.py 子模块拆分 | 📋 |
+| v0.4 | 赛季主题系统 + app.js 按模块拆分 | ❌ |
+| v0.5 | 自定义挑战 | ❌ |
+| v0.6 | 能力值系统完整上线 | ❌ |
+| v0.7 | 前端 Tab 导航 | ❌ |
 
 **v0.2.5 修复详情**：
 - 兑换模块下线（feature flag 关闭前端入口和路由，代码不动；拆分并入 v0.3）
@@ -322,11 +321,8 @@
 - `main.py` 加 `ENABLE_EXCHANGE = False` 开关，关闭相关路由
 - 前端兑换板块由后端 API 返回的 `exchange_enabled` 字段控制显示
 - 聚焦采集去重 + 星点计算透明化 + 相似笔记体验完善
-
-**v0.4 前端文件拆分**：
-- `index.html` 超 2600 行，`<style>` 和 `<script>` 分到外链文件
+- index.html 超 2600 行，`<style>` → `styles.css`，`<script>` → `app.js`
 - engine.py 按功能拆分为子模块
-- 结构优化（模块边界清晰）比对文件组织（CSS→x.css）更优先
 
 ---
 
