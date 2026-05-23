@@ -62,13 +62,12 @@
 >    - **恢复时优先用备份**：先查 `~/Documents/hunterhunter_backups/` 有无可用备份 → 有则从备份恢复 → 没有再用 `git checkout`
 > 7. **⚠️ 禁止在调试端测试同步/备份**：`sync_to_icloud()` 和 `backup()` 操作的是 `self.base_path`（代码所在目录的 `data/inspire/`），在 workspace 调试端运行会污染 iCloud 和备份目录。同步/备份操作只能部署到生产环境后在生产端测试。
 
-> ⚠️ **方法论实验规则**：本项目同时是个人开发方法论实验。两阶段策略见 `docs/STATUS.md`「方法论实验」节。
+> ⚠️ **方法论实验规则**：本项目同时是个人开发方法论实验。当前阶段规则只管 hunterhunter，不做通用化；项目关闭时统一收割到 `METHODOLOGY.md`。
 > **AI 在以下场景主动提醒用户**（无需等用户下指令）：
 > 1. **建议固化规则**：同一跨会话操作出现 ≥3 次，或踩坑后找到明确解决方案时，主动问：
 >    "这个操作建议固化为规则，要加到 AI_WORKFLOW.md 吗？"
 > 2. **建议提炼通用模块**：当用户说"这个以后可能还会用到"，AI 主动记录到 `docs/PATTERNS.md`
 > 3. **方法论收获总结**：Phase 完成或新规则确立时，AI 主动问：
 >    "要往 CHANGELOG 追加方法论收获吗？"
-> 4. **⚠️ 不提前抽象**：当前阶段规则只服务 hunterhunter，不做通用化。项目关闭时统一收割到 `METHODOLOGY.md`。
 > 
 > 理念说明见 `docs/PHILOSOPHY.md` 第九节。

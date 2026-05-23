@@ -35,7 +35,7 @@ python3 -m uvicorn main:app --host 0.0.0.0 --port 8003 --reload
 
 | 文件 | 用途 |
 |------|------|
-| `VERSION` | 版本号（纯数字单行，如 `0.2.4`） |
+| `VERSION` | 版本号（纯数字单行，如 `0.2.5`） |
 | `data/inspire/_狩猎系统/config.yaml` | 运行时参数（倍率/阈值/勋章/赛季） |
 | `data/inspire/_狩猎系统/defaults.yaml` | 默认配置模板（重置时参考） |
 | `data/inspire/_狩猎系统/state.json` | 运行时状态（系统自动维护） |
@@ -44,7 +44,7 @@ python3 -m uvicorn main:app --host 0.0.0.0 --port 8003 --reload
 
 | 版本 | 主要变化 |
 |------|---------|
-| v0.2.5 | 🔜 兑换下线 + 结构优化（规划中） |
+| v0.2.5 | ✅ iCloud 同步补回、相似笔记算法升级、规则体系完善 |
 | v0.2.4 | 基金池重构、连接力奖励、赛季系统、星点里程碑 |
 | v0.2.0 | 能力值系统、标签宇宙、连续加成替代惩罚 |
 | v0.1.0 | 灵感采集、兑换、勋章 |
@@ -98,7 +98,7 @@ git push origin <DEV_BRANCH>
 
 > 以下是快速摘要。完整部署步骤、踩坑记录、数据流说明见 **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)**（新设备部署必读）。
 
-- 代码仓库 ≠ 运行目录，修改后需 `cp` 到 `<PRODUCTION>/v0.2.4/` 并重启
+- 代码仓库 ≠ 运行目录，修改后需 `cp` 到 `<PRODUCTION>/v0.2.5/` 并重启
 - launchd 守护：FastAPI 服务 + localtunnel 隧道，两个 plist
 - 公网：localtunnel（Cloudflare Tunnel 国内下载被墙）
 - `static/index.html` 需单独部署，忘拷首页 404

@@ -4,6 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from typing import List, Optional
 from engine import HuntingEngine
+from pathlib import Path
 import uvicorn
 import os
 
@@ -29,6 +30,9 @@ app.add_middleware(
 )
 
 engine = HuntingEngine()
+
+# 启动后台 iCloud 同步（每 5 分钟）
+engine.start_icloud_sync(interval=300)
 
 class CaptureRequest(BaseModel):
     content: str
@@ -61,7 +65,11 @@ async def capture(request: CaptureRequest):
             tags=request.tags,
             folder=request.folder
         )
+        if "error" in result:
+            raise HTTPException(status_code=400, detail=result["error"])
         return result
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -308,6 +316,52 @@ async def get_config():
 async def update_config(config: dict):
     try:
         return engine.update_config(config)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# ========== 备份与同步 API ==========
+
+@app.post("/api/backup")
+async def backup_data():
+    """备份 inspire 数据目录"""
+    try:
+        result = engine.backup()
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/backup/list")
+async def list_backups():
+    """列出所有备份"""
+    try:
+        backup_root = Path.home() / "Documents" / "hunterhunter_backups"
+        if not backup_root.exists():
+            return {"backups": []}
+        backups = sorted(backup_root.glob("inspire_backup_*"), reverse=True)
+        return {
+            "backups": [
+                {
+                    "name": b.name,
+                    "path": str(b),
+                    "size": sum(f.stat().st_size for f in b.rglob("*") if f.is_file()),
+                    "file_count": sum(1 for _ in b.rglob("*") if _.is_file())
+                }
+                for b in backups
+            ]
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/sync/icloud")
+async def sync_to_icloud():
+    """手动触发同步：本地 → iCloud Obsidian Vault（只写不删）"""
+    try:
+        result = engine.sync_to_icloud()
+        if not result["success"]:
+            raise HTTPException(status_code=500, detail=result.get("error", "同步失败"))
+        return result
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

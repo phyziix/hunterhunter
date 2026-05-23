@@ -1,10 +1,10 @@
 {
-  "total_star": 1100.0,
-  "today_count": 21,
-  "last_capture_date": "2026-05-22",
+  "total_star": 1291.0,
+  "today_count": 6,
+  "last_capture_date": "2026-05-24",
   "streak_days": 1,
-  "active_days": 1,
-  "total_notes": 21,
+  "active_days": 2,
+  "total_notes": 27,
   "penalty_active": false,
   "penalty_days": 0,
   "medals": [
@@ -66,20 +66,26 @@
       "amount": 100.0,
       "real_value": 100.0,
       "timestamp": "2026-05-23T15:17:14.996658"
+    },
+    {
+      "type": "coupon",
+      "amount": 10.0,
+      "real_value": 10.0,
+      "timestamp": "2026-05-24T00:54:32.350517"
     }
   ],
   "exchange_path": "fund",
   "fund_pool": 1000.0,
-  "coupon_pool": 200.0,
-  "available_star": 100.0,
-  "consumption_loss_this_month": 500.0,
+  "coupon_pool": 210.0,
+  "available_star": 291.0,
+  "consumption_loss_this_month": 505.0,
   "path_streak_weeks": 0,
   "last_path_choice": "2026-20",
   "published_count": 2,
   "total_output_star": 1754,
   "abilities": {
     "hunt_power": 5.897939877774275,
-    "link_power": 29.461203589390667,
+    "link_power": 27.562202302527677,
     "output_power": 11.3227424783294
   },
   "ability_changes": [
@@ -198,7 +204,7 @@
       "reason": "连接力计算更新"
     }
   ],
-  "cross_domain_notes_count": 19,
+  "cross_domain_notes_count": 25,
   "tag_graph": {
     "nodes": {
       "#测试": {
@@ -266,7 +272,7 @@
         "first_seen": "2026-05-22"
       },
       "AI": {
-        "count": 1,
+        "count": 2,
         "first_seen": "2026-05-22"
       },
       "机器学习": {
@@ -346,12 +352,48 @@
         "first_seen": "2026-05-22"
       },
       "Python": {
-        "count": 2,
+        "count": 3,
         "first_seen": "2026-05-22"
       },
       "Tech": {
         "count": 1,
         "first_seen": "2026-05-22"
+      },
+      "test": {
+        "count": 3,
+        "first_seen": "2026-05-24"
+      },
+      "debug": {
+        "count": 3,
+        "first_seen": "2026-05-24"
+      },
+      "FastAPI": {
+        "count": 1,
+        "first_seen": "2026-05-24"
+      },
+      "LLM": {
+        "count": 1,
+        "first_seen": "2026-05-24"
+      },
+      "LangChain": {
+        "count": 1,
+        "first_seen": "2026-05-24"
+      },
+      "薇邻": {
+        "count": 1,
+        "first_seen": "2026-05-24"
+      },
+      "代码重构": {
+        "count": 1,
+        "first_seen": "2026-05-24"
+      },
+      "灵感记录": {
+        "count": 1,
+        "first_seen": "2026-05-24"
+      },
+      "生活碎片": {
+        "count": 1,
+        "first_seen": "2026-05-24"
       }
     },
     "edges": {
@@ -391,7 +433,18 @@
       "灵感<->创造力": 1,
       "睡眠<->创造力": 1,
       "技术<->Python": 1,
-      "Python<->Tech": 1
+      "Python<->Tech": 1,
+      "test<->debug": 3,
+      "Python<->FastAPI": 1,
+      "AI<->LLM": 1,
+      "AI<->LangChain": 1,
+      "LLM<->LangChain": 1,
+      "薇邻<->代码重构": 1,
+      "薇邻<->灵感记录": 1,
+      "薇邻<->生活碎片": 1,
+      "代码重构<->灵感记录": 1,
+      "代码重构<->生活碎片": 1,
+      "灵感记录<->生活碎片": 1
     }
   },
   "current_season": {
@@ -405,8 +458,61 @@
     "active_days_this_season": 0
   },
   "season_history": [],
-  "star_income_history": [],
+  "star_income_history": [
+    {
+      "source": "灵感采集",
+      "amount": 10.0,
+      "details": "基础10.0 + 连续奖励0.0（1天）",
+      "timestamp": "2026-05-24T00:23:39.432536"
+    },
+    {
+      "source": "连接力奖励",
+      "amount": 50,
+      "details": "连接力达到5",
+      "timestamp": "2026-05-24T00:23:39.432828"
+    },
+    {
+      "source": "连接力奖励",
+      "amount": 100,
+      "details": "连接力达到20",
+      "timestamp": "2026-05-24T00:23:39.433047"
+    },
+    {
+      "source": "灵感采集",
+      "amount": 15.0,
+      "details": "基础15.0 + 连续奖励0.0（1天）",
+      "timestamp": "2026-05-24T00:23:44.784887"
+    },
+    {
+      "source": "灵感采集",
+      "amount": 20.0,
+      "details": "基础20.0 + 连续奖励0.0（1天）",
+      "timestamp": "2026-05-24T00:23:48.367509"
+    },
+    {
+      "source": "灵感采集",
+      "amount": 2.0,
+      "details": "基础2.0 + 连续奖励0.0（1天）",
+      "timestamp": "2026-05-24T00:24:01.060634"
+    },
+    {
+      "source": "灵感采集",
+      "amount": 2.0,
+      "details": "基础2.0 + 连续奖励0.0（1天）",
+      "timestamp": "2026-05-24T00:24:13.194279"
+    },
+    {
+      "source": "灵感采集",
+      "amount": 2.0,
+      "details": "基础2.0 + 连续奖励0.0（1天）",
+      "timestamp": "2026-05-24T00:25:34.693484"
+    }
+  ],
   "fund_first_opened_at": "2026-05-22",
   "version": "0.1",
-  "last_exchange_date": "2026-05-23"
+  "last_exchange_date": "2026-05-24",
+  "link_power_rewards_earned": [
+    5,
+    20
+  ]
 }

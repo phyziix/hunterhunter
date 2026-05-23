@@ -5,6 +5,9 @@ import yaml
 import math
 import random
 import hashlib
+import shutil
+import time
+import threading
 import logging
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -916,7 +919,7 @@ class HuntingEngine:
         return new_connections
     
     def _find_related_notes(self, tags, content="", limit=3):
-        """查找相似笔记（基于标签Jaccard + 内容相似度）"""
+        """查找相似笔记（基于标签IDF加权Jaccard + 内容相似度）"""
         related_notes = []
         inbox_folder = self.base_path / "Inbox"
         
@@ -932,7 +935,13 @@ class HuntingEngine:
         if content:
             input_words = set(re.findall(r'[\u4e00-\u9fff]{2,}|[a-zA-Z]{3,}', content.lower()))
         
+        # 第一遍扫描：统计所有标签出现频率（用于IDF加权）
+        all_tag_counts = {}
+        total_docs = 0
+        note_metas = []  # 缓存解析结果避免二次IO
+        
         for note_file in inbox_folder.glob("*.md"):
+            total_docs += 1
             try:
                 with open(note_file, 'r', encoding='utf-8') as f:
                     note_content = f.read()
@@ -958,39 +967,69 @@ class HuntingEngine:
                         if not note_tag_set:
                             continue
                         
-                        overlap = len(tag_set & note_tag_set)
-                        # Jaccard 相似度
-                        tag_jaccard = overlap / len(tag_set | note_tag_set)
-                        
-                        # 内容相似度
                         body = note_content[end+4:].strip()
                         nl = body.find('\n')
                         body = body[nl+1:].strip() if nl != -1 else ""
-                        note_words = set(re.findall(r'[\u4e00-\u9fff]{2,}|[a-zA-Z]{3,}', body[:300].lower()))
-                        all_words = input_words | note_words
-                        content_jaccard = len(input_words & note_words) / len(all_words) if all_words else 0
                         
-                        # 综合得分
-                        score = tag_jaccard * 0.7 + content_jaccard * 0.3
+                        note_metas.append({
+                            "file": note_file,
+                            "tag_set": note_tag_set,
+                            "body": body,
+                        })
                         
-                        # 阈值：至少 2 个标签重叠 或 标签Jaccard >= 0.25
-                        if overlap >= 2 or tag_jaccard >= 0.25:
-                            title = body.split('\n')[0][:40] if body else ""
-                            if not title:
-                                title = note_file.stem.replace("灵感-", "").split("-")[-1]
-                            
-                            snippet = body[:200]
-                            
-                            related_notes.append({
-                                "title": title,
-                                "date": note_file.stem.split("-")[1] if "-" in note_file.stem else "",
-                                "file_path": str(note_file),
-                                "tag_overlap": overlap,
-                                "score": round(score, 2),
-                                "snippet": snippet
-                            })
+                        for t in note_tag_set:
+                            all_tag_counts[t] = all_tag_counts.get(t, 0) + 1
             except:
                 continue
+        
+        if total_docs == 0:
+            return related_notes
+        
+        # 计算IDF权重：log(总文档数 / 该标签出现次数)，高频标签权重低
+        import math
+        tag_idf = {}
+        for t, count in all_tag_counts.items():
+            tag_idf[t] = math.log((total_docs + 1) / (count + 1)) + 1  # +1避免0
+        
+        # 第二遍：用IDF加权计算匹配度
+        for meta in note_metas:
+            note_tag_set = meta["tag_set"]
+            body = meta["body"]
+            note_file = meta["file"]
+            
+            overlap = len(tag_set & note_tag_set)
+            if overlap == 0:
+                continue
+            
+            # IDF加权Jaccard：交集权重之和 / 并集权重之和
+            intersection_weight = sum(tag_idf.get(t, 1.0) for t in (tag_set & note_tag_set))
+            union_weight = sum(tag_idf.get(t, 1.0) for t in (tag_set | note_tag_set))
+            tag_jaccard_idf = intersection_weight / union_weight if union_weight > 0 else 0
+            
+            # 内容相似度
+            note_words = set(re.findall(r'[\u4e00-\u9fff]{2,}|[a-zA-Z]{3,}', body[:500].lower()))
+            all_words = input_words | note_words
+            content_jaccard = len(input_words & note_words) / len(all_words) if all_words else 0
+            
+            # 综合得分：内容权重提升到0.5
+            score = tag_jaccard_idf * 0.5 + content_jaccard * 0.5
+            
+            # 阈值：标签重叠≥2 且 综合得分≥0.2
+            if overlap >= 2 and score >= 0.2:
+                title = body.split('\n')[0][:40] if body else ""
+                if not title:
+                    title = note_file.stem.replace("灵感-", "").split("-")[-1]
+                
+                snippet = body[:500]
+                
+                related_notes.append({
+                    "title": title,
+                    "date": note_file.stem.split("-")[1] if "-" in note_file.stem else "",
+                    "file_path": str(note_file),
+                    "tag_overlap": overlap,
+                    "score": round(score, 3),
+                    "snippet": snippet
+                })
         
         related_notes.sort(key=lambda x: (x["tag_overlap"], x["score"]), reverse=True)
         return related_notes[:limit]
@@ -2066,3 +2105,75 @@ hunt: true
                 self.state["gray_medal"] = True
         
         self._save_state()
+    
+    # ========== 备份与 iCloud 同步 ==========
+    
+    def backup(self, backup_dir=None):
+        """备份整个 inspire 数据目录，默认到 ~/Documents/hunterhunter_backups/，自动保留最近 10 个"""
+        backup_root = Path(backup_dir) if backup_dir else Path.home() / "Documents" / "hunterhunter_backups"
+        backup_root.mkdir(parents=True, exist_ok=True)
+        
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        backup_name = f"inspire_backup_{timestamp}"
+        backup_path = backup_root / backup_name
+        
+        shutil.copytree(self.base_path, backup_path)
+        
+        # 只保留最近 10 个备份
+        existing_backups = sorted(backup_root.glob("inspire_backup_*"))
+        if len(existing_backups) > 10:
+            for old in existing_backups[:-10]:
+                shutil.rmtree(old)
+        
+        file_count = sum(1 for _ in backup_path.rglob("*") if _.is_file())
+        
+        return {
+            "success": True,
+            "backup_path": str(backup_path),
+            "backup_name": backup_name,
+            "file_count": file_count,
+            "total_backups": len(existing_backups)
+        }
+    
+    def sync_to_icloud(self):
+        """单向同步：本地 data/inspire/ → iCloud Obsidian Vault（只写不删不读内容）"""
+        icloud_path = Path.home() / "Library" / "Mobile Documents" / "iCloud~md~obsidian" / "Documents" / "inspire"
+        
+        try:
+            icloud_path.mkdir(parents=True, exist_ok=True)
+        except Exception:
+            return {"success": False, "error": "无法访问 iCloud 目录"}
+        
+        copied, skipped, errors = 0, 0, 0
+        for src in sorted(self.base_path.rglob("*")):
+            if src.is_dir():
+                continue
+            try:
+                rel = src.relative_to(self.base_path)
+                dst = icloud_path / rel
+                dst.parent.mkdir(parents=True, exist_ok=True)
+                
+                # 仅比较 mtime，不读文件内容
+                if dst.exists() and src.stat().st_mtime <= dst.stat().st_mtime:
+                    skipped += 1
+                    continue
+                
+                shutil.copy2(src, dst)
+                copied += 1
+            except Exception:
+                errors += 1
+        
+        return {"success": True, "copied": copied, "skipped": skipped, "errors": errors}
+    
+    def start_icloud_sync(self, interval=300):
+        """后台定时同步到 iCloud，默认每 5 分钟一次"""
+        def _sync_loop():
+            while True:
+                time.sleep(interval)
+                try:
+                    self.sync_to_icloud()
+                except Exception:
+                    pass
+        
+        t = threading.Thread(target=_sync_loop, daemon=True)
+        t.start()

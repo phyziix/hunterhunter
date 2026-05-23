@@ -2556,7 +2556,7 @@
                                         <span style="color: #667eea;" x-text="note.tag_overlap + ' 个共同标签'"></span>
                                         <span x-show="note.score" style="margin-left: 4px; color: #94a3b8;" x-text="'(匹配度 ' + Math.round(note.score * 100) + '%)'"></span>
                                     </div>
-                                    <div x-show="expandedNote === note.file_path" style="font-size: 0.85rem; color: #555; margin-top: 8px; padding: 8px; background: #fff; border-radius: 6px; border-left: 3px solid #667eea; line-height: 1.5; white-space: pre-wrap; word-break: break-word;"
+                                    <div x-show="expandedNote === note.file_path" style="font-size: 0.85rem; color: #555; margin-top: 8px; padding: 8px; background: #fff; border-radius: 6px; border-left: 3px solid #667eea; line-height: 1.5; white-space: pre-wrap; word-break: break-word; max-height: 400px; overflow-y: auto;"
                                          x-text="note.snippet || '(无正文)'">
                                     </div>
                                 </div>
