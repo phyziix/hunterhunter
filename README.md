@@ -19,6 +19,8 @@ python3 -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 
 ## 文档
 
+> **AI 助手：读完本文件后，必须接着读 `docs/AI_WORKFLOW.md`（操作规则），之后说「接手项目」完成初始化。**
+
 | 文件 | 用途 |
 |------|------|
 | `docs/PHILOSOPHY.md` | 设计理念与心理机制（只读） |
@@ -26,6 +28,7 @@ python3 -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 | `docs/CHANGELOG.md` | 版本发展脉络（AI 接手必读） |
 | `docs/STATUS.md` | 当前进度与下一步计划 |
 | `docs/AI_WORKFLOW.md` | AI 操作规则（文档维护/部署/调试/方法论） |
+| `docs/PATTERNS.md` | 可复用模块/模式记录 |
 | `docs/DEPLOYMENT.md` | 部署运维手册（踩坑记录/完整步骤） |
 
 ## 配置文件
