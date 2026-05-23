@@ -128,11 +128,6 @@ v0.2.4 已上线但以下功能点仍需修复：
 
 > 专注代码结构优化，不做功能变更。
 
-### 兑换模块剥离
-
-所有兑换方法从 `engine.py` 抽取到 `engine_exchange.py`，main.py 加 `ENABLE_EXCHANGE = False` feature flag。
-前端兑换板块同步隐藏。代码不删，一行配置即可恢复。
-
 ### 采集+星点清理
 
 去重逻辑完善、`_calculate_stars` 计算链透明化、相似笔记匹配打磨。
