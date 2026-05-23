@@ -946,11 +946,21 @@ class HuntingEngine:
                             if not title:
                                 title = note_file.stem.replace("灵感-", "").split("-")[-1]
                             
+                            # 提取正文片段（去 frontmatter 后的前 120 字）
+                            body = ""
+                            if end != -1:
+                                body = content[end+4:].strip()
+                                # 跳过标题行
+                                nl = body.find('\n')
+                                body = body[nl+1:].strip() if nl != -1 else ""
+                            snippet = body[:120]
+                            
                             related_notes.append({
                                 "title": title,
                                 "date": note_file.stem.split("-")[1],
                                 "file_path": str(note_file),
-                                "tag_overlap": overlap
+                                "tag_overlap": overlap,
+                                "snippet": snippet
                             })
             except:
                 continue

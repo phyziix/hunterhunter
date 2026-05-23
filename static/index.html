@@ -1738,9 +1738,11 @@
                 // ===== 采集成功弹窗 =====
                 captureSuccessData: null,
                 showCaptureSuccessModal: false,
+                expandedNote: null,
                 closeCaptureSuccessModal() {
                     this.showCaptureSuccessModal = false;
                     this.captureSuccessData = null;
+                    this.expandedNote = null;
                 },
                 // ===== 长期推演数据 =====
                 projection: null,
@@ -2539,13 +2541,22 @@
                     <!-- 相似笔记 -->
                     <div x-show="captureSuccessData.related_notes && captureSuccessData.related_notes.length > 0" style="margin-bottom: 20px;">
                         <h4 style="margin: 0 0 12px 0; color: #333; font-size: 0.95rem;">💡 相似笔记（与过去的自己对话）</h4>
-                        <div style="max-height: 150px; overflow-y: auto;">
+                        <div style="max-height: 250px; overflow-y: auto;">
                             <template x-for="note in captureSuccessData.related_notes" :key="note.file_path">
-                                <div style="padding: 10px; background: #f8f9fa; border-radius: 8px; margin-bottom: 8px;">
-                                    <div style="font-weight: 600; color: #333; font-size: 0.9rem;" x-text="note.title"></div>
+                                <div @click="expandedNote === note.file_path ? expandedNote = null : expandedNote = note.file_path"
+                                     style="padding: 10px; background: #f8f9fa; border-radius: 8px; margin-bottom: 8px; cursor: pointer; transition: background 0.15s;"
+                                     @mouseenter="$el.style.background='#eef2ff'"
+                                     @mouseleave="$el.style.background='#f8f9fa'">
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <div style="font-weight: 600; color: #333; font-size: 0.9rem;" x-text="note.title"></div>
+                                        <span style="font-size: 0.7rem; color: #94a3b8;" x-text="expandedNote === note.file_path ? '收起 ▲' : '展开 ▼'"></span>
+                                    </div>
                                     <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 4px;">
-                                        <span x-text="note.date"></span> · 
+                                        <span x-text="note.date"></span> ·
                                         <span style="color: #667eea;" x-text="note.tag_overlap + ' 个共同标签'"></span>
+                                    </div>
+                                    <div x-show="expandedNote === note.file_path" style="font-size: 0.85rem; color: #555; margin-top: 8px; padding: 8px; background: #fff; border-radius: 6px; border-left: 3px solid #667eea; line-height: 1.5;"
+                                         x-text="note.snippet || '(无正文)'">
                                     </div>
                                 </div>
                             </template>
