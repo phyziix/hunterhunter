@@ -300,11 +300,19 @@
 
 | 版本 | 功能 | 状态 |
 |------|------|------|
+| v0.2.5 | 前端文件拆分：index.html CSS/JS 分离为 styles.css + app.js | ❌ |
 | v0.3 | 赛季主题系统（开拓者/连线大师/深度矿工/分享者） | ❌ |
 | v0.4 | 自定义挑战 | ❌ |
 | v0.5 | 能力值系统完整上线 - 星点里程碑档位制 + 能力面板前端展示 | ❌ |
 | Phase 8 | 前端 Tab 导航 | ❌ |
 | Phase 7.5 | engine.py 按功能拆分为子模块 | ❌ |
+
+**v0.2.5 前端拆分详情**：
+- `index.html` 当前超 2200 行，单文件难以维护
+- `<style>...</style>` 全部提取到 `static/styles.css`
+- `<script>...</script>` 全部 JavaScript（含 `appData()` 等）提取到 `static/app.js`
+- `index.html` 仅保留 HTML 结构 + Alpine.js CDN + 外链 CSS/JS
+- 拆分后验证：Console 无报错，核心按钮可点击
 
 **v0.3 赛季主题系统详情**：
 - 每个赛季随机分配主题，赋予不同加成策略

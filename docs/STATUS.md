@@ -32,6 +32,7 @@
 
 ### 优先
 - [ ] **v0.2.4 生产部署**：创建 v0.2.4 launchd plist，独立于 v0.1 运行，上线
+- [ ] **v0.2.5 前端拆分**：index.html 超 2200 行，CSS → styles.css，JS → app.js，HTML 仅保留结构
 - [ ] **Phase 7.5 后端重构**：engine.py 按功能拆分为子模块（预估1-2天）
 
 ### 暂缓
