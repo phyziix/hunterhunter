@@ -22,6 +22,7 @@ python3 -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 | 文件 | 用途 |
 |------|------|
 | `docs/PHILOSOPHY.md` | 设计理念与心理机制（只读） |
+| `docs/PRODUCT.md` | 产品需求文档（功能规格/配置参数/未来计划） |
 | `docs/CHANGELOG.md` | 版本发展脉络（AI 接手必读） |
 | `docs/STATUS.md` | 当前进度与下一步计划 |
 | `docs/DEPLOYMENT.md` | 部署运维手册（踩坑记录/完整步骤） |
