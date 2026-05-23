@@ -659,6 +659,15 @@
                 ></textarea>
             </div>
             
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
+                <button @click="extractTags"
+                    style="padding: 8px 16px; border: 1px solid rgba(255,255,255,0.4); border-radius: 8px; background: rgba(255,255,255,0.15); color: #fff; font-size: 0.85rem; cursor: pointer; transition: all 0.2s;"
+                    onmouseover="this.style.background='rgba(255,255,255,0.25)';"
+                    onmouseout="this.style.background='rgba(255,255,255,0.15)';"
+                >🔍 提取正文中的 #标签</button>
+                <span style="font-size: 0.75rem; color: rgba(255,255,255,0.5);">自动识别正文中的 #标签 格式</span>
+            </div>
+            
             <div class="input-group" style="margin-bottom: 20px;">
                 <input 
                     type="text" 
@@ -1778,6 +1787,19 @@
                 },
                 removeTag(index) {
                     this.captureForm.tags.splice(index, 1);
+                },
+                extractTags() {
+                    const content = this.captureForm.content.trim();
+                    if (!content) return;
+                    
+                    // 匹配 #标签 格式：以#开头，后跟非空格、非标点的中文/英文/数字/斜杠
+                    const tagPattern = /#[^\s.,;:!?，。；：！？、\n]+/g;
+                    const matches = content.match(tagPattern) || [];
+                    const extracted = matches.map(t => t.replace(/^#/, '').trim());
+                    
+                    // 去重 + 合并到现有标签（不替换，只追加）
+                    const allTags = new Set([...this.captureForm.tags, ...extracted]);
+                    this.captureForm.tags = [...allTags];
                 },
                 async submitCapture() {
                     if (!this.captureForm.content.trim()) return;
