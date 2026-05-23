@@ -300,11 +300,19 @@
 
 | 版本 | 功能 | 状态 |
 |------|------|------|
+| v0.2.5 | （方案A）前端文件按语言分离：CSS→styles.css, JS→app.js（纯工程整理，零逻辑改动） | ❌ |
 | v0.3 | engine.py 按功能拆分为子模块 | ❌ |
 | v0.4 | 赛季主题系统 + （方案B）app.js 按模块拆分（capture/exchange/review） | ❌ |
 | v0.5 | 自定义挑战 | ❌ |
 | v0.6 | 能力值系统完整上线 - 星点里程碑档位制 + 能力面板前端展示 | ❌ |
 | v0.7 | 前端 Tab 导航 | ❌ |
+
+**v0.2.5 方案A：按语言分离（纯工程整理）**：
+- `index.html` 当前超 2200 行，单文件难以维护
+- `<style>...</style>` 全部提取到 `static/styles.css`
+- `<script>...</script>` 全部 JavaScript（含 `appData()` 等）提取到 `static/app.js`
+- `index.html` 仅保留 HTML 结构 + Alpine.js CDN + 外链 CSS/JS
+- **零逻辑改动**，纯剪切粘贴
 
 **v0.3 后端重构详情**：
 - engine.py 按功能拆分为子模块（capture / exchange / season / stats 等）
