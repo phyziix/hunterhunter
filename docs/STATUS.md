@@ -39,10 +39,10 @@
 ### 优先
 - [ ] **v0.2.4 生产部署**：创建 v0.2.4 launchd plist，独立于 v0.1 运行，上线
 - [ ] **v0.2.5 前端拆分**：index.html 超 2200 行，CSS → styles.css，JS → app.js，HTML 仅保留结构
-- [ ] **Phase 7.5 后端重构**：engine.py 按功能拆分为子模块（预估1-2天）
+- [ ] **v0.7 后端重构**：engine.py 按功能拆分为子模块（预估1-2天）
 
 ### 暂缓
-- [ ] **Phase 8 Tab 导航**：前端 6 个 Tab(采集/概览/成长/标签/行动/规则)，Alpine.js x-show 切换
+- [ ] **v0.8 Tab 导航**：前端 6 个 Tab(采集/概览/成长/标签/行动/规则)，Alpine.js x-show 切换
 - [ ] **v0.3 app.js 模块拆分**：capture.js / exchange.js / review.js，需解决 Alpine x-data 作用域
 - [ ] **AI_WORKFLOW.md 拆分**：触发条件（任一满足时执行）→ 规则超过 5 条 / 某条超 10 行 / STATUS 超 100 行。将顶部 ⚠️ 操作规则移出到独立文件，STATUS 恢复纯状态文档
 
