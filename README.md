@@ -63,14 +63,15 @@ git push origin v0.2 --tags
 
 ```
 main ─── 稳定发布版（仅合入稳定版本）
-  └── v0.2 ─── 当前开发分支（活跃开发）← 我们在这里
+  └── v0.3 ─── 当前开发分支（活跃开发）← 我们在这里
 ```
 
 | 分支 | 用途 | 说明 |
 |------|------|------|
 | `main` | 稳定发布版 | 仅合入完整的稳定版本，由维护者手动合并 |
-| `v0.2` | **活跃开发分支** | ✅ 当前所有开发工作在此分支进行 |
+| `v0.3` | **活跃开发分支** | ✅ 当前所有开发工作在此分支进行 |
 | `tag: v0.1` | 历史版本存档 | v0.1 初始版本的标记点 |
+| `v0.2` | 已完成版本 | v0.22 开发完成，保留存档 |
 
 ### 跨终端开发操作指南
 
@@ -78,19 +79,19 @@ main ─── 稳定发布版（仅合入稳定版本）
 # === 首次克隆（新设备上） ===
 git clone git@github.com:phyziix/hunterhunter.git
 cd hunterhunter
-git checkout v0.2          # 切换到开发分支
+git checkout v0.3          # 切换到开发分支
 
 # === 日常开发（每天开始时） ===
-git pull origin v0.2       # 拉取最新代码
+git pull origin v0.3       # 拉取最新代码
 
 # === 提交代码（每天结束时） ===
 git add -A
 git commit -m "feat: 说明改了什么"
-git push origin v0.2       # 推送到 v0.2
+git push origin v0.3       # 推送到 v0.3
 
 # === ❌ 不要这样做 ===
-git push                   # 如果不在 v0.2 分支上，可能推错
+git push                   # 如果不在 v0.3 分支上，可能推错
 git push origin main       # 不要直接推 main，main 只合入稳定版本
 ```
 
-**核心规则：始终在 `v0.2` 分支上操作。** push 和 pull 都明确指定 `origin v0.2`，避免误操作 main 分支。
+**核心规则：始终在 `v0.3` 分支上操作。** push 和 pull 都明确指定 `origin v0.3`，避免误操作 main 分支。
