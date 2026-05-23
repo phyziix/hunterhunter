@@ -36,12 +36,21 @@ python3 -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 | `data/inspire/_狩猎系统/defaults.yaml` | 默认配置模板（重置时参考） |
 | `data/inspire/_狩猎系统/state.json` | 运行时状态（系统自动维护） |
 
-## 版本管理
+## 版本概览
 
-版本号在 `VERSION` 文件，纯数字单行。`main.py` 启动时自动读取。版本历史和分支对应关系见 `docs/CHANGELOG.md`。
+| 版本 | 主要变化 |
+|------|---------|
+| v0.2.4 | 基金池重构、连接力奖励、赛季系统、星点里程碑 |
+| v0.2.0 | 能力值系统、标签宇宙、连续加成替代惩罚 |
+| v0.1.0 | 灵感采集、兑换、勋章 |
+
+完整变更历史见 [CHANGELOG](docs/CHANGELOG.md)。
+
+### 发布新版本
+
+版本号在 `VERSION` 文件（纯数字单行），`main.py` 启动时自动读取。
 
 ```bash
-# 发布新版本（<DEV_BRANCH> 替换为当前开发分支）
 echo "X.Y.Z" > VERSION
 git add VERSION
 git commit -m "release: vX.Y.Z"
