@@ -105,22 +105,25 @@ class HuntingEngine:
             
             # 基金配置
             "fund": {
-                "base_rate": 1.5,
+                "base_rate": 1.0,
+                "base_bonus": 0.5,
                 "lock_days": 30,
                 "min_withdraw": 500
             },
+            "fund_base_rate": 1.0,
+            "fund_base_bonus": 0.5,
             
-            # 连续选择奖惩
+            # 连续选择奖惩（增量值，与基础汇率加减）
             "path_bonuses": {
                 "fund": [
-                    {"weeks": 2, "rate": 1.55},
-                    {"weeks": 4, "rate": 1.60},
-                    {"weeks": 8, "rate": 1.65}
+                    {"weeks": 2, "rate": 0.05},
+                    {"weeks": 4, "rate": 0.10},
+                    {"weeks": 8, "rate": 0.15}
                 ],
                 "coupon": [
-                    {"weeks": 2, "rate": 0.95},
-                    {"weeks": 4, "rate": 0.90},
-                    {"weeks": 8, "rate": 0.85}
+                    {"weeks": 2, "rate": -0.05},
+                    {"weeks": 4, "rate": -0.10},
+                    {"weeks": 8, "rate": -0.15}
                 ]
             },
             
@@ -607,17 +610,6 @@ class HuntingEngine:
         
         return False
     
-    def _check_season_medal(self, medal):
-        """检查赛季触发类型勋章"""
-        season_theme = medal.get("season_theme")
-        current_season = self.state.get("current_season", {})
-        
-        if current_season.get("name") == season_theme:
-            # 在赛季结算时发放
-            return False
-        
-        return False
-    
     def get_all_medals(self):
         """获取所有勋章定义和状态"""
         medals_config = self.config.get("medals", [])
@@ -809,17 +801,25 @@ class HuntingEngine:
             "标签": ", ".join(tags)
         })
         
-        # 计算基础星星和加成
-        base_stars = self.config.get("capture_base_stars", 10)
-        streak_bonus_pct = 0
-        streak_bonuses = self.config.get("streak_bonuses", [])
-        for bonus in reversed(streak_bonuses):
-            if self.state["streak_days"] >= bonus["days"]:
-                streak_bonus_pct = bonus["bonus_pct"]
-                break
+        # 计算星点（含倍增阶梯 + 连续加成）
+        total_stars = self._calculate_stars()
         
-        streak_bonus_amount = base_stars * streak_bonus_pct / 100
-        total_stars = base_stars + streak_bonus_amount
+        # 提取展示用拆分明细
+        base_star = self.config.get("base_star", 10)
+        multipliers = self.config.get("daily_multipliers", [1.0, 1.5, 2.0, 0.2])
+        count = self.state["today_count"]
+        mult = multipliers[count - 1] if count <= len(multipliers) else multipliers[-1]
+        base_stars = base_star * mult
+        
+        streak_bonus_pct = 0
+        streak_days = self.state["streak_days"]
+        if count == 1:  # 连续加成只有第1条触发
+            for bonus in reversed(self.config.get("streak_bonuses", [])):
+                if streak_days >= bonus["days"]:
+                    streak_bonus_pct = bonus["bonus_pct"]
+                    break
+        
+        streak_bonus_amount = total_stars - base_stars if streak_bonus_pct > 0 else 0.0
         
         self.state["available_star"] += total_stars
         self.state["total_star"] = self.state["available_star"] + self.state["fund_pool"]

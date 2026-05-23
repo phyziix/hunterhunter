@@ -85,7 +85,7 @@ seasons:
   auto_start: true
   default_length_days: 15  # 赛季默认15天
 
-# 赛季主题系统 (v0.3 延展，当前不激活)
+# 赛季主题系统 (v0.4 延展，当前不激活)
 # themes:
 #   - id: pioneer, name: 开拓者, bonus: {}
 #   - id: connector, name: 连线大师, bonus: {cross_domain_bonus: 5}
