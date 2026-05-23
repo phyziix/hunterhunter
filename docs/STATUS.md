@@ -13,7 +13,7 @@
 | 版本号 | 0.2.4 |
 | 分支 | v0.2.4 |
 | 部署状态 | ✅ v0.2.4 已上线 (8003端口 + hunterhub.loca.lt) |
-| 下一版本 | v0.2.5 规划中（兑换模块剥离等） |
+| 下一版本 | v0.2.5（Bug 修复） |
 
 ---
 
@@ -23,7 +23,20 @@
 
 ---
 
-## 下一步：v0.2.5 规划
+## 下一步：v0.2.5（Bug 修复）
+
+> v0.2.4 已上线但以下功能点仍需修复，归入 v0.2.5。
+
+- [ ] **重复提交检测修复**：当前去重机制不正确，仍可重复提交相同内容。修复后端去重逻辑
+- [ ] **重复提交提示优化**：检测到重复提交后，弹出「建议情况」对话框告知用户，提升体验
+- [ ] **标签提取过滤 `##`**：正文标签提取正则会匹配到 `## 标题` 等 Markdown 格式，需过滤
+- [ ] **相关灵感匹配规则优化**：当前 `_find_related_notes()` 的 IDF 加权 Jaccard 匹配结果仍不合理，需进一步打磨
+
+---
+
+## 下一步：v0.3（结构调整）
+
+> v0.3 专注代码结构优化，不做功能变更。
 
 ### 设计决策
 
@@ -32,28 +45,30 @@
 
 ### 优先
 
-- [ ] **兑换模块剥离**：从 `engine.py` 抽取 `set_exchange_path` / `exchange_coupon` / `exchange_fund` 等所有兑换方法到新文件 `engine_exchange.py`。原代码 move 不改逻辑，`main.py` 加 `ENABLE_EXCHANGE = False` 控制路由暴露，前端兑换板块同步隐藏
+- [ ] **兑换模块剥离**：从 `engine.py` 抽取所有兑换方法到新文件 `engine_exchange.py`。原代码 move 不改逻辑，`main.py` 加 `ENABLE_EXCHANGE = False` 控制路由暴露，前端兑换板块同步隐藏
     - **调试方案**（隐藏≠不能调）：
-      1. **环境变量控制**：`ENABLE_EXCHANGE` 不要写死，用 `os.getenv("ENABLE_EXCHANGE", "false")` 读取。本地 `ENABLE_EXCHANGE=true uvicorn main:app` 即恢复正常，线上不加就是 false
-      2. **API 始终暴露**：路由不删，`curl` 直接调 `/api/exchange/*` 即可测试逻辑，前端隐藏不影响后端调试
-      3. **前端调试入口**：URL 加 `?debug=exchange` 参数临时显示隐藏模块，或 `/api/config` 返回 `exchange_enabled` 让 Alpine.js 用 `x-show` 绑定
-      4. **数据验证**：直接看 `data/inspire/_狩猎系统/state.json` 中 `exchange_history` / `fund_pool` / `available_star` 字段验证结果
-- [ ] **采集 + 星点模块清理**：去重逻辑观察完善、`_calculate_stars` 计算链透明化、相似笔记匹配打磨、星点收支记录清晰化
-- [ ] **前端精简**：兑换中心 / 赛季兑换面板按 feature flag 隐藏（后端 `/api/config` 返回 `exchange_enabled: false`，前端 Alpine.js `x-show` 绑定）
+      1. **环境变量控制**：`ENABLE_EXCHANGE` 用 `os.getenv("ENABLE_EXCHANGE", "false")` 读取
+      2. **API 始终暴露**：路由不删，`curl` 直接调 `/api/exchange/*` 测试逻辑
+      3. **前端调试入口**：URL 加 `?debug=exchange` 参数临时显示隐藏模块
+      4. **数据验证**：看 `state.json` 中 `exchange_history` / `fund_pool` / `available_star`
+- [ ] **采集 + 星点模块清理**：去重逻辑完善、`_calculate_stars` 计算链透明化、相似笔记匹配打磨
+- [ ] **前端精简**：兑换中心 / 赛季兑换面板按 feature flag 隐藏
 
-### 暂缓（原 v0.2.5 计划移入）
+### 暂缓
 
-- [ ] **前端文件拆分**：index.html 超 2600 行，CSS → styles.css，JS → app.js（结构优化优先级更高，先做 module 拆分再管文件拆分）
-- [ ] **v0.3 后端重构**：engine.py 按功能拆分为子模块（预估1-2天）
+- [ ] **前端文件拆分**：index.html 超 2600 行，CSS → styles.css，JS → app.js
+- [ ] **v0.4 后端重构**：engine.py 按功能拆分为子模块（预估1-2天）
 
-### 远期
+---
 
-- [ ] **v0.4 赛季主题**：开拓者/连线大师/深度矿工/分享者 四主题 + **方案B**：app.js 按模块拆分（capture/exchange/review）
+## 远期
+
+- [ ] **v0.4 赛季主题**：开拓者/连线大师/深度矿工/分享者 四主题 + app.js 按模块拆分
 - [ ] **v0.5 自定义挑战**：用户自行设定挑战目标与奖励，自动追踪进度
 - [ ] **v0.6 能力值面板**：星点里程碑档位制 + 前端能力面板展示
 - [ ] **v0.7 Tab 导航**：前端 6 个 Tab(采集/概览/成长/标签/行动/规则)，Alpine.js x-show 切换
-- [x] **AI_WORKFLOW.md 拆分**：触发条件（任一满足时执行）→ 规则超过 5 条 / 某条超 10 行 / STATUS 超 100 行。将顶部 ⚠️ 操作规则移出到独立文件，STATUS 恢复纯状态文档
-- [ ] **方法论收割**：项目关闭时，从 AI_WORKFLOW/DEPLOYMENT/STATUS 提炼通用骨架 → `METHODOLOGY.md`（当前阶段不做通用化，规则只管 hunterhunter 怎么跑）
+- [x] **AI_WORKFLOW.md 拆分**：将 ⚠️ 操作规则移出到独立文件，STATUS 恢复纯状态文档
+- [ ] **方法论收割**：项目关闭时，从 AI_WORKFLOW/DEPLOYMENT/STATUS 提炼通用骨架 → `METHODOLOGY.md`
 
 ---
 
