@@ -141,10 +141,10 @@ v0.2.4 已上线但以下功能点仍需修复：
 
 兑换板块按 feature flag 隐藏（`/api/config` 返回 `exchange_enabled: false`，前端 `x-show` 绑定）。
 
-### 暂缓
+### 暂缓（归入远期）
 
 - 前端文件拆分：index.html(2600+行) → styles.css + app.js
-- v0.4 后端重构：engine.py 按功能拆子模块
+- 后端重构：engine.py 按功能拆子模块
 
 ---
 
