@@ -1,0 +1,319 @@
+- generic [ref=e2]:
+  - generic [ref=e3]:
+    - heading "🎯 认知狩猎" [level=1] [ref=e4]
+    - paragraph [ref=e5]: 捕捉灵感，积累星点
+  - generic [ref=e6]:
+    - generic [ref=e7]:
+      - generic [ref=e8]: ✍️
+      - generic [ref=e9]:
+        - heading "灵感捕获" [level=3] [ref=e10]
+        - paragraph [ref=e11]: 记录你的灵光一闪
+    - textbox "写下你的灵感..." [ref=e13]
+    - generic [ref=e14]:
+      - 'button "🔍 提取正文中的 #标签" [ref=e15] [cursor=pointer]'
+      - generic [ref=e16]: "自动识别正文中的 #标签 格式"
+    - textbox "添加标签（回车确认）" [ref=e18]
+    - button "🚀 捕获灵感" [disabled] [ref=e19] [cursor=pointer]
+  - generic [ref=e20]:
+    - generic [ref=e21]:
+      - heading "📊 仪表盘" [level=3] [ref=e22]
+      - button "📋 获取记录" [ref=e23] [cursor=pointer]
+    - generic [ref=e24]:
+      - generic [ref=e25]:
+        - generic [ref=e26]: "1295.0"
+        - generic [ref=e27]: 总星点
+      - generic [ref=e28]:
+        - generic [ref=e29]: "3"
+        - generic [ref=e30]: 今日战果
+      - generic [ref=e31]:
+        - generic [ref=e32]: "2"
+        - generic [ref=e33]: 连续天数
+  - generic [ref=e34]:
+    - heading "🏅 勋章墙" [level=3] [ref=e35]
+    - generic [ref=e36]:
+      - generic [ref=e37]: 💡 灵光乍现
+      - generic [ref=e38]: 🏹 周常猎人
+      - generic [ref=e39]: 🕸️ 连线大师
+      - generic [ref=e40]: 🔗 连线新手
+    - generic [ref=e41]:
+      - generic [ref=e42]:
+        - generic [ref=e43]: 月度勋章
+        - generic [ref=e44]: "0"
+      - generic [ref=e45]:
+        - generic [ref=e46]: 基金加成
+        - generic [ref=e47]: +0%
+  - generic [ref=e48]:
+    - heading "🚀 媒体发布" [level=3] [ref=e49]
+    - generic [ref=e50]:
+      - generic [ref=e52]: 🌟
+      - generic [ref=e54]: 🌟
+      - generic [ref=e56]: ⭐
+      - generic [ref=e58]: ⭐
+      - generic [ref=e60]: ⭐
+    - generic [ref=e61]:
+      - generic [ref=e62]: "发布进度: 2/5"
+      - generic [ref=e63]: "奖励: +750-1000 星点/次"
+    - generic [ref=e64]:
+      - textbox "输入发布链接地址..." [ref=e65]
+      - button "提交发布" [ref=e66] [cursor=pointer]
+    - generic [ref=e67]: 每次发布可获得 100 星点，最多可获得 5 次奖励
+  - generic [ref=e68]:
+    - heading "🔄 兑换中心" [level=3] [ref=e69]
+    - paragraph [ref=e70]: 选择消费券即时兑换或存入基金池获取更高倍率，连续选择同一路径可获得额外加成。
+    - generic [ref=e71]:
+      - generic [ref=e72]:
+        - button "🎫 消费券兑换" [ref=e73] [cursor=pointer]
+        - generic [ref=e74]: 1星点 = 1元
+      - generic [ref=e75]:
+        - button "💰 基金充值" [ref=e76] [cursor=pointer]
+        - generic [ref=e77]:
+          - generic [ref=e78]: 1星点 = 1.50元
+          - generic [ref=e79]: "基础: 1星点 = 1元"
+          - generic [ref=e80]: "基金奖励: +50%"
+          - generic [ref=e81]: "连续加成: +0%"
+    - generic [ref=e82]:
+      - generic [ref=e83]:
+        - generic [ref=e84]: 本赛季兑换情况
+        - generic [ref=e85]: 2026-05-16 ~ 2026-05-31
+      - generic [ref=e86]:
+        - generic [ref=e87]:
+          - generic [ref=e88]: 消费兑换星点
+          - generic [ref=e89]: ⭐ 200
+        - generic [ref=e90]:
+          - generic [ref=e91]: "倍率: 1.0 (连续选择减益: 0%)"
+          - generic [ref=e92]: ¥200.00
+      - generic [ref=e93]:
+        - generic [ref=e94]:
+          - generic [ref=e95]: 消费水位
+          - generic [ref=e96]: 4%
+        - generic [ref=e99]: 基于上限5000星点
+      - generic [ref=e100]:
+        - generic [ref=e101]:
+          - generic [ref=e102]: 基金兑换星点
+          - generic [ref=e103]: ⭐ 1000
+        - generic [ref=e104]:
+          - generic [ref=e105]: "倍率: 1.50 (连续选择加成: +0%)"
+          - generic [ref=e106]: ¥1500.00
+      - generic [ref=e107]:
+        - generic [ref=e108]:
+          - generic [ref=e109]: 基金水位
+          - generic [ref=e110]: 20%
+        - generic [ref=e113]: 基于上限5000星点
+      - generic [ref=e114]:
+        - generic [ref=e115]:
+          - generic [ref=e116]: 今日兑换
+          - generic [ref=e117]: 可兑换
+        - generic [ref=e118]:
+          - generic [ref=e119]: 最低提取
+          - generic [ref=e120]: ⭐500
+        - generic [ref=e121]:
+          - generic [ref=e122]: 基金加成
+          - generic [ref=e123]: +0%
+    - generic [ref=e124]:
+      - generic [ref=e125]:
+        - generic [ref=e126]: 本月消费损失
+        - generic [ref=e127]: "-¥500.00"
+      - generic [ref=e128]:
+        - generic [ref=e129]: 基金累计收益
+        - generic [ref=e130]: +¥1000.00
+  - generic [ref=e131]:
+    - heading "📝 回顾与战报" [level=3] [ref=e132]
+    - generic [ref=e133]:
+      - button "📅 周回顾" [ref=e134] [cursor=pointer]
+      - button "📈 月度战报" [ref=e135] [cursor=pointer]
+  - generic [ref=e136]:
+    - heading "🏷️ 标签宇宙" [level=3] [ref=e137]
+    - paragraph [ref=e138]: 记录你所有灵感笔记的标签，标签云展示频次分布，点击标签查看相关笔记，跨领域标签可获得额外星点加成。
+    - generic [ref=e139]:
+      - button "云视图" [ref=e140] [cursor=pointer]
+      - button "排行榜" [ref=e141] [cursor=pointer]
+    - generic [ref=e142]:
+      - generic [ref=e143]:
+        - generic [ref=e144] [cursor=pointer]: "#测试 (4)"
+        - generic [ref=e145] [cursor=pointer]: "#开发 (3)"
+        - generic [ref=e146] [cursor=pointer]: "#设计 (2)"
+        - generic [ref=e147] [cursor=pointer]: "#生产力 (2)"
+        - generic [ref=e148] [cursor=pointer]: "#效率 (1)"
+        - generic [ref=e149] [cursor=pointer]: 测试 (4)
+        - generic [ref=e150] [cursor=pointer]: API (1)
+        - generic [ref=e151] [cursor=pointer]: 学习 (1)
+        - generic [ref=e152] [cursor=pointer]: 认知 (1)
+        - generic [ref=e153] [cursor=pointer]: 成长 (1)
+        - generic [ref=e154] [cursor=pointer]: 效率 (1)
+        - generic [ref=e155] [cursor=pointer]: 时间管理 (1)
+        - generic [ref=e156] [cursor=pointer]: 工作法 (1)
+        - generic [ref=e157] [cursor=pointer]: 产品设计 (1)
+        - generic [ref=e158] [cursor=pointer]: 用户体验 (1)
+        - generic [ref=e159] [cursor=pointer]: 反馈 (1)
+        - generic [ref=e160] [cursor=pointer]: AI (1)
+        - generic [ref=e161] [cursor=pointer]: 机器学习 (1)
+        - generic [ref=e162] [cursor=pointer]: 技术 (2)
+        - generic [ref=e163] [cursor=pointer]: 敏捷 (1)
+        - generic [ref=e164] [cursor=pointer]: 团队协作 (1)
+        - generic [ref=e165] [cursor=pointer]: 开发 (2)
+        - generic [ref=e166] [cursor=pointer]: 注意力 (1)
+        - generic [ref=e167] [cursor=pointer]: 信息 (1)
+        - generic [ref=e168] [cursor=pointer]: 专注 (1)
+        - generic [ref=e169] [cursor=pointer]: 冥想 (1)
+        - generic [ref=e170] [cursor=pointer]: 心理健康 (1)
+        - generic [ref=e171] [cursor=pointer]: 习惯 (1)
+        - generic [ref=e172] [cursor=pointer]: 知识管理 (1)
+        - generic [ref=e173] [cursor=pointer]: 网络 (1)
+        - generic [ref=e174] [cursor=pointer]: 组织 (1)
+        - generic [ref=e175] [cursor=pointer]: git (1)
+        - generic [ref=e176] [cursor=pointer]: 工具 (1)
+        - generic [ref=e177] [cursor=pointer]: 灵感 (1)
+        - generic [ref=e178] [cursor=pointer]: 睡眠 (1)
+        - generic [ref=e179] [cursor=pointer]: 创造力 (1)
+        - generic [ref=e180] [cursor=pointer]: Python (2)
+        - generic [ref=e181] [cursor=pointer]: Tech (1)
+        - generic [ref=e182] [cursor=pointer]: debug (1)
+        - generic [ref=e183] [cursor=pointer]: verify (1)
+        - generic [ref=e184] [cursor=pointer]: check (1)
+      - generic [ref=e185]:
+        - generic [ref=e186]: 🏷️
+        - paragraph [ref=e187]: 暂无标签数据
+  - generic [ref=e188]:
+    - heading "📅 赛季信息" [level=3] [ref=e189]
+    - paragraph [ref=e190]: 每15天为一个赛季，赛季结束时结算收益，星点上限3000，重置时保留50%星点。
+    - button "检查赛季" [ref=e191] [cursor=pointer]
+    - generic [ref=e192]:
+      - generic [ref=e193]:
+        - generic [ref=e194]:
+          - generic [ref=e195]: 当前赛季
+          - generic [ref=e196]: 开拓者
+        - generic [ref=e197]:
+          - generic [ref=e198]: 赛季进度
+          - generic [ref=e199]: 0/15 天
+      - generic [ref=e200]:
+        - generic [ref=e201]:
+          - generic [ref=e202]: 赛季星点
+          - generic [ref=e203]: "0"
+        - generic [ref=e204]:
+          - generic [ref=e205]: 跨界笔记
+          - generic [ref=e206]: "0"
+        - generic [ref=e207]:
+          - generic [ref=e208]: 赛季上限
+          - generic [ref=e209]: "3000"
+      - generic [ref=e211]:
+        - generic [ref=e212]: 赛季进度
+        - generic [ref=e213]: 0%
+  - generic [ref=e215]:
+    - heading "🔮 长期推演" [level=3] [ref=e216]
+    - paragraph [ref=e217]: 基于你的采集习惯，预测未来6个月的灵感成长趋势，帮助你制定长期计划。
+    - button "查看预测" [ref=e218] [cursor=pointer]
+    - generic [ref=e219]:
+      - generic [ref=e220]:
+        - generic [ref=e221]:
+          - generic [ref=e222]: 当前笔记
+          - generic [ref=e223]: "24"
+        - generic [ref=e224]:
+          - generic [ref=e225]: 活跃天数
+          - generic [ref=e226]: "2"
+        - generic [ref=e227]:
+          - generic [ref=e228]: 总星点
+          - generic [ref=e229]: "1295"
+      - generic [ref=e230]: 点击「查看预测」了解6个月后的你
+  - generic [ref=e231]:
+    - generic [ref=e232]:
+      - generic [ref=e233]: 📋
+      - heading "规则速查" [level=3] [ref=e234]
+    - generic [ref=e235]:
+      - generic [ref=e236]:
+        - generic [ref=e237]: 💰
+        - heading "积分获取" [level=4] [ref=e238]
+      - generic [ref=e239]:
+        - generic [ref=e240]:
+          - generic [ref=e241]: 📝
+          - heading "每日灵感" [level=5] [ref=e242]
+        - table [ref=e243]:
+          - rowgroup [ref=e244]:
+            - row "采集次数 倍数 星点" [ref=e245]:
+              - columnheader "采集次数" [ref=e246]
+              - columnheader "倍数" [ref=e247]
+              - columnheader "星点" [ref=e248]
+          - rowgroup [ref=e249]:
+            - row "第1条 1× ✏️ 10.0 ✏️" [ref=e250]:
+              - cell "第1条" [ref=e251]
+              - cell "1× ✏️" [ref=e252]:
+                - generic [ref=e253] [cursor=pointer]: 1× ✏️
+              - cell "10.0 ✏️" [ref=e254]:
+                - generic [ref=e255] [cursor=pointer]: 10.0 ✏️
+            - row "第2条 1.5× ✏️ 15.0 ✏️" [ref=e256]:
+              - cell "第2条" [ref=e257]
+              - cell "1.5× ✏️" [ref=e258]:
+                - generic [ref=e259] [cursor=pointer]: 1.5× ✏️
+              - cell "15.0 ✏️" [ref=e260]:
+                - generic [ref=e261] [cursor=pointer]: 15.0 ✏️
+            - row "第3条 2× ✏️ 20.0 ✏️" [ref=e262]:
+              - cell "第3条" [ref=e263]
+              - cell "2× ✏️" [ref=e264]:
+                - generic [ref=e265] [cursor=pointer]: 2× ✏️
+              - cell "20.0 ✏️" [ref=e266]:
+                - generic [ref=e267] [cursor=pointer]: 20.0 ✏️
+            - row "第4条+ 0.2× ✏️ 2.0 ✏️" [ref=e268]:
+              - cell "第4条+" [ref=e269]
+              - cell "0.2× ✏️" [ref=e270]:
+                - generic [ref=e271] [cursor=pointer]: 0.2× ✏️
+              - cell "2.0 ✏️" [ref=e272]:
+                - generic [ref=e273] [cursor=pointer]: 2.0 ✏️
+      - generic [ref=e274]:
+        - generic [ref=e275]:
+          - generic [ref=e276]: 🚀
+          - heading "媒体发布" [level=5] [ref=e277]
+        - generic [ref=e278]:
+          - generic [ref=e280]: 🌟
+          - generic [ref=e282]: 🌟
+          - generic [ref=e284]: ⭐
+          - generic [ref=e286]: ⭐
+          - generic [ref=e288]: ⭐
+        - table [ref=e289]:
+          - rowgroup [ref=e290]:
+            - row "发布内容 750-1000 星点/次" [ref=e291]:
+              - cell "发布内容" [ref=e292]
+              - cell "750-1000 星点/次" [ref=e293]:
+                - generic [ref=e294]: 750-1000 星点/次
+        - generic [ref=e295]: 最多可获得 5 次奖励
+      - generic [ref=e296]:
+        - generic [ref=e297]:
+          - generic [ref=e298]: 🗓️
+          - heading "周月小结" [level=5] [ref=e299]
+        - table [ref=e300]:
+          - rowgroup [ref=e301]:
+            - row "项目 说明 奖励" [ref=e302]:
+              - columnheader "项目" [ref=e303]
+              - columnheader "说明" [ref=e304]
+              - columnheader "奖励" [ref=e305]
+          - rowgroup [ref=e306]:
+            - row "📅 每周回顾 完成周回顾 200 星点 ✏️" [ref=e307]:
+              - cell "📅 每周回顾" [ref=e308]
+              - cell "完成周回顾" [ref=e309]
+              - cell "200 星点 ✏️" [ref=e310]:
+                - generic [ref=e311] [cursor=pointer]: 200 星点 ✏️
+            - row "📈 月度战报 完成月总结 500 星点 ✏️" [ref=e312]:
+              - cell "📈 月度战报" [ref=e313]
+              - cell "完成月总结" [ref=e314]
+              - cell "500 星点 ✏️" [ref=e315]:
+                - generic [ref=e316] [cursor=pointer]: 500 星点 ✏️
+    - generic [ref=e317]:
+      - generic [ref=e318]:
+        - generic [ref=e319]: 🛒
+        - heading "积分使用" [level=4] [ref=e320]
+      - table [ref=e322]:
+        - rowgroup [ref=e323]:
+          - row "项目 说明 汇率" [ref=e324]:
+            - columnheader "项目" [ref=e325]
+            - columnheader "说明" [ref=e326]
+            - columnheader "汇率" [ref=e327]
+        - rowgroup [ref=e328]:
+          - row "🎫 消费券兑换 1星点 = 1 元 ✏️" [ref=e329]:
+            - cell "🎫 消费券兑换" [ref=e330]
+            - cell "1星点 =" [ref=e331]
+            - cell "1 元 ✏️" [ref=e332]:
+              - generic [ref=e333] [cursor=pointer]: 1 元 ✏️
+          - row "💰 基金充值 我的投资账户 ✏️ 1 元 ✏️" [ref=e334]:
+            - cell "💰 基金充值" [ref=e335]
+            - cell "我的投资账户 ✏️" [ref=e336]:
+              - generic [ref=e337] [cursor=pointer]: 我的投资账户 ✏️
+            - cell "1 元 ✏️" [ref=e338]:
+              - generic [ref=e339] [cursor=pointer]: 1 元 ✏️
