@@ -10,14 +10,16 @@
 
 | 项目 | 值 |
 |------|-----|
-| 版本号 | 0.3.1-dev |
-| 分支 | v0.3.1-dev |
+| 版本号 | 0.3.2-dev |
+| 分支 | v0.3.2-dev |
 | 部署状态 | 🔧 开发中 |
-| 下一版本 | v0.3.2（后端拆分第一波） |
+| 下一版本 | v0.3.2（后端拆分） |
 
 ---
 
 > **已上线版本**（v0.1.0、v0.1.1、v0.2.4、v0.2.5）见 [CHANGELOG](CHANGELOG.md)。
+>
+> **v0.3.1** 已打 tag，前端拆分完成。
 
 ---
 
@@ -55,37 +57,48 @@
 
 ---
 
-## 下一步：v0.3.2（后端拆分第一波）
+## 进行中：v0.3.2（后端拆分）
 
-### 目标：先拆核心模块，验证后再拆其余
+> ⚠️ **风险提示**：本版本涉及 `engine.py`（2258行）拆分为多个模块，属大规模重构。执行前需备份 `engine.py`，每拆完一个模块立即验证。
 
-| 模块 | 文件 | 包含功能 |
-|------|------|
-| [ ] **engine_core.py** | 状态/配置/日志/数据路径 |
-| [ ] **engine_capture.py** | 采集/标签/连接力/去重/相似笔记 |
-| [ ] **engine_exchange.py** | 兑换/基金池/汇率/动态锁定 |
+### 架构模式
 
----
+采用 **Mixin 多重继承** 模式拆分，API 层零变更：
 
-## v0.3.3：后端拆分第二波（review + season + backup）
+```python
+# engine.py 最终形态
+class HuntingEngine(EngineCore, EngineBackup, EngineSeason,
+                     EngineReview, EngineExchange, EngineCapture):
+    pass  # 所有方法通过 MRO 继承
+```
 
-| 模块 | 文件 | 包含功能 |
-|------|------|
-| [ ] **engine_review.py** | 周/月回顾/生成/素材 |
-| [ ] **engine_season.py** | 赛季系统/主题/进度 |
-| [ ] **engine_backup.py** | 备份/iCloud 同步 |
+### 拆分顺序（依赖最少的先拆）
+
+| 步骤 | 模块 | 文件 | 核心方法 | 验证方式 |
+|:----:|------|------|---------|---------|
+| 0 | **Core** | `engine_core.py` | `_load_state/_save_state/_load_config/__init__` | 启动无报错 |
+| 1 | **Backup** | `engine_backup.py` | `backup/sync_to_icloud/start_icloud_sync` | `POST /api/backup` |
+| 2 | **Season** | `engine_season.py` | `check_season_end/start_new_season/_generate_season_report` | `POST /api/season/check` |
+| 3 | **Review** | `engine_review.py` | `generate_weekly_review/submit_weekly_review/...` | 触发周回顾 |
+| 4 | **Exchange** | `engine_exchange.py` | `exchange_coupon/exchange_fund/_calculate_exchange_rate` | 兑换消费券+基金 |
+| 5 | **Capture** | `engine_capture.py` | `process_daily_capture/_update_tag_graph/_find_related_notes` | 提交采集灵感 |
+
+### 关于惩罚代码（v0.3.1 已清理前端）
+
+- 前端 penalty 死代码（`:class` 绑定、提示条、`.penalty-indicator`）已在 v0.3.1 删除
+- 后端 `engine.py` 中 `penalty_active` 相关字段和逻辑在拆分 Exchange/Capture 时一并清理
 
 ### 预期效果
 
 | 文件 | 拆分前 | 拆分后 |
 |------|--------|--------|
-| `index.html` | 2778 行 | ~1210 行 |
-| `engine.py` | 2258 行 | ~377 行/模块（6个模块） |
-
-### 技术保障
-
-- uvicorn `--reload` 完全不受影响，改任意 .py 文件自动重启
-- 每个模块拆完立即测试核心流程（采集 + 至少一个 API）
+| `engine.py` | 2258 行 | ~50 行（仅 import + class 定义）|
+| `engine_core.py` | - | ~500 行（基础方法）|
+| `engine_capture.py` | - | ~800 行（采集+标签+发现）|
+| `engine_exchange.py` | - | ~200 行 |
+| `engine_review.py` | - | ~350 行 |
+| `engine_season.py` | - | ~200 行 |
+| `engine_backup.py` | - | ~80 行 |
 
 ---
 
