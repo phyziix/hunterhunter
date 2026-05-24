@@ -3,6 +3,8 @@
 > 记录时间：2026-05-22 / 最后维护：2026-05-24
 > 状态：✅ v0.1 已下线 / ✅ v0.2.4 已下线 / ✅ v0.2.5 已上线 (8003端口)
 > 
+> **最新热修复** (05-24)：v0.2.5 engine.py `required_fields` 补上 `tag_index`，修复生产环境标签查询 KeyError。详见踩坑 7。
+> 
 > 本文档是部署的唯一事实来源。README 的部署部分是摘要，这里才是完整步骤和踩坑记录。**新设备部署必读。**
 
 ---
@@ -245,6 +247,14 @@ lt --port 8003 --subdomain <YOUR_SUBDOMAIN>
 **原因**：写入本地 → sync_to_icloud → macOS iCloud Drive 守护进程上传，有延迟。
 
 **解决**：等待数秒到数十秒后刷新 Obsidian。属于 iCloud 同步的正常延迟。也可手动触发 `POST /api/sync/icloud` 加速同步。
+
+### 坑 7：v0.2.5 标签查询 KeyError — tag_index 迁移遗漏
+
+**现象**：生产环境点击标签或提交笔记时报 `KeyError: 'tag_index'`。
+
+**原因**：v0.3.1 新增了 `tag_index`（标签→笔记文件路径的 O(1) 索引），代码多处直接 `self.state["tag_index"]` 访问，但 `_migrate_state_v022` 的 `required_fields` 列表遗漏了 `tag_index`。生产 state.json 没有该字段，迁移跳过，运行时报错。
+
+**解决**：在 `engine.py` 的 `required_fields` 中加入 `"tag_index"`，重启后自动迁移补齐字段。修复已在 workspace v0.3.2-dev 的 `engine/engine_core.py` 和生产 v0.2.5 的 `engine.py` 同步应用。
 
 ---
 
