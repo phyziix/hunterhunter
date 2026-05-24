@@ -913,7 +913,7 @@
             </div>
         </div>
 
-        <div class="card">
+        <div class="card" x-show="config.exchange_enabled !== false">
             <h3>🔄 兑换中心</h3>
             <p style="font-size: 0.8rem; color: #64748b; margin-top: 0; margin-bottom: 15px;">选择消费券即时兑换或存入基金池获取更高倍率，连续选择同一路径可获得额外加成。</p>
             
@@ -1550,7 +1550,7 @@
     </div>
 
     <!-- 兑换模态框 -->
-    <div x-show="showExchangeModal" style="display: none;" class="modal-overlay" @click.self="closeExchangeModal">
+    <div x-show="showExchangeModal && config.exchange_enabled !== false" style="display: none;" class="modal-overlay" @click.self="closeExchangeModal">
         <div class="modal" @click.stop style="max-width: 480px;">
             <h3 x-text="exchangeType === 'coupon' ? '🎫 消费券兑换' : '💰 基金充值'" style="margin-bottom: 12px;"></h3>
             
@@ -1744,6 +1744,13 @@
                     this.captureSuccessData = null;
                     this.expandedNote = null;
                 },
+                // ===== 重复提交警告 =====
+                duplicateWarningData: null,
+                showDuplicateWarningModal: false,
+                closeDuplicateWarningModal() {
+                    this.showDuplicateWarningModal = false;
+                    this.duplicateWarningData = null;
+                },
                 // ===== 长期推演数据 =====
                 projection: null,
                 showProjectionModal: false,
@@ -1901,7 +1908,8 @@
                     if (!content) return;
                     
                     // 匹配 #标签 格式：以#开头，后跟非空格、非标点的中文/英文/数字/斜杠
-                    const tagPattern = /#[^\s.,;:!?，。；：！？、\n]+/g;
+                    // 排除 Markdown 标题格式（## ### 等）和 # 后面直接是空格的情况
+                    const tagPattern = /#([^\s.,;:!?，。；：！？、\n#][^\s.,;:!?，。；：！？、\n]*)/g;
                     const matches = content.match(tagPattern) || [];
                     const extracted = matches
                         .map(t => t.replace(/^#/, '').trim())
@@ -1942,7 +1950,16 @@
                             await this.loadTags();
                             this.playSound();
                         } else {
-                            this.showNotificationMessage(data.detail || '捕获失败', 'error', '❌');
+                            // 检测是否是重复提交错误
+                            if (data.error && (data.error.includes('相同内容') || data.error.includes('高度相似'))) {
+                                this.duplicateWarningData = {
+                                    error: data.error,
+                                    detail: data.detail
+                                };
+                                this.showDuplicateWarningModal = true;
+                            } else {
+                                this.showNotificationMessage(data.detail || '捕获失败', 'error', '❌');
+                            }
                         }
                     } catch (error) {
                         this.showNotificationMessage('网络错误', 'error', '❌');
@@ -2567,6 +2584,41 @@
                     <!-- 关闭按钮 -->
                     <button @click="closeCaptureSuccessModal()" style="width: 100%; padding: 12px; background: #667eea; color: white; border: none; border-radius: 10px; font-size: 1rem; cursor: pointer;">
                         继续采集
+                    </button>
+                </div>
+            </template>
+        </div>
+    </div>
+
+    <!-- 重复提交警告弹窗 -->
+    <div x-show="showDuplicateWarningModal" style="display: none;" class="modal-overlay" @click.self="closeDuplicateWarningModal()">
+        <div class="modal-content" style="max-width: 420px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="margin: 0; color: #f59e0b;">⚠️ 检测到重复提交</h3>
+                <button @click="closeDuplicateWarningModal()" class="btn-close">✕</button>
+            </div>
+            
+            <template x-if="duplicateWarningData">
+                <div>
+                    <!-- 警告内容 -->
+                    <div style="background: #fef3c7; border: 1px solid #f59e0b; border-radius: 12px; padding: 16px; margin-bottom: 20px;">
+                        <div style="font-weight: 600; color: #92400e; margin-bottom: 8px;" x-text="duplicateWarningData.error"></div>
+                        <div style="font-size: 0.9rem; color: #a16207;" x-text="duplicateWarningData.detail"></div>
+                    </div>
+                    
+                    <!-- 建议 -->
+                    <div style="background: #f8fafc; border-radius: 8px; padding: 16px; margin-bottom: 20px;">
+                        <h4 style="margin: 0 0 10px 0; color: #475569; font-size: 0.9rem;">💡 建议</h4>
+                        <ul style="margin: 0; padding-left: 20px; color: #64748b; font-size: 0.85rem; line-height: 1.8;">
+                            <li>查看右侧的「相似笔记」，了解是否已有类似内容</li>
+                            <li>如有需要，可修改后重新提交</li>
+                            <li>或直接关闭此提示，继续其他采集</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- 关闭按钮 -->
+                    <button @click="closeDuplicateWarningModal()" style="width: 100%; padding: 12px; background: #f59e0b; color: white; border: none; border-radius: 10px; font-size: 1rem; cursor: pointer;">
+                        我知道了
                     </button>
                 </div>
             </template>

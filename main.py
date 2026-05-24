@@ -29,6 +29,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# 兑换模块 feature flag（v0.2.5 下线）
+ENABLE_EXCHANGE = os.getenv("ENABLE_EXCHANGE", "false").lower() == "true"
+
 engine = HuntingEngine()
 
 # 启动后台 iCloud 同步（每 5 分钟）
@@ -92,10 +95,12 @@ async def content_verify(request: ContentVerifyRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-# ========== 兑换相关 API ==========
+# ========== 兑换相关 API（v0.2.5 feature flag 下线）==========
 
 @app.post("/api/exchange/path")
 async def set_exchange_path(request: ExchangePathRequest):
+    if not ENABLE_EXCHANGE:
+        raise HTTPException(status_code=403, detail="兑换模块已临时关闭")
     try:
         result = engine.set_exchange_path(path=request.path)
         if "error" in result:
@@ -108,6 +113,8 @@ async def set_exchange_path(request: ExchangePathRequest):
 
 @app.post("/api/exchange/coupon")
 async def exchange_coupon(request: ExchangeRequest):
+    if not ENABLE_EXCHANGE:
+        raise HTTPException(status_code=403, detail="兑换模块已临时关闭")
     try:
         result = engine.exchange_coupon(amount=request.amount)
         if "error" in result:
@@ -120,6 +127,8 @@ async def exchange_coupon(request: ExchangeRequest):
 
 @app.post("/api/exchange/fund")
 async def exchange_fund(request: ExchangeRequest):
+    if not ENABLE_EXCHANGE:
+        raise HTTPException(status_code=403, detail="兑换模块已临时关闭")
     try:
         result = engine.exchange_fund(amount=request.amount)
         if "error" in result:

@@ -989,7 +989,8 @@ class HuntingEngine:
         import math
         tag_idf = {}
         for t, count in all_tag_counts.items():
-            tag_idf[t] = math.log((total_docs + 1) / (count + 1)) + 1  # +1避免0
+            idf = math.log((total_docs + 1) / (count + 1)) + 1  # +1避免0
+            tag_idf[t] = min(idf, 5.0)  # IDF 上限截断，防止冷门标签权重爆炸
         
         # 第二遍：用IDF加权计算匹配度
         for meta in note_metas:
@@ -1011,11 +1012,13 @@ class HuntingEngine:
             all_words = input_words | note_words
             content_jaccard = len(input_words & note_words) / len(all_words) if all_words else 0
             
-            # 综合得分：内容权重提升到0.5
-            score = tag_jaccard_idf * 0.5 + content_jaccard * 0.5
+            # 综合得分：标签权重 0.7，内容权重 0.3
+            score = tag_jaccard_idf * 0.7 + content_jaccard * 0.3
             
-            # 阈值：标签重叠≥2 且 综合得分≥0.2
-            if overlap >= 2 and score >= 0.2:
+            # 阈值规则：
+            # 1. 标签重叠≥2 且 综合得分≥0.2（保留原规则）
+            # 2. 标签重叠=1 且 综合得分≥0.25（新增规则，支持单标签新笔记）
+            if (overlap >= 2 and score >= 0.2) or (overlap == 1 and score >= 0.25):
                 title = body.split('\n')[0][:40] if body else ""
                 if not title:
                     title = note_file.stem.replace("灵感-", "").split("-")[-1]
@@ -1031,7 +1034,8 @@ class HuntingEngine:
                     "snippet": snippet
                 })
         
-        related_notes.sort(key=lambda x: (x["tag_overlap"], x["score"]), reverse=True)
+        # 排序：综合得分第一，标签重叠数第二
+        related_notes.sort(key=lambda x: (x["score"], x["tag_overlap"]), reverse=True)
         return related_notes[:limit]
     
     def _check_duplicate(self, content, folder_path):
@@ -1766,7 +1770,10 @@ hunt: true
         return notes
     
     def get_config(self):
-        return self.config
+        # v0.2.5: 兑换模块已下线，通过配置暴露开关供前端判断
+        config = self.config.copy()
+        config["exchange_enabled"] = False  # 始终为 false，v0.4 重构后由环境变量控制
+        return config
     
     def update_config(self, updates):
         self.config.update(updates)
