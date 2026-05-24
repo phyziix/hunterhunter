@@ -1,7 +1,7 @@
 # 部署与运维手册
 
 > 记录时间：2026-05-22 / 最后维护：2026-05-24
-> 状态：✅ v0.1 已下线 / ✅ v0.2.4 已上线 (8003端口)
+> 状态：✅ v0.1 已下线 / ✅ v0.2.4 已下线 / ✅ v0.2.5 已上线 (8003端口)
 > 
 > 本文档是部署的唯一事实来源。README 的部署部分是摘要，这里才是完整步骤和踩坑记录。**新设备部署必读。**
 
@@ -30,8 +30,20 @@
 | 用途 | 路径 | 说明 |
 |------|------|------|
 | 代码仓库 | `<WORKSPACE>/hunterhunter/` | Git 管理，源码在此 |
-| 运行目录 (当前) | `<PRODUCTION>/v0.2.4/` | **当前上线版本**，端口 8003 |
+| 运行目录 (当前) | `<PRODUCTION>/v0.2.5/` | **当前上线版本**，端口 8003 |
+| 运行目录 (旧版) | `<PRODUCTION>/v0.2.4/` | 已下线，端口 8003 |
 | 运行目录 (旧版) | `<PRODUCTION>/v0.1/` | 已下线，端口 8002 |
+
+---
+
+## ⚠️ 端口约定（重要）
+
+| 用途 | 端口 | 说明 |
+|------|------|------|
+| 生产环境 | 8003 | **固定不变**，launchd 守护 |
+| 调试环境 | 8004 | **临时使用**，避免与生产冲突 |
+
+> 调试时需临时修改 `main.py` 端口为 8004，调试完后改回 8003。
 
 > **重要**：修改代码要在 `<WORKSPACE>` 下，改完后复制到 `<PRODUCTION>` 并重启服务才生效。
 
@@ -139,21 +151,21 @@ for file in sorted(self.inbox_folder.glob("灵感-*.md")):
 
 plist 文件：`~/Library/LaunchAgents/<BUNDLE_ID>.hunterhunter-v<version>.plist`
 
-当前 v0.2.4 关键配置：
-- `WorkingDirectory`：`<PRODUCTION>/v0.2.4/`
-- `ProgramArguments`：`<PRODUCTION>/v0.2.4/venv/bin/python3 -m uvicorn main:app --host 0.0.0.0 --port 8003`
+当前 v0.2.5 关键配置：
+- `WorkingDirectory`：`<PRODUCTION>/v0.2.5/`
+- `ProgramArguments`：`<PRODUCTION>/v0.2.5/venv/bin/python3 -m uvicorn main:app --host 0.0.0.0 --port 8003`
 - `KeepAlive`：true
-- `StandardOutPath` / `StandardErrorPath`：`<PRODUCTION>/v0.2.4/logs/`
+- `StandardOutPath` / `StandardErrorPath`：`<PRODUCTION>/v0.2.5/logs/`
 
-旧版 v0.2.4 / v0.1 配置（已下线，仅供参考）：
+旧版 v0.2.5 / v0.2.4 / v0.1 配置（已下线，仅供参考）：
 
 ### localtunnel 隧道
 
 plist 文件：`~/Library/LaunchAgents/com.hunterhunter.tunnel.plist`
 
 关键配置：
-- `WorkingDirectory`：`<PRODUCTION>/v0.2.4/`
-- `ProgramArguments`：`/bin/bash <PRODUCTION>/v0.2.4/tunnel.sh`
+- `WorkingDirectory`：`<PRODUCTION>/v0.2.5/`
+- `ProgramArguments`：`/bin/bash <PRODUCTION>/v0.2.5/tunnel.sh`
 - **必须在 tunnel.sh 中显式设置 PATH**（见踩坑 3）
 
 ---
@@ -244,9 +256,9 @@ lt --port 8003 --subdomain <YOUR_SUBDOMAIN>
 # 查看所有相关进程
 launchctl list | grep hunterhunter
 
-# 重启 FastAPI 服务 (v0.2.4)
-launchctl unload ~/Library/LaunchAgents/<BUNDLE_ID>.hunterhunter-v0.2.4.plist
-launchctl load ~/Library/LaunchAgents/<BUNDLE_ID>.hunterhunter-v0.2.4.plist
+# 重启 FastAPI 服务 (v0.2.5)
+launchctl unload ~/Library/LaunchAgents/<BUNDLE_ID>.hunterhunter-v0.2.5.plist
+launchctl load ~/Library/LaunchAgents/<BUNDLE_ID>.hunterhunter-v0.2.5.plist
 
 # 重启 tunnel
 launchctl unload ~/Library/LaunchAgents/com.hunterhunter.tunnel.plist
@@ -254,8 +266,8 @@ launchctl load ~/Library/LaunchAgents/com.hunterhunter.tunnel.plist
 
 # ===== 日志查看 =====
 
-tail -f <PRODUCTION>/v0.2.4/logs/stdout.log      # 服务日志
-tail -f <PRODUCTION>/v0.2.4/logs/stderr.log      # 错误日志
+tail -f <PRODUCTION>/v0.2.5/logs/stdout.log      # 服务日志
+tail -f <PRODUCTION>/v0.2.5/logs/stderr.log      # 错误日志
 
 # ===== 验证 =====
 
