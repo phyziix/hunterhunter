@@ -52,14 +52,16 @@
 > 10. **维护文档**：先更新 `docs/DEPLOYMENT.md`（版本状态、端口、目录结构等），再执行「同步文档」规则（覆盖 CHANGELOG/PRODUCT/STATUS/README，该规则末尾已含 commit+push）
 
 > ⚠️ **调试规则**：用户说「调试」或贴了报错截图时，执行以下全部操作：
-> 1. **启动运行时环境**：`python3 main.py &` 启动后端 + `playwright-cli open` 打开浏览器
+> 1. **启动运行时环境**：
+>    - **端口约定**：生产环境固定 8003，调试用 8004（避免冲突）
+>    - 临时修改 main.py 端口为 8004 后，`python3 main.py &` 启动后端 + 打开浏览器 http://localhost:8004
 > 2. 区分来源：Console 红字 → 前端问题；Network 红请求 → 后端问题
 > 3. 同时自查代码一致性（API 路由与函数签名是否匹配、state.json 结构是否与文档一致、config.yaml 键是否被正确引用）
 > 4. 给出本次变更的验收清单（3-7 条可操作检查项）
 > 5. 异常时列出问题并给出修复；无异常则说「调试通过」
-> 6. **最后一步**：停服、删 playwright-cli 临时目录、删测试产生的笔记/星点，恢复测试前的 state.json
->    - **删除数据前必须先备份**：执行 `POST /api/backup` 生成时间戳备份，或手动 `cp -r data/inspire/ ~/Documents/hunterhunter_backups/manual_$(date +%Y%m%d_%H%M%S)/`
->    - **恢复时优先用备份**：先查 `~/Documents/hunterhunter_backups/` 有无可用备份 → 有则从备份恢复 → 没有再用 `git checkout`
+> 6. **最后一步**：停服、恢复 main.py 端口为 8003、删测试产生的笔记/星点，恢复测试前的 state.json
+>     - **删除数据前必须先备份**：执行 `POST /api/backup` 生成时间戳备份，或手动 `cp -r data/inspire/ ~/Documents/hunterhunter_backups/manual_$(date +%Y%m%d_%H%M%S)/`
+>     - **恢复时优先用备份**：先查 `~/Documents/hunterhunter_backups/` 有无可用备份 → 有则从备份恢复 → 没有再用 `git checkout`
 > 7. **⚠️ 禁止在调试端测试同步/备份**：`sync_to_icloud()` 和 `backup()` 操作的是 `self.base_path`（代码所在目录的 `data/inspire/`），在 workspace 调试端运行会污染 iCloud 和备份目录。同步/备份操作只能部署到生产环境后在生产端测试。
 
 > ⚠️ **方法论实验规则**：本项目同时是个人开发方法论实验。当前阶段规则只管 hunterhunter，不做通用化；项目关闭时统一收割到 `METHODOLOGY.md`。

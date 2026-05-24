@@ -396,7 +396,8 @@ async def reset_daily_flags():
 if not os.path.exists("static"):
     os.makedirs("static")
 
-app.mount("/", StaticFiles(directory="static", html=True), name="static")
+app.mount("/static", StaticFiles(directory="static"), name="static_files")
+app.mount("/", StaticFiles(directory="static", html=True), name="static_root")
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8003)

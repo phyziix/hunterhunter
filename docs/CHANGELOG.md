@@ -9,6 +9,7 @@
 
 | 版本号 | 分支 | 日期 | 部署 | 核心变更 |
 |--------|------|------|:--:|---------|
+| 0.3.1-dev | v0.3.1-dev | 05-24 | 🔧 | 前端拆分：index.html → styles.css + app.js，修复 Alpine.js 重复加载和样式文件路径 404 |
 | 0.2.5 | v0.2.4 | 05-24 | 🔧 | 兑换模块下线、重复提交提示优化、标签提取过滤、相似笔记算法再优化 |
 | 0.2.4 | v0.2.4 | 05-24 | ✅ | iCloud 同步补回、相似笔记算法升级、规则体系完善、tunnel 自动重连（05-24 部署） |
 | 0.2.4 | v0.2.4 | 05-23 | 🔧 | 基金池重构(动态锁定)、标签提取、获取记录、15天赛季、连接力奖励 |
@@ -18,6 +19,33 @@
 | 0.2.0 | v0.2  | 05-18 | 🔧 | 数据迁移、基金池分离、tag_graph |
 | 0.1.1 | v0.11 | 05-22 | ✅ | localtunnel 公网部署、launchd 守护 |
 | 0.1.0 | v0.1  | 05-17 | ✅ | 初始版本 |
+
+---
+
+## v0.3.1-dev（2026-05-24）🔧 开发中
+
+### 前端拆分
+
+将单页 index.html（2778行）拆分为三个独立文件：
+
+| 文件 | 行数 | 说明 |
+|------|:----:|------|
+| `static/index.html` | 1215 | HTML 结构 + Alpine.js CDN + 外链引用 |
+| `static/styles.css` | 700 | 所有样式（基础/布局/模态框/动画/响应式） |
+| `static/app.js` | 835 | 所有 Alpine.js 逻辑（appData 函数） |
+
+### 修复的问题
+
+- **Alpine.js 重复加载**：CDN `<script>` 标签被引入两次（修改 extract_files.py 时引入），已删除冗余
+- **重复样式定义**：`styles.css` 中 `.modal-overlay`、`@keyframes fadeIn`、`@keyframes scaleIn` 各出现两次，已清理
+- **静态资源 404**：CSS/JS 路径使用 `/static/*`，但之前只有一个根挂载 `app.mount("/", StaticFiles(...))`，导致实际查找路径为 `static/static/*`。修复方式：在 `main.py` 增加独立的 `/static` 挂载 `app.mount("/static", StaticFiles(directory="static"))`，与根挂载共存
+- **惩罚代码清理**：删除前端 penalty 相关死代码（v0.2.2 已废除），涉及 index.html（`:class` 绑定 + 提示条）、styles.css（`.penalty-indicator` + `@keyframes pulse`）、app.js（`penalty_active` 初始值）
+
+### 验证
+
+- 零逻辑改动，纯剪切粘贴
+- Console 无报错，CSS/JS 均返回 200
+- 页面背景 `linear-gradient(135deg, #667eea, #764ba2)` 正常显示
 
 ---
 
