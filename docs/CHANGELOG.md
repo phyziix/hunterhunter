@@ -9,7 +9,8 @@
 
 | 版本号 | 分支 | 日期 | 部署 | 核心变更 |
 |--------|------|------|:--:|---------|
-| 0.3.1-dev | v0.3.1-dev | 05-24 | 🔧 | 前端拆分：index.html → styles.css + app.js，修复 Alpine.js 重复加载和样式文件路径 404 |
+| 0.3.2-dev | v0.3.2-dev | 05-24 | 🔧 | 后端拆分：engine.py → core/backup/season/review/exchange/capture（Mixin 模式）|
+| 0.3.1 | v0.3.1-dev | 05-24 | ✅ | 前端拆分：index.html → styles.css + app.js，修复 Alpine.js 重复加载和样式文件路径 404 |
 | 0.2.5 | v0.2.4 | 05-24 | 🔧 | 兑换模块下线、重复提交提示优化、标签提取过滤、相似笔记算法再优化 |
 | 0.2.4 | v0.2.4 | 05-24 | ✅ | iCloud 同步补回、相似笔记算法升级、规则体系完善、tunnel 自动重连（05-24 部署） |
 | 0.2.4 | v0.2.4 | 05-23 | 🔧 | 基金池重构(动态锁定)、标签提取、获取记录、15天赛季、连接力奖励 |
@@ -22,7 +23,7 @@
 
 ---
 
-## v0.3.1-dev（2026-05-24）🔧 开发中
+## v0.3.1（2026-05-24）✅ 已上线
 
 ### 前端拆分
 
@@ -46,6 +47,31 @@
 - 零逻辑改动，纯剪切粘贴
 - Console 无报错，CSS/JS 均返回 200
 - 页面背景 `linear-gradient(135deg, #667eea, #764ba2)` 正常显示
+
+---
+
+## v0.3.2-dev（2026-05-24）🔧 开发中
+
+### 后端拆分
+
+将单文件 `engine.py`（2258行）按功能拆分为多个模块，采用 **Mixin 多重继承** 模式：
+
+| 模块 | 文件 | 行数 | 功能 |
+|------|------|:----:|------|
+| Core | `engine_core.py` | ~500 | 状态/配置/日志/数据路径 |
+| Backup | `engine_backup.py` | ~80 | 备份/iCloud 同步 |
+| Season | `engine_season.py` | ~200 | 赛季/主题/结算 |
+| Review | `engine_review.py` | ~350 | 周回顾/月战报 |
+| Exchange | `engine_exchange.py` | ~200 | 兑换/基金/汇率 |
+| Capture | `engine_capture.py` | ~800 | 采集/标签/发现/连接力 |
+
+`engine.py` 最终简化为仅 import + class 定义（约50行）。
+
+### 设计决策
+
+- **Mixin 模式**：API 层零变更，`engine.xxx()` 调用不受影响
+- **执行顺序**：Core → Backup → Season → Review → Exchange → Capture（依赖最少的先拆）
+- **每拆一模块立即验证**：精准定位问题
 
 ---
 
