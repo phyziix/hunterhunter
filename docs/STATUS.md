@@ -38,9 +38,9 @@
 
 ---
 
-## 下一步：v0.3（结构调整）
+## 下一步：v0.3.x（结构调整）
 
-> v0.3 专注代码结构优化，不做功能变更。
+> v0.3.x 专注代码结构优化，不做功能变更。
 
 ### 设计决策
 
@@ -48,22 +48,45 @@
 - v0.4 再做**兑换重构**，两版本递进关系：v0.3 搬代码，v0.4 改代码
 - 兑换体系代码暂不删，通过结构优化实现下线，日后一行配置即可恢复
 
-### 任务分解
+---
 
-#### 前端拆分（~30分钟）
+## v0.3.1：前端拆分（低风险，快速上线）
 
-- [ ] **前端：提取 style**：`index.html` 的 `<style>` 块 → `static/styles.css`
-- [ ] **前端：提取 script**：`index.html` 的 `<script>` 块 → `static/app.js`
-- [ ] **前端：精简 index.html**：只保留 HTML 结构 + Alpine.js CDN + 外链引用
+### 目标：把 index.html 从 2778 行降到 ~1210 行
 
-#### 后端拆分（2-3小时，每模块拆完即测）
+| 任务 | 说明 |
+|------|------|
+| [ ] **提取 style**：`<style>` 块 → `static/styles.css` |
+| [ ] **提取 script**：`<script>` 块 → `static/app.js` |
+| [ ] **精简 index.html**：只保留 HTML 结构 + Alpine.js CDN + 外链引用 |
 
-- [ ] **后端：engine_core.py**：状态/配置/日志基础方法
-- [ ] **后端：engine_capture.py**：采集 + 标签 + 连接力
-- [ ] **后端：engine_exchange.py**：兑换 + 基金池（v0.4 重构基础）
-- [ ] **后端：engine_review.py**：周/月回顾
-- [ ] **后端：engine_season.py**：赛季系统
-- [ ] **后端：engine_backup.py**：备份同步
+### 验证要点
+
+- 零逻辑改动，纯剪切粘贴
+- Console 无报错
+- 核心按钮可点击
+
+---
+
+## v0.3.2：后端拆分第一波（core + capture + exchange）
+
+### 目标：先拆核心模块，验证后再拆其余
+
+| 模块 | 文件 | 包含功能 |
+|------|------|
+| [ ] **engine_core.py** | 状态/配置/日志/数据路径 |
+| [ ] **engine_capture.py** | 采集/标签/连接力/去重/相似笔记 |
+| [ ] **engine_exchange.py** | 兑换/基金池/汇率/动态锁定 |
+
+---
+
+## v0.3.3：后端拆分第二波（review + season + backup）
+
+| 模块 | 文件 | 包含功能 |
+|------|------|
+| [ ] **engine_review.py** | 周/月回顾/生成/素材 |
+| [ ] **engine_season.py** | 赛季系统/主题/进度 |
+| [ ] **engine_backup.py** | 备份/iCloud 同步 |
 
 ### 预期效果
 
