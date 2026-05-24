@@ -76,12 +76,27 @@ class HuntingEngine(EngineCore, EngineBackup, EngineSeason,
 
 | 步骤 | 模块 | 文件 | 核心方法 | 验证方式 |
 |:----:|------|------|---------|---------|
-| 0 | **Core** | `engine_core.py` | `_load_state/_save_state/_load_config/__init__` | 启动无报错 |
+| 0 | **Core** | `engine_core.py` | 基础方法（详见下文清单）| 启动无报错 |
 | 1 | **Backup** | `engine_backup.py` | `backup/sync_to_icloud/start_icloud_sync` | `POST /api/backup` |
 | 2 | **Season** | `engine_season.py` | `check_season_end/start_new_season/_generate_season_report` | `POST /api/season/check` |
 | 3 | **Review** | `engine_review.py` | `generate_weekly_review/submit_weekly_review/...` | 触发周回顾 |
 | 4 | **Exchange** | `engine_exchange.py` | `exchange_coupon/exchange_fund/_calculate_exchange_rate` | 兑换消费券+基金 |
 | 5 | **Capture** | `engine_capture.py` | `process_daily_capture/_update_tag_graph/_find_related_notes` | 提交采集灵感 |
+
+### Core 方法完整清单（~600+ 行）
+
+| 类别 | 方法 |
+|------|------|
+| 存储 | `_load_state`, `_save_state`, `_load_config`, `_save_config`, `_write_default_config`, `_write_default_state` |
+| 初始化 | `__init__`, `_init_system`, `_init_logging`, `_log_event` |
+| 时间工具 | `_get_today_str`, `_get_week_str`, `_get_month_str`, `_get_season_start_date` |
+| 迁移 | `_migrate_state_v022` |
+| 勋章（共用）| `_check_medals`, `_check_event_medal`, `_check_ability_medal`, `_check_season_medal`, `get_all_medals`, `get_medal_status` |
+| 标签图（共用）| `_init_tag_graph_from_notes`, `_init_tag_index_from_notes` |
+| 聚合 API | `get_status`, `calculate_long_term_projection`, `process_publish`, `get_config`, `update_config` |
+| 调试 | `reset_all`, `reset_daily_flags` |
+
+> 勋章和标签图方法被多个模块调用（Capture/Review/Migration），归入 Core 避免循环依赖。
 
 ### 关于惩罚代码（v0.3.1 已清理前端）
 
@@ -93,7 +108,7 @@ class HuntingEngine(EngineCore, EngineBackup, EngineSeason,
 | 文件 | 拆分前 | 拆分后 |
 |------|--------|--------|
 | `engine.py` | 2258 行 | ~50 行（仅 import + class 定义）|
-| `engine_core.py` | - | ~500 行（基础方法）|
+| `engine_core.py` | - | ~650 行（基础方法+勋章+标签图）|
 | `engine_capture.py` | - | ~800 行（采集+标签+发现）|
 | `engine_exchange.py` | - | ~200 行 |
 | `engine_review.py` | - | ~350 行 |
@@ -104,9 +119,8 @@ class HuntingEngine(EngineCore, EngineBackup, EngineSeason,
 
 ## 后续：v0.4（兑换模块开发）
 
-> v0.2.5 已下线，v0.4 正式剥离重构。代码不删，一行配置可恢复。
+> v0.2.5 已下线，v0.4 正式剥离重构。代码不删，一行配置可恢复。（兑换代码拆分已在 v0.3.2 完成，v0.4 做功能级 feature flag 控制）
 
-- [ ] **兑换模块剥离**：从 `engine.py` 抽取所有兑换方法到新文件 `engine_exchange.py`
 - [ ] **main.py feature flag**：`ENABLE_EXCHANGE` 用 `os.getenv("ENABLE_EXCHANGE", "false")` 读取
 - [ ] **前端兑换板块隐藏**：`/api/config` 返回 `exchange_enabled`，前端 `x-show` 绑定
 - [ ] **调试方案**（隐藏≠不能调）：
