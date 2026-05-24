@@ -729,6 +729,11 @@
                 font-size: 1.3rem;
             }
         }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body x-data="appData()" x-init="init()">
@@ -1086,34 +1091,35 @@
             </div>
             
             <!-- 标签云视图 -->
-            <div x-show="tagViewMode === 'cloud'" style="padding: 15px; background: #f8fafc; border-radius: 12px; min-height: 150px;">
-                <template x-if="Object.keys(tagCloudData).length > 0">
-                    <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
-                        <template x-for="[tag, data] in Object.entries(tagCloudData)" :key="tag">
-                            <span 
+            <div x-show="tagViewMode === 'cloud'" style="padding: 8px; background: #f8fafc; border-radius: 12px;">
+                <template x-if="filteredTagCloudEntries.length > 0">
+                    <div style="display: flex; flex-wrap: wrap; gap: 4px; line-height: 1.4; justify-content: center;">
+                        <template x-for="[tag, data] in filteredTagCloudEntries" :key="tag">
+                            <button 
                                 @click="openTagDetail(tag)"
                                 :style="{
-                                    padding: '8px 14px',
-                                    borderRadius: '20px',
-                                    fontSize: getTagSize(data.count) + 'rem',
-                                    background: getTagColor(data.count),
-                                    color: 'white',
+                                    padding: '2px 8px',
+                                    borderRadius: '12px',
+                                    border: 'none',
                                     cursor: 'pointer',
-                                    transition: 'transform 0.2s',
-                                    boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
+                                    transition: 'all 0.2s',
+                                    fontSize: getTagSize(data.count) + 'px',
+                                    maxWidth: '150px',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    whiteSpace: 'nowrap',
+                                    background: getTagColor(data.count),
+                                    color: 'white'
                                 }"
-                                onmouseover="this.style.transform='scale(1.1)'"
-                                onmouseout="this.style.transform='scale(1)'"
+                                @mouseenter="$el.style.transform = 'scale(1.05)'; $el.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)'"
+                                @mouseleave="$el.style.transform = 'scale(1)'; $el.style.boxShadow = 'none'"
                             >
-                                <span x-text="tag"></span> (<span x-text="data.count"></span>)
-                            </span>
+                                <span x-text="tag"></span>
+                                <span x-text="` (${data.count})`" style="opacity: 0.7; font-size: 0.75em;"></span>
+                            </button>
                         </template>
                     </div>
                 </template>
-                <div x-else style="text-align: center; color: #94a3b8; padding: 40px;">
-                    <div style="font-size: 2rem; margin-bottom: 10px;">🏷️</div>
-                    <p>暂无标签数据</p>
-                </div>
             </div>
             
             <!-- 排行榜视图 -->
@@ -1141,7 +1147,7 @@
             </div>
         </div>
 
-        <div class="card">
+        <div class="card" x-show="config.season_enabled">
             <h3>📅 赛季信息</h3>
             <p style="font-size: 0.8rem; color: #64748b; margin-top: 0; margin-bottom: 12px;">每15天为一个赛季，赛季结束时结算收益，星点上限3000，重置时保留50%星点。</p>
             <button 
@@ -1811,6 +1817,8 @@
                 tagNotes: [],
                 selectedTag: '',
                 showTagModal: false,
+                tagDetailLoading: false,
+                tagDetailError: '',
                 async loadTags() {
                     try {
                         const response = await fetch('/api/tags');
@@ -1847,10 +1855,8 @@
                     this._tagCloudData = value;
                 },
                 getTagSize(count) {
-                    const minSize = 0.85;
-                    const maxSize = 1.8;
-                    const maxCount = Math.max(...Object.values(this.tagCloudData).map(d => d.count), 1);
-                    return minSize + (count / maxCount) * (maxSize - minSize);
+                    // 按团队建议：基准 11px，log 映射，最大 20px
+                    return Math.min(11 + Math.log(count + 1) * 3, 20);
                 },
                 getTagColor(count) {
                     const colors = [
@@ -1864,7 +1870,18 @@
                     return colors[index];
                 },
                 get sortedTags() {
-                    return Object.entries(this.tagCloudData).sort((a, b) => b[1].count - a[1].count);
+                    // 排行榜：只显示 count >= 2 的标签，最多 50 个
+                    return Object.entries(this.tagCloudData)
+                        .filter(([_, data]) => data.count >= 2)
+                        .sort((a, b) => b[1].count - a[1].count)
+                        .slice(0, 50);
+                },
+                get filteredTagCloudEntries() {
+                    // 标签云：只显示 count >= 2 的标签，最多 50 个
+                    return Object.entries(this.tagCloudData)
+                        .filter(([_, data]) => data.count >= 2)
+                        .sort((a, b) => b[1].count - a[1].count)
+                        .slice(0, 50);
                 },
                 getSeasonEndDate() {
                     if (this.status.current_season?.end_date) {
@@ -1878,15 +1895,24 @@
                     return start.toISOString().split('T')[0];
                 },
                 async openTagDetail(tag) {
+                    this.selectedTag = tag;
+                    this.tagNotes = [];
+                    this.tagDetailError = '';
+                    this.tagDetailLoading = true;
+                    this.showTagModal = true;
+                    
                     try {
                         const response = await fetch(`/api/notes/by-tag?tag=${encodeURIComponent(tag)}`);
                         if (response.ok) {
                             this.tagNotes = await response.json();
-                            this.selectedTag = tag;
-                            this.showTagModal = true;
+                        } else {
+                            this.tagDetailError = '加载失败，请重试';
                         }
                     } catch (error) {
                         console.error('Failed to load tag notes:', error);
+                        this.tagDetailError = '网络错误，请检查连接';
+                    } finally {
+                        this.tagDetailLoading = false;
                     }
                 },
                 closeTagModal() {
@@ -2479,12 +2505,29 @@
                 <button @click="closeTagModal()" class="btn-close">✕</button>
             </div>
             
-            <div x-show="tagNotes.length === 0" style="text-align: center; padding: 40px; color: #94a3b8;">
+            <!-- 加载状态 -->
+            <div x-show="tagDetailLoading" style="text-align: center; padding: 60px;">
+                <div style="width: 40px; height: 40px; border: 4px solid #f0f0f0; border-top-color: #667eea; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 15px auto;"></div>
+                <p style="color: #94a3b8;">加载中...</p>
+            </div>
+            
+            <!-- 错误状态 -->
+            <div x-show="tagDetailError" style="text-align: center; padding: 40px;">
+                <div style="font-size: 3rem; margin-bottom: 10px;">❌</div>
+                <p style="color: #f5576c; margin-bottom: 15px;" x-text="tagDetailError"></p>
+                <button @click="openTagDetail(selectedTag)" style="padding: 8px 20px; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer;">
+                    重试
+                </button>
+            </div>
+            
+            <!-- 空状态 -->
+            <div x-show="!tagDetailLoading && !tagDetailError && tagNotes.length === 0" style="text-align: center; padding: 40px; color: #94a3b8;">
                 <div style="font-size: 3rem; margin-bottom: 10px;">📭</div>
                 <p>暂无相关笔记</p>
             </div>
             
-            <div x-show="tagNotes.length > 0" style="max-height: 400px; overflow-y: auto;">
+            <!-- 正常状态 -->
+            <div x-show="!tagDetailLoading && !tagDetailError && tagNotes.length > 0" style="max-height: 400px; overflow-y: auto;">
                 <template x-for="note in tagNotes" :key="note.file_path">
                     <div style="padding: 12px; border-bottom: 1px solid #eee; cursor: pointer;" @click="openNoteDetail(note)">
                         <div style="font-weight: 600; color: #333;" x-text="note.title || '无标题'"></div>

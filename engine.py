@@ -207,6 +207,8 @@ class HuntingEngine:
                 "nodes": {},
                 "edges": {}
             },
+            # 标签索引：tag -> list of file_path，用于快速查询标签对应的笔记
+            "tag_index": {},
             
             # 赛季系统
             "current_season": {
@@ -285,6 +287,8 @@ class HuntingEngine:
             "nodes": {},
             "edges": {}
         })
+        # 标签索引
+        self.state.setdefault("tag_index", {})
         
         # 赛季系统
         self.state.setdefault("completed_reports", 0)
@@ -372,6 +376,51 @@ class HuntingEngine:
         self.state["tag_graph"]["edges"] = edges
         self.state["total_notes"] = total_notes
         self.state["cross_domain_notes_count"] = cross_domain_count
+        
+        # 同时初始化 tag_index
+        self._init_tag_index_from_notes()
+    
+    def _init_tag_index_from_notes(self):
+        """从现有笔记初始化 tag_index"""
+        if self.state.get("tag_index", {}) and len(self.state["tag_index"]) > 0:
+            return
+        
+        tag_index = {}
+        
+        for file in self.inbox_folder.glob("灵感-*.md"):
+            try:
+                with open(file, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                
+                if not content.startswith('---'):
+                    continue
+                
+                parts = content.split('---', 2)
+                if len(parts) < 3:
+                    continue
+                
+                frontmatter_text = parts[1]
+                if 'hunt: true' not in frontmatter_text and 'hunt: True' not in frontmatter_text:
+                    continue
+                
+                tags_match = re.search(r'tags:\s*\[(.+?)\]', frontmatter_text)
+                if not tags_match:
+                    continue
+                
+                tag_list = tags_match.group(1)
+                tags = [t.strip().strip("'\"") for t in tag_list.split(',')]
+                
+                for tag in tags:
+                    if tag not in tag_index:
+                        tag_index[tag] = []
+                    file_path_str = str(file.resolve())
+                    if file_path_str not in tag_index[tag]:
+                        tag_index[tag].append(file_path_str)
+            
+            except Exception:
+                continue
+        
+        self.state["tag_index"] = tag_index
     
     def _calculate_link_power(self):
         """计算连接力"""
@@ -874,6 +923,14 @@ class HuntingEngine:
         old_edges_count = sum(self.state["tag_graph"]["edges"].values())
         
         self._update_tag_graph(tags)
+        
+        # 更新 tag_index
+        file_path_str = str((folder_path / filename).resolve())
+        for tag in tags:
+            if tag not in self.state["tag_index"]:
+                self.state["tag_index"][tag] = []
+            if file_path_str not in self.state["tag_index"][tag]:
+                self.state["tag_index"][tag].append(file_path_str)
         
         # 检测新产生的标签连接
         new_edges_count = sum(self.state["tag_graph"]["edges"].values())
@@ -1771,8 +1828,10 @@ hunt: true
     
     def get_config(self):
         # v0.2.5: 兑换模块已下线，通过配置暴露开关供前端判断
+        # v0.2.5: 赛季模块已下线，通过配置暴露开关供前端判断
         config = self.config.copy()
         config["exchange_enabled"] = False  # 始终为 false，v0.4 重构后由环境变量控制
+        config["season_enabled"] = False    # 始终为 false，v0.4 重构后由环境变量控制
         return config
     
     def update_config(self, updates):
@@ -1789,11 +1848,26 @@ hunt: true
         }
     
     def get_notes_by_tag(self, tag):
-        """按标签查询笔记"""
+        """按标签查询笔记（使用 tag_index 优化性能）"""
         notes = []
+        self._load_state()
         
-        for file in self.inbox_folder.glob("灵感-*.md"):
+        # 如果 tag_index 为空或该标签不存在，先初始化索引
+        if (not self.state.get("tag_index") or 
+            len(self.state["tag_index"]) == 0 or 
+            tag not in self.state["tag_index"]):
+            self._init_tag_index_from_notes()
+            self._save_state()
+        
+        # 从 tag_index 获取文件列表
+        file_paths = self.state["tag_index"].get(tag, [])
+        
+        for file_path_str in file_paths:
             try:
+                file = Path(file_path_str)
+                if not file.exists():
+                    continue
+                
                 with open(file, 'r', encoding='utf-8') as f:
                     content = f.read()
                 
@@ -1815,17 +1889,16 @@ hunt: true
                 tag_list = tags_match.group(1)
                 tags = [t.strip().strip("'\"") for t in tag_list.split(',')]
                 
-                if tag in tags:
-                    title = file.stem.replace("灵感-", "")
-                    date_match = re.search(r'date:\s*(.+)', frontmatter_text)
-                    date_str = date_match.group(1).strip() if date_match else ""
-                    
-                    notes.append({
-                        "title": title,
-                        "date": date_str,
-                        "tags": tags,
-                        "filename": file.name
-                    })
+                title = file.stem.replace("灵感-", "")
+                date_match = re.search(r'date:\s*(.+)', frontmatter_text)
+                date_str = date_match.group(1).strip() if date_match else ""
+                
+                notes.append({
+                    "title": title,
+                    "date": date_str,
+                    "tags": tags,
+                    "file_path": file_path_str
+                })
             except Exception:
                 continue
         
