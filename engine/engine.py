@@ -13,12 +13,12 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from threading import Lock
 
-from engine_core import EngineCore
-from engine_backup import EngineBackup
-from engine_season import EngineSeason
-from engine_review import EngineReview
-from engine_exchange import EngineExchange
-from engine_capture import EngineCapture
+from .engine_core import EngineCore
+from .engine_backup import EngineBackup
+from .engine_season import EngineSeason
+from .engine_review import EngineReview
+from .engine_exchange import EngineExchange
+from .engine_capture import EngineCapture
 
 class HuntingEngine(EngineCore, EngineBackup, EngineSeason,
                      EngineReview, EngineExchange, EngineCapture):

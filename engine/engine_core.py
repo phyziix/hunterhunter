@@ -20,7 +20,7 @@ class EngineCore:
         if base_path:
             self.base_path = Path(base_path)
         else:
-            self.base_path = Path(__file__).parent / "data" / "inspire"
+            self.base_path = Path(__file__).parent.parent / "data" / "inspire"
         
         self.system_folder = self.base_path / "_狩猎系统"
         self.state_file = self.system_folder / "state.json"
