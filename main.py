@@ -32,10 +32,14 @@ app.add_middleware(
 # 兑换模块 feature flag（v0.4 启用）
 ENABLE_EXCHANGE = os.getenv("ENABLE_EXCHANGE", "true").lower() == "true"
 
+# iCloud 同步开关（默认关闭，仅生产环境开启，避免 workspace 调试污染 iCloud）
+ENABLE_ICLOUD_SYNC = os.getenv("ENABLE_ICLOUD_SYNC", "false").lower() == "true"
+
 engine = HuntingEngine()
 
 # 启动后台 iCloud 同步（每 5 分钟）
-engine.start_icloud_sync(interval=300)
+if ENABLE_ICLOUD_SYNC:
+    engine.start_icloud_sync(interval=300)
 
 class CaptureRequest(BaseModel):
     content: str
