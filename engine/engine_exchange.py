@@ -46,8 +46,8 @@ class EngineExchange:
             rate = self.config["fund"]["base_rate"] + self.config["fund"].get("base_bonus", 0.5)
             rate += self._calculate_path_streak_bonus("fund")
         else:
-            # 消费：固定为 1.0，无动态因子
-            rate = self.config["coupon_rate"]
+            # 消费：基础倍率 + 连续选择惩罚
+            rate = self.config["coupon_rate"] + self._calculate_path_streak_bonus("coupon")
         
         return rate
     

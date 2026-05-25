@@ -286,6 +286,9 @@ hunt: true
     def submit_weekly_review(self, file_path, insight):
         self._load_state()
 
+        if self.state["weekly_review_done"] and self.state["last_weekly_review"]:
+            return {"error": f"本周回顾已完成（{self.state['last_weekly_review']}）"}
+
         fp = Path(file_path)
         if not fp.exists():
             return {"error": "素材文件不存在，请先点击周回顾生成素材"}
@@ -354,6 +357,9 @@ hunt: true
 
     def submit_monthly_report(self, file_path, insight):
         self._load_state()
+
+        if self.state["monthly_report_done"] and self.state["last_monthly_report"]:
+            return {"error": f"本月战报已完成（{self.state['last_monthly_report']}）"}
 
         fp = Path(file_path)
         if not fp.exists():

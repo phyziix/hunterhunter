@@ -1,7 +1,7 @@
 # 部署与运维手册
 
 > 记录时间：2026-05-22 / 最后维护：2026-05-25
-> 状态：✅ v0.1 已下线 / ✅ v0.2.4 已下线 / ✅ v0.2.5 已下线 / ✅ v0.3.2 已下线 / ✅ v0.4.0 已上线 (8003端口)
+> 状态：✅ v0.1 已下线 / ✅ v0.2.4 已下线 / ✅ v0.2.5 已下线 / ✅ v0.3.2 已下线 / ✅ v0.4.0 已下线 / ✅ v0.4.1 已上线 (8003端口)
 > 
 > 本文档是部署的唯一事实来源。README 的部署部分是摘要，这里才是完整步骤和踩坑记录。**新设备部署必读。**
 
@@ -30,7 +30,8 @@
 | 用途 | 路径 | 说明 |
 |------|------|------|
 | 代码仓库 | `<WORKSPACE>/hunterhunter/` | Git 管理，源码在此 |
-| 运行目录 (当前) | `<PRODUCTION>/v0.4.0/` | **当前上线版本**，端口 8003 |
+| 运行目录 (当前) | `<PRODUCTION>/v0.4.1/` | **当前上线版本**，端口 8003 |
+| 运行目录 (旧版) | `<PRODUCTION>/v0.4.0/` | 已下线 |
 | 运行目录 (旧版) | `<PRODUCTION>/v0.3.2/` | 已下线 |
 | 运行目录 (旧版) | `<PRODUCTION>/v0.2.5/` | 已下线 |
 | 运行目录 (旧版) | `<PRODUCTION>/v0.2.4/` | 已下线，端口 8003 |
@@ -52,7 +53,7 @@
 ### 运行目录结构
 
 ```
-<PRODUCTION>/v0.4.0/
+<PRODUCTION>/v0.4.1/
 ├── main.py              # FastAPI 入口
 ├── engine/              # 引擎包（Mixin 模式）
 │   ├── __init__.py
@@ -162,11 +163,11 @@ for file in sorted(self.inbox_folder.glob("灵感-*.md")):
 
 plist 文件：`~/Library/LaunchAgents/<BUNDLE_ID>.hunterhunter-v<version>.plist`
 
-当前 v0.4.0 关键配置：
-- `WorkingDirectory`：`<PRODUCTION>/v0.4.0/`
-- `ProgramArguments`：`<PRODUCTION>/v0.4.0/venv/bin/python3 -m uvicorn main:app --host 0.0.0.0 --port 8003`
+当前 v0.4.1 关键配置：
+- `WorkingDirectory`：`<PRODUCTION>/v0.4.1/`
+- `ProgramArguments`：`<PRODUCTION>/v0.4.1/venv/bin/python3 -m uvicorn main:app --host 0.0.0.0 --port 8003`
 - `KeepAlive`：true
-- `StandardOutPath` / `StandardErrorPath`：`<PRODUCTION>/v0.4.0/logs/`
+- `StandardOutPath` / `StandardErrorPath`：`<PRODUCTION>/v0.4.1/logs/`
 
 旧版 v0.4.0 / v0.3.2 / v0.2.5 / v0.2.4 / v0.1 配置（已下线，仅供参考）：
 
@@ -175,8 +176,8 @@ plist 文件：`~/Library/LaunchAgents/<BUNDLE_ID>.hunterhunter-v<version>.plist
 plist 文件：`~/Library/LaunchAgents/com.hunterhunter.tunnel.plist`
 
 关键配置：
-- `WorkingDirectory`：`<PRODUCTION>/v0.4.0/`
-- `ProgramArguments`：`/bin/bash <PRODUCTION>/v0.4.0/tunnel.sh`
+- `WorkingDirectory`：`<PRODUCTION>/v0.4.1/`
+- `ProgramArguments`：`/bin/bash <PRODUCTION>/v0.4.1/tunnel.sh`
 - **必须在 tunnel.sh 中显式设置 PATH**（见踩坑 3）
 
 ---

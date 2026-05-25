@@ -29,6 +29,7 @@ python3 -m uvicorn main:app --host 0.0.0.0 --port 8003 --reload
 | `docs/STATUS.md` | 当前进度与下一步计划 |
 | `docs/AI_WORKFLOW.md` | AI 操作规则（文档维护/部署/调试/方法论） |
 | `docs/PATTERNS.md` | 可复用模块/模式记录 |
+| `docs/RULES_TEST.md` | 规则清单驱动测试文档（系统规则梳理 + 测试结果 + Bug 清单）|
 | `docs/DEPLOYMENT.md` | 部署运维手册（踩坑记录/完整步骤） |
 
 ## 配置文件
@@ -44,7 +45,8 @@ python3 -m uvicorn main:app --host 0.0.0.0 --port 8003 --reload
 
 | 版本 | 主要变化 |
 |------|---------|
-| v0.4.1-dev | 🔧 调试和 Bug 修复 |
+| v0.4.1 | ✅ Bug 修复（规则清单驱动测试 + 3 项修复）|
+| v0.4.1-dev | 🔧 调试和 Bug 修复（已合入 v0.4.1）|
 | v0.4.0 | ✅ 消费记录功能、版本号显示、兑换逻辑与 PRODUCT.md 对齐、移除基金锁定规则、兑换模块启用 |
 | v0.3.2 | ✅ 后端拆分：engine.py → engine/ 包（Mixin 模式）|
 | v0.3.1 | ✅ 前端拆分：index.html → styles.css + app.js，修复静态资源路径冲突 |
