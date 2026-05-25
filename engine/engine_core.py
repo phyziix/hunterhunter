@@ -191,7 +191,7 @@ class EngineCore:
             "exchange_path": "",
             "fund_pool": 0.0,
             "fund_first_opened_at": None,  # 基金首次开通日期，用于30天锁定期校验
-            "coupon_pool": 0.0,  # 消费券兑换累计星点
+            "coupon_pool": 0.0,  # 消费兑换累计星点
             "consumed_amount": 0.0,  # 已消费金额（v0.4 新增）
             "consumption_records": [],  # 消费记录列表（v0.4 新增）
             "last_exchange_date": None,  # 上次兑换日期，用于动态锁定
@@ -275,7 +275,7 @@ class EngineCore:
         self.state.setdefault("exchange_path", "")
         self.state.setdefault("fund_pool", 0.0)
         self.state.setdefault("fund_first_opened_at", None)  # 基金首次开通日期
-        self.state.setdefault("coupon_pool", 0.0)  # 消费券兑换累计星点
+        self.state.setdefault("coupon_pool", 0.0)  # 消费兑换累计星点
         self.state.setdefault("consumed_amount", 0.0)  # 已消费金额（v0.4 新增）
         self.state.setdefault("consumption_records", [])  # 消费记录列表（v0.4 新增）
         self.state.setdefault("last_exchange_date", None)  # 上次兑换日期，用于动态锁定

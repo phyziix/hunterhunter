@@ -21,9 +21,6 @@ def _read_version() -> str:
 
 __version__ = _read_version()
 
-# Feature flags
-ENABLE_EXCHANGE = os.getenv("ENABLE_EXCHANGE", "false").lower() == "true"
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -32,8 +29,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# 兑换模块 feature flag（v0.2.5 下线）
-ENABLE_EXCHANGE = os.getenv("ENABLE_EXCHANGE", "false").lower() == "true"
+# 兑换模块 feature flag（v0.4 启用）
+ENABLE_EXCHANGE = os.getenv("ENABLE_EXCHANGE", "true").lower() == "true"
 
 engine = HuntingEngine()
 

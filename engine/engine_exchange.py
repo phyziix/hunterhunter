@@ -26,7 +26,7 @@ class EngineExchange:
         """计算连续选择路径的奖励加成
         
         基金用户：连续2周 +0.05、连续4周 +0.10、连续8周 +0.15
-        消费券用户：连续2周 -0.05、连续4周 -0.10、连续8周 -0.15
+        消费用户：连续2周 -0.05、连续4周 -0.10、连续8周 -0.15
         中断（切换路径）则加成归零
         """
         streak_weeks = self.state.get("path_streak_weeks", 0)
@@ -46,7 +46,7 @@ class EngineExchange:
             rate = self.config["fund"]["base_rate"] + self.config["fund"].get("base_bonus", 0.5)
             rate += self._calculate_path_streak_bonus("fund")
         else:
-            # 消费券：固定为 1.0，无动态因子
+            # 消费：固定为 1.0，无动态因子
             rate = self.config["coupon_rate"]
         
         return rate
@@ -67,7 +67,7 @@ class EngineExchange:
     def calculate_opportunity_cost(self, amount, from_path):
         """三层镜像对比
         
-        等值对比：消费券金额 vs 基金金额
+        等值对比：消费金额 vs 基金金额
         时间维度延伸：基金增值预估 / 消费品折旧
         历史累计：本月消费损失或克制收益
         """
@@ -123,7 +123,7 @@ class EngineExchange:
     
 
     def exchange_coupon(self, amount):
-        """消费券兑换"""
+        """消费兑换"""
         self._load_state()
         
         # 检查动态锁定：今日是否已兑换

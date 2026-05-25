@@ -693,7 +693,8 @@ function appData() {
                             await this.loadConsumptionData();
                             await this.loadStatus();
                         } else {
-                            this.showNotificationMessage(data.error || '记录失败', 'error', '❌');
+                            const errorMessage = data.error || data.detail || '记录失败';
+                            this.showNotificationMessage(errorMessage, 'error', '❌');
                         }
                     } catch (error) {
                         this.showNotificationMessage('网络错误', 'error', '❌');
