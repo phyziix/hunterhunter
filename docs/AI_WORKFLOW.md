@@ -43,12 +43,22 @@
 >    - **备份原则**：**只增不替**。每次部署前创建带时间戳的新备份目录，不覆盖已有备份。可随时回滚到任意历史状态
 >    - **备份命令**：`cp -r <PRODUCTION>/v<old>/data/ ~/Documents/hunterhunter_backups/pre_deploy_$(date +%Y%m%d_%H%M%S)/`
 >    - **验证**：`ls` 确认备份目录存在且文件数一致
+> 3.4 **验证旧环境数据一致性**（首次部署必须；旧版本存在时执行）
+>    - 命令：`python3 verify_deployment.py --source <PRODUCTION>/v<old>/data/inspire`
+>    - 确认旧环境 total_notes 与 Inbox 实际文件数一致，有问题先修复再继续部署
+> 3.5 **迁移灵感文件**（首次部署必须；旧版本存在时执行）
+>    - 命令：`cp <PRODUCTION>/v<old>/data/inspire/Inbox/*.md <PRODUCTION>/v<new>/data/inspire/Inbox/ 2>/dev/null || echo "（无旧版本灵感文件，跳过）"`
+>    - 灵感文件是系统最核心的数据资产，不可丢失。`|| echo` 确保首次部署（无旧版本）不会中断流程
 > 4. **停旧服 + 替换代码**
 > 5. **创建 venv + 安装依赖**（首次部署必须；增量无 Python 变更则跳过）
 > 6. **数据迁移**（首次部署必须）：复制旧版数据 → 迁移 state.json → 替换 config.yaml（保留用户自定义字段）
 > 7. **特征连续性检查**（首次部署必须）：对比上一版本的 feature set，确保没有功能遗漏。逐项验：旧版所有 API 端点是否存在、旧版所有后台线程是否启动、旧版外部文件（如 tunnel.sh / sync_to_icloud.py）是否随部署复制。**禁止假设"代码抄过来就行"——必须以 API curl + 进程检查做实际验证。**
 >    - ⚠️ **只做读验证**：特征连续性检查阶段只允许 GET 请求和无副作用的安全端点（status/version/config/medals 等）。**禁止在已迁移生产数据的目录上执行写操作**（capture/exchange/submit 等），以免污染生产数据。写操作正确性留到启动后的「启动+验证」步骤在生产端以真实操作验证。
 > 8. **启动 + 验证**：launchctl load → curl 版本号 + 关键 API + 前端关键字
+> 8.5 **验证新环境数据完整性**（必须执行）
+>    - 命令：`python3 verify_deployment.py --source <PRODUCTION>/v<new>/data/inspire`
+>    - 确认迁移完整，total_notes 与 Inbox 实际文件数一致
+>    - 验证失败 → 中断部署流程，排查问题后再继续
 > 9. **重启隧道**（每次部署必须，否则 localtunnel 持续 503）：`launchctl unload ~/Library/LaunchAgents/com.hunterhunter.tunnel.plist; sleep 2; launchctl load ~/Library/LaunchAgents/com.hunterhunter.tunnel.plist`。验证：`launchctl list | grep tunnel` 确认进程在跑
 > 10. **维护文档**：先更新 `docs/DEPLOYMENT.md`（版本状态、端口、目录结构等），再执行「同步文档」规则（覆盖 CHANGELOG/PRODUCT/STATUS/README，该规则末尾已含 commit+push）
 

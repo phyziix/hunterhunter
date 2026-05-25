@@ -120,6 +120,17 @@ cp data/inspire/_狩猎系统/defaults.yaml data/inspire/_狩猎系统/config.ya
 mkdir -p <PRODUCTION>/v0.2.4/logs
 ```
 
+### 3.5 迁移灵感文件（从旧版本升级时必须执行）
+
+灵感文件是系统最核心的数据资产，版本升级时不可丢失：
+
+```bash
+# 从旧版本复制所有灵感笔记到新版本 Inbox
+cp <PRODUCTION>/v<old>/data/inspire/Inbox/*.md <PRODUCTION>/v<new>/data/inspire/Inbox/ 2>/dev/null || echo "（无旧版本灵感文件，跳过）"
+```
+
+> 首次部署（没有旧版本）时 `cp` 会因为源路径不存在而报错，`|| echo` 会吞掉错误并输出提示，不会中断部署流程。
+
 ---
 
 ## 三、灵感文件路径（核心）
