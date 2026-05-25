@@ -1207,5 +1207,12 @@
             </template>
         </div>
     </div>
+
+    <!-- 版本号显示 -->
+    <div style="text-align: center; padding: 20px 0; font-size: 0.7rem; color: rgba(255, 255, 255, 0.5);">
+        <span x-text="'v' + config.version"></span>
+        <span x-show="config.version.includes('dev')" style="color: #fbbf24; margin-left: 4px;">🚧 DEV</span>
+    </div>
+
 </body>
 </html>

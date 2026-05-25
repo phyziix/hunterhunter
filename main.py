@@ -322,6 +322,7 @@ async def get_config():
     try:
         config = engine.get_config()
         config["exchange_enabled"] = ENABLE_EXCHANGE
+        config["version"] = __version__
         return config
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
