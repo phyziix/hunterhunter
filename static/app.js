@@ -209,11 +209,17 @@ function appData() {
                         const response = await fetch(`/api/review/file?file_path=${encodeURIComponent(this.lastReviewFile)}`);
                         if (response.ok) {
                             const data = await response.json();
+                            // 截断原始素材：只展示周报正文，不展示底部的原始素材
+                            let displayContent = data.content;
+                            const sepIdx = displayContent.indexOf('🔻🔻🔻');
+                            if (sepIdx !== -1) {
+                                displayContent = displayContent.substring(0, sepIdx).trimEnd();
+                            }
                             this.reviewType = type;
                             this.reviewData = { date_range: '', note_count: 0 };
                             this.reviewInsight = '';
-                            this.reviewRawContent = data.content;
-                            this.renderedContent = this.parseMaterialContent(data.content);
+                            this.reviewRawContent = displayContent;
+                            this.renderedContent = this.parseMaterialContent(displayContent);
                             this.showReviewModal = true;
                         } else {
                             const err = await response.json();
@@ -526,20 +532,27 @@ function appData() {
                 },
 
                 parseMaterialContent(md) {
-                    // 将素材 Markdown 转为带层级的 HTML（过滤 frontmatter 由后端保证）
+                    // 将素材 Markdown 转为带层级的 HTML
                     let html = '';
                     const lines = md.split('\n');
-                    let inCodeBlock = false;
+                    let inFrontmatter = false;
+                    let frontmatterDone = false;
                     
                     for (let i = 0; i < lines.length; i++) {
                         let line = lines[i];
                         
-                        // 跳过 YAML frontmatter 标记
-                        if (line.trim() === '---') {
-                            inCodeBlock = !inCodeBlock;
-                            continue;
+                        // 只跳过开头的 YAML frontmatter（第一个 --- ... --- 块）
+                        if (!frontmatterDone && line.trim() === '---') {
+                            if (!inFrontmatter) {
+                                inFrontmatter = true;
+                                continue;
+                            } else {
+                                inFrontmatter = false;
+                                frontmatterDone = true;
+                                continue;
+                            }
                         }
-                        if (inCodeBlock) continue;
+                        if (inFrontmatter) continue;
                         
                         // 空行
                         if (line.trim() === '') {
