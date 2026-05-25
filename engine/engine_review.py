@@ -298,10 +298,20 @@ hunt: true
 
         tags = self._extract_tags_from_content(existing)
 
-        with open(fp, 'a', encoding='utf-8') as f:
-            f.write(f"\n## 本周核心洞察\n\n{insight}\n\n")
+        # 重构文件：洞察在前，素材在后，中间加明显分割线
+        all_tags = tags + ["周回顾"]
+        frontmatter = f"""---
+date: {datetime.now().isoformat()}
+tags: {all_tags}
+hunt: true
+---
 
-        self._prepend_frontmatter(file_path, tags, "周回顾")
+"""
+        with open(fp, 'w', encoding='utf-8') as f:
+            f.write(frontmatter)
+            f.write(insight.strip() + "\n" + "\n" * 20)
+            f.write("🔻🔻🔻 以下为周回顾原始素材 🔻🔻🔻\n\n" + "\n" * 20)
+            f.write(existing)
 
         current_week = self._get_week_str()
         self.state["last_weekly_review"] = current_week
@@ -370,10 +380,20 @@ hunt: true
 
         tags = self._extract_tags_from_content(existing)
 
-        with open(fp, 'a', encoding='utf-8') as f:
-            f.write(f"\n## 本月核心洞察\n\n{insight}\n\n")
+        # 重构文件：洞察在前，素材在后，中间加明显分割线
+        all_tags = tags + ["月回顾"]
+        frontmatter = f"""---
+date: {datetime.now().isoformat()}
+tags: {all_tags}
+hunt: true
+---
 
-        self._prepend_frontmatter(file_path, tags, "月回顾")
+"""
+        with open(fp, 'w', encoding='utf-8') as f:
+            f.write(frontmatter)
+            f.write(insight.strip() + "\n" + "\n" * 20)
+            f.write("🔻🔻🔻 以下为月度战报原始素材 🔻🔻🔻\n\n" + "\n" * 20)
+            f.write(existing)
 
         current_month = self._get_month_str()
 

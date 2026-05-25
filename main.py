@@ -249,6 +249,25 @@ async def monthly_report_submit(request: ReviewSubmitRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.get("/api/review/file")
+async def get_review_file(file_path: str):
+    """读取回顾文件内容（查看已提交的周报/月报）"""
+    try:
+        fp = Path(file_path)
+        if not fp.exists():
+            raise HTTPException(status_code=404, detail="回顾文件不存在")
+        # 安全检查：只允许读取 Inbox 下的文件
+        inbox = engine.inbox_folder.resolve()
+        if not fp.resolve().is_relative_to(inbox):
+            raise HTTPException(status_code=403, detail="禁止访问外部文件")
+        with open(fp, 'r', encoding='utf-8') as f:
+            content = f.read()
+        return {"content": content, "filename": fp.name}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.get("/api/report/monthly/draft")
 async def get_monthly_draft():
     try:

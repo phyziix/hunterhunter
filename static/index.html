@@ -342,7 +342,7 @@
 
         <div class="card">
             <h3>📝 回顾与战报</h3>
-            <div class="nav-buttons">
+            <div class="nav-buttons" style="display: flex; flex-wrap: wrap; gap: 8px;">
                 <button 
                     class="btn btn-secondary" 
                     @click="openReview('weekly')"
@@ -353,6 +353,12 @@
                     <span x-show="status.weekly_review_done" class="completion-badge">已完成</span>
                 </button>
                 <button 
+                    x-show="status.weekly_review_done && lastReviewType === 'weekly'"
+                    class="btn btn-secondary"
+                    @click="viewSubmittedReview('weekly')"
+                    style="background: #10b981; color: white; border-color: #10b981;"
+                >📄 查看周报</button>
+                <button 
                     class="btn btn-secondary" 
                     @click="openReview('monthly')"
                     :disabled="status.monthly_report_done"
@@ -361,6 +367,12 @@
                     📈 月度战报
                     <span x-show="status.monthly_report_done" class="completion-badge">已完成</span>
                 </button>
+                <button 
+                    x-show="status.monthly_report_done && lastReviewType === 'monthly'"
+                    class="btn btn-secondary"
+                    @click="viewSubmittedReview('monthly')"
+                    style="background: #10b981; color: white; border-color: #10b981;"
+                >📄 查看月报</button>
             </div>
         </div>
 
@@ -797,8 +809,9 @@
                 <span x-text="'📅 ' + reviewData.date_range + '  |  📝 ' + reviewData.note_count + ' 条碎片'"></span>
             </div>
 
-            <!-- 洞察输入 -->
+            <!-- 洞察输入（仅新建回顾时显示） -->
             <textarea 
+                x-show="!lastReviewFile || lastReviewType !== reviewType"
                 class="review-insight-input" 
                 x-model="reviewInsight" 
                 @keydown.ctrl.a.prevent="$event.target.select()"
@@ -808,8 +821,8 @@
 
             <!-- 按钮 -->
             <div class="modal-buttons" style="margin-top: 15px;">
-                <button class="btn btn-secondary" @click="closeReviewModal">取消</button>
-                <button class="btn btn-primary" @click="submitReviewInsight" :disabled="!reviewInsight.trim()">提交回顾</button>
+                <button class="btn btn-secondary" @click="closeReviewModal">关闭</button>
+                <button x-show="!lastReviewFile || lastReviewType !== reviewType" class="btn btn-primary" @click="submitReviewInsight" :disabled="!reviewInsight.trim()">提交回顾</button>
             </div>
         </div>
     </div>

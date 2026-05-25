@@ -197,11 +197,31 @@ function appData() {
                 closeIncomeModal() {
                     this.showIncomeModal = false;
                 },
-                get tagCloudData() {
-                    return this._tagCloudData || {};
-                },
-                set tagCloudData(value) {
-                    this._tagCloudData = value;
+                // ===== 已提交回顾查看 =====
+                lastReviewFile: '',
+                lastReviewType: '',
+                async viewSubmittedReview(type) {
+                    if (!this.lastReviewFile) {
+                        this.showNotificationMessage('暂无已提交的回顾', 'info', '📄');
+                        return;
+                    }
+                    try {
+                        const response = await fetch(`/api/review/file?file_path=${encodeURIComponent(this.lastReviewFile)}`);
+                        if (response.ok) {
+                            const data = await response.json();
+                            this.reviewType = type;
+                            this.reviewData = { date_range: '', note_count: 0 };
+                            this.reviewInsight = '';
+                            this.reviewRawContent = data.content;
+                            this.renderedContent = this.parseMaterialContent(data.content);
+                            this.showReviewModal = true;
+                        } else {
+                            const err = await response.json();
+                            this.showNotificationMessage(err.detail || '加载失败', 'error', '❌');
+                        }
+                    } catch (error) {
+                        this.showNotificationMessage('网络错误', 'error', '❌');
+                    }
                 },
                 getTagSize(count) {
                     // 按团队建议：基准 11px，log 映射，最大 20px
@@ -645,6 +665,8 @@ function appData() {
                         
                         if (response.ok) {
                             this.showNotificationMessage(`${title}完成！+${data.reward} 星点`, 'success', '🎉');
+                            this.lastReviewFile = this.reviewData.file_path;
+                            this.lastReviewType = this.reviewType;
                             this.closeReviewModal();
                             await this.loadStatus();
                         } else {
