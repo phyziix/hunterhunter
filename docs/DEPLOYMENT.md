@@ -1,7 +1,7 @@
 # 部署与运维手册
 
 > 记录时间：2026-05-22 / 最后维护：2026-05-25
-> 状态：✅ v0.1 已下线 / ✅ v0.2.4 已下线 / ✅ v0.2.5 已下线 / ✅ v0.3.2 已下线 / ✅ v0.4.0 已下线 / ✅ v0.4.1 已上线 (8003端口) / 含 Bug #6 热修复
+> 状态：✅ v0.1 已下线 / ✅ v0.2.4 已下线 / ✅ v0.2.5 已下线 / ✅ v0.3.2 已下线 / ✅ v0.4.0 已下线 / ✅ v0.4.1 已上线 (8003端口) / 含 Bug #6 热修复 + iCloud 同步环境变量开关
 > 
 > 本文档是部署的唯一事实来源。README 的部署部分是摘要，这里才是完整步骤和踩坑记录。**新设备部署必读。**
 
@@ -166,6 +166,7 @@ plist 文件：`~/Library/LaunchAgents/<BUNDLE_ID>.hunterhunter-v<version>.plist
 当前 v0.4.1 关键配置：
 - `WorkingDirectory`：`<PRODUCTION>/v0.4.1/`
 - `ProgramArguments`：`<PRODUCTION>/v0.4.1/venv/bin/python3 -m uvicorn main:app --host 0.0.0.0 --port 8003`
+- `EnvironmentVariables`：`ENABLE_ICLOUD_SYNC=true`（**必须设置**，否则 iCloud 同步不会启动）
 - `KeepAlive`：true
 - `StandardOutPath` / `StandardErrorPath`：`<PRODUCTION>/v0.4.1/logs/`
 

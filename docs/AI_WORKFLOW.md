@@ -63,7 +63,7 @@
 > 6. **最后一步**：停服、恢复 main.py 端口为 8003、删测试产生的笔记/星点，恢复测试前的 state.json
 >     - **删除数据前必须先备份**：执行 `POST /api/backup` 生成时间戳备份，或手动 `cp -r data/inspire/ ~/Documents/hunterhunter_backups/manual_$(date +%Y%m%d_%H%M%S)/`
 >     - **恢复时优先用备份**：先查 `~/Documents/hunterhunter_backups/` 有无可用备份 → 有则从备份恢复 → 没有再用 `git checkout`
-> 7. **⚠️ 禁止在调试端测试同步/备份**：`sync_to_icloud()` 和 `backup()` 操作的是 `self.base_path`（代码所在目录的 `data/inspire/`），在 workspace 调试端运行会污染 iCloud 和备份目录。同步/备份操作只能部署到生产环境后在生产端测试。
+> 7. **⚠️ 禁止在调试端测试同步/备份**：`sync_to_icloud()` 和 `backup()` 操作的是 `self.base_path`（代码所在目录的 `data/inspire/`），在 workspace 调试端运行会污染 iCloud 和备份目录。`ENABLE_ICLOUD_SYNC` 环境变量默认 `false`，workspace 调试时 iCloud 同步自动关闭；生产环境 plist 设 `ENABLE_ICLOUD_SYNC=true` 才会启动后台同步。同步/备份操作只能部署到生产环境后在生产端测试。
 
 > ⚠️ **规则清单驱动测试**：新版本或大规模验证时，按以下流程执行系统化测试。
 > 1. **创建/更新 RULES_TEST.md**：系统化梳理所有规则、开关、条件、配置项，生成可逐项打勾的测试清单。

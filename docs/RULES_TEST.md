@@ -20,6 +20,7 @@
 | 规则类型 | 配置项 | 值 | 位置 | 说明 |
 |---------|--------|-----|------|------|
 | **模块开关** | `ENABLE_EXCHANGE` | `true` | `main.py:33` | 兑换模块总开关（环境变量） |
+| **同步开关** | `ENABLE_ICLOUD_SYNC` | `false` | `main.py:38` | iCloud 同步开关，默认关闭（仅生产 plist 设为 true） |
 | **兑换规则** | `fund.min_withdraw` | `500` | `config.yaml:36` | 基金最低兑换额度（星点） |
 | **采集规则** | `daily_multipliers` | `[1.0, 1.5, 2.0, 0.2]` | `config.yaml:27-31` | 每日采集倍率阶梯 |
 | **连续加成** | `streak_bonuses` | `7天+10%, 30天+30%, 90天+50%` | `config.yaml:94-100` | 连续采集加成 |
@@ -337,3 +338,4 @@
 | 2026-05-25 | v0.4.1-dev | Bug 修复：#3 周回顾守卫、#4 消费路径惩罚、#5 月度战报守卫 |
 | 2026-05-25 | v0.4.1-dev | 第四轮测试（API全覆盖+勋章+路径边界+周期重置）：18项通过，发现 Bug #6 path_streak_weeks 永不可累积 |
 | 2026-05-25 | v0.4.1-dev | Bug 修复：#6 `_update_path_streak` `last_path_choice`(周字符串) → `exchange_path`(路径名) |
+| 2026-05-25 | v0.4.1-dev | 加 `ENABLE_ICLOUD_SYNC` 环境变量开关，默认关闭避免 workspace 调试污染 iCloud |
