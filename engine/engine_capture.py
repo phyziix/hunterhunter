@@ -154,8 +154,19 @@ class EngineCapture:
         
         content = "\n".join(frontmatter_lines) + "\n\n" + content
         
-        with open(folder_path / filename, 'w', encoding='utf-8') as f:
+        file_fullpath = folder_path / filename
+        with open(file_fullpath, 'w', encoding='utf-8') as f:
             f.write(content)
+        
+        # 记录灵感文件创建（仅在实际写入成功后，用于追溯验证）
+        self._log_event("FILE_CREATED", "灵感文件已创建", {
+            "文件名": filename,
+            "路径": str(file_fullpath.resolve()),
+            "文件大小": f"{len(content)} 字符",
+            "标签": ", ".join(tags),
+            "本次星点": total_stars,
+            "今日第几条": self.state["today_count"]
+        })
         
         # 记录添加标签前的边数用于检测新连接
         old_edges_count = sum(self.state["tag_graph"]["edges"].values())

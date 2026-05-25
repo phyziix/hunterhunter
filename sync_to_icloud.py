@@ -26,8 +26,10 @@ def main():
 
     ICLOUD.mkdir(parents=True, exist_ok=True)
 
-    copied = 0
-    skipped = 0
+    copied_count = 0
+    skipped_count = 0
+    copied_files = []
+    skipped_files = []
 
     for src in sorted(LOCAL.rglob("*")):
         if src.is_dir():
@@ -40,14 +42,29 @@ def main():
 
         # 仅用元数据判断（不读文件内容）
         if dst.exists() and src.stat().st_mtime <= dst.stat().st_mtime:
-            skipped += 1
+            skipped_count += 1
+            skipped_files.append(str(rel))
             continue
 
         # 只写：复制文件到 iCloud，不删除任何已有文件
         shutil.copy2(src, dst)
-        copied += 1
+        copied_count += 1
+        copied_files.append(str(rel))
 
-    log(f"同步完成: 写入 {copied} 个文件，跳过 {skipped} 个（目标已有且更新）")
+    # 逐文件记录：写入列表
+    if copied_files:
+        log(f"写入 {copied_count} 个文件：")
+        for f in copied_files:
+            log(f"  + {f}")
+    
+    # 逐文件记录：跳过列表
+    if skipped_files:
+        log(f"跳过 {skipped_count} 个文件（目标已有且更新）：")
+        for f in skipped_files:
+            log(f"  = {f}")
+    
+    if not copied_files and not skipped_files:
+        log("同步完成: 无文件变更")
 
 if __name__ == "__main__":
     main()
