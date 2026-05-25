@@ -210,6 +210,82 @@
 | 4 | `_calculate_exchange_rate()` else 分支补 `_calculate_path_streak_bonus("coupon")` | `engine_exchange.py:49` | 消费路径的连续惩罚（2/4/8周 -0.05/-0.10/-0.15）现在生效 |
 | 5 | `submit_monthly_report()` 增加 `monthly_report_done` 守卫 | `engine_review.py:358-359` | 与 Bug #3 同类修复，已提交则拒绝 |
 
+#### 第四轮：API 全覆盖 + 勋章完整性 + 路径边界 + 周期重置（2026-05-25）
+
+> 对照 main.py 全部 31 个 API 端点逐条对账，补测前三轮遗漏的端点和规则。
+
+##### P0：核心功能缺口
+
+| # | 测试项 | 结论 | 详情 |
+|---|--------|------|------|
+| 1 | `POST /api/exchange/path` 设置兑换路径 | ⚠️ **新 Bug** | 基本功能正常（fund/coupon 切换、无效路径拒绝），但 `_update_path_streak()` 中 `last_choice`（周字符串如 "2026-21"）与 `path`（路径名 "fund"/"coupon"）比较永远不等，**path_streak_weeks 永远不会通过 API 正常累积**，始终为 0 |
+| 2a | `POST /api/consume` 记录消费 | ✅ 通过 | 正常记录、余额递减正确 |
+| 2b | 消费超额保护 | ✅ 通过 | 额度不足时返回 400 + 剩余额度提示 |
+| 2c | `GET /api/consume/history` 消费历史 | ✅ 通过 | 返回 consumed_amount / coupon_pool / remaining / records |
+| 3 | `PUT /api/config` 配置持久化 | ✅ 通过 | 修改 base_star=15 → 重启 → 仍为 15，`_save_config()` 写 yaml 正确 |
+
+##### P1：勋章系统完整性
+
+| # | 勋章 | 结论 | 详情 |
+|---|------|------|------|
+| 4 | 💡 灵光乍现 (first_triple) | ✅ 通过 | 早期测试轮次已触发（today_count≥3），已 earned |
+| 5 | 🕸️ 连线大师 (link_master) | ✅ 通过 | 月度战报标签≥3 正确触发（构造上月 3 条多标签笔记 → submit → `_last_report_tag_count=3` → 勋章激活） |
+| 6 | 🔗 连线新手 (link_novice) | ✅ 通过 | 早期测试轮次已触发（link_power≥5），已 earned |
+
+##### P2：路径交换边界
+
+| # | 测试项 | 结论 | 详情 |
+|---|--------|------|------|
+| 7 | 基金路径 2周(+0.05→1.55) / 4周(+0.10→1.65) | ✅ 通过 | 状态注入验证，各级累加正确（注：因 Bug #6 无法自然累积） |
+| 8 | 消费路径 2周(-0.05→0.95) / 4周(-0.10→0.85) | ✅ 通过 | 状态注入验证，各级累加正确（注：因 Bug #6 无法自然累积） |
+| 9 | Path streak reset | ⚠️ 受 Bug #6 影响 | 切换路径时 reset 到 0 的逻辑正确，但 streak 本身无法累积 |
+
+##### P3：其余未测 API
+
+| # | 测试项 | 结论 | 详情 |
+|---|--------|------|------|
+| 10 | `GET /api/projection` 长期推演 | ✅ 通过 | 180天推演：笔记 30→1830，基金 2000→67211，link_power 25→50 |
+| 11a | `GET /api/tags` 标签云 | ✅ 通过 | 返回 nodes + edges，47个标签节点正常 |
+| 11b | `GET /api/notes/by-tag` 按标签查笔记 | ✅ 通过 | tag=测试 → 返回 3 条相关笔记 |
+| 12 | `GET /api/income/history` 星点记录 | ✅ 通过 | 12 条记录，来源/金额/详情完整 |
+| 13a | `POST /api/backup` 创建备份 | ✅ 通过 | 备份成功创建到 ~/Documents/hunterhunter_backups/ |
+| 13b | `GET /api/backup/list` 备份列表 | ✅ 通过 | 返回 10 个备份，含文件数和大小 |
+| 14 | `GET /api/report/monthly/draft` | ✅ 通过 | 无草稿时返回空列表 `[]`（正常） |
+| 15 | `POST /api/medals/check` 手动勋章检查 | ✅ 通过 | checked:4, newly_earned:[]（全部已获得） |
+
+##### P4：周期重置逻辑
+
+| # | 测试项 | 结论 | 详情 |
+|---|--------|------|------|
+| 16 | `weekly_review_done` 新周重置 | ✅ 通过 | 设守卫=True + last_weekly_review=上周 → reset_daily_flags → False |
+| 17 | `monthly_report_done` 新月重置 | ✅ 通过 | 设守卫=True + last_monthly_report=3月 → reset_daily_flags → False |
+| 18 | `today_count` 跨天重置 | ✅ 通过 | 设 today_count=5 + last_capture_date=昨天 → reset_daily_flags → 0，同时 gray_medal 惩罚触发 |
+
+##### 第四轮总结
+
+| 类别 | ✅ 通过 | ❌ Bug | ⚠️ 受影响 |
+|------|--------|--------|-----------|
+| P0 核心功能 | 4 | 1 | 0 |
+| P1 勋章完整性 | 3 | 0 | 0 |
+| P2 路径边界 | 2 | 0 | 1 |
+| P3 其余 API | 7 | 0 | 0 |
+| P4 周期重置 | 3 | 0 | 0 |
+| **合计** | **19** | **1** | **1** |
+
+**新发现 Bug：**
+6. **path_streak_weeks 永远不会自然累积** — `_update_path_streak()` 第 59 行 `last_choice == path` 比较类型错误：`last_choice` 存的是周字符串（"2026-21"），`path` 是路径名（"fund"/"coupon"），两者永远不等。应改为 `self.state.get("exchange_path") == path`。这意味着所有路径连续奖励/惩罚（基金+0.05~0.15、消费-0.05~-0.15）**对真实用户完全不可达**，只能通过手动修改 state.json 触发。
+
+**累计 Bug 清单（四轮合计）：**
+
+| # | Bug | 严重度 | 位置 | 状态 |
+|---|-----|--------|------|:----:|
+| 1 | 重复检测是位置匹配而非文本相似度 | 中 | `engine_capture.py:_check_duplicate` | ⏳ 暂缓 |
+| 2 | 跨界采集加成从未上线 | 低 | `engine_capture.py:_calculate_stars` | ⏳ 暂缓 |
+| 3 | 周回顾可重复提交 | 高 | `engine_review.py:submit_weekly_review` | ✅ 已修复 |
+| 4 | 消费路径连续惩罚从未生效 | 中 | `engine_exchange.py:_calculate_exchange_rate` | ✅ 已修复 |
+| 5 | 月度战报可重复提交 | 高 | `engine_review.py:submit_monthly_report` | ✅ 已修复 |
+| 6 | path_streak_weeks 永远不累积 | 高 | `engine_exchange.py:_update_path_streak:59` | ❌ 待修复 |
+
 ---
 
 ## 五、配置化优先级建议
@@ -259,3 +335,4 @@
 | 2026-05-25 | v0.4.1-dev | 第二轮测试（虚拟历史数据）：补充连续加成/兑换门槛/路径奖励/回顾/ENABLE_EXCHANGE 测试，发现周回顾重复提交 Bug |
 | 2026-05-25 | v0.4.1-dev | 第三轮测试（补测清单外在线项）：消费路径/30天+90天连续加成/月度战报重复提交/勋章+连接力 |
 | 2026-05-25 | v0.4.1-dev | Bug 修复：#3 周回顾守卫、#4 消费路径惩罚、#5 月度战报守卫 |
+| 2026-05-25 | v0.4.1-dev | 第四轮测试（API全覆盖+勋章+路径边界+周期重置）：18项通过，发现 Bug #6 path_streak_weeks 永不可累积 |
