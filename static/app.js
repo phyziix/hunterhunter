@@ -33,7 +33,8 @@ function appData() {
                         lock_days: 30,
                         min_withdraw: 500
                     },
-                    custom_fund_name: "我的投资账户"
+                    custom_fund_name: "我的投资账户",
+                    exchange_enabled: false
                 },
                 showNotification: false,
                 notificationMessage: '',

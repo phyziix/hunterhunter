@@ -21,6 +21,9 @@ def _read_version() -> str:
 
 __version__ = _read_version()
 
+# Feature flags
+ENABLE_EXCHANGE = os.getenv("ENABLE_EXCHANGE", "false").lower() == "true"
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -317,7 +320,9 @@ async def start_new_season():
 @app.get("/api/config")
 async def get_config():
     try:
-        return engine.get_config()
+        config = engine.get_config()
+        config["exchange_enabled"] = ENABLE_EXCHANGE
+        return config
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
