@@ -284,7 +284,7 @@
 | 3 | 周回顾可重复提交 | 高 | `engine_review.py:submit_weekly_review` | ✅ 已修复 |
 | 4 | 消费路径连续惩罚从未生效 | 中 | `engine_exchange.py:_calculate_exchange_rate` | ✅ 已修复 |
 | 5 | 月度战报可重复提交 | 高 | `engine_review.py:submit_monthly_report` | ✅ 已修复 |
-| 6 | path_streak_weeks 永远不累积 | 高 | `engine_exchange.py:_update_path_streak:59` | ❌ 待修复 |
+| 6 | path_streak_weeks 永远不累积 | 高 | `engine_exchange.py:_update_path_streak:59` | ✅ 已修复 |
 
 ---
 
@@ -336,3 +336,4 @@
 | 2026-05-25 | v0.4.1-dev | 第三轮测试（补测清单外在线项）：消费路径/30天+90天连续加成/月度战报重复提交/勋章+连接力 |
 | 2026-05-25 | v0.4.1-dev | Bug 修复：#3 周回顾守卫、#4 消费路径惩罚、#5 月度战报守卫 |
 | 2026-05-25 | v0.4.1-dev | 第四轮测试（API全覆盖+勋章+路径边界+周期重置）：18项通过，发现 Bug #6 path_streak_weeks 永不可累积 |
+| 2026-05-25 | v0.4.1-dev | Bug 修复：#6 `_update_path_streak` `last_path_choice`(周字符串) → `exchange_path`(路径名) |
