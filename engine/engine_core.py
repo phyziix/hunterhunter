@@ -844,6 +844,8 @@ class EngineCore:
             "gray_medal": self.state["gray_medal"],
             "weekly_review_done": self.state["weekly_review_done"],
             "monthly_report_done": self.state["monthly_report_done"],
+            "last_weekly_review_file": self.state.get("last_weekly_review_file", "") or self._find_review_file("周回顾素材"),
+            "last_monthly_report_file": self.state.get("last_monthly_report_file", "") or self._find_review_file("月度战报素材"),
             "published_count": self.state.get("published_count", 0),
             "exchange_path": self.state["exchange_path"],
             "path_streak_weeks": self.state["path_streak_weeks"],
@@ -854,6 +856,14 @@ class EngineCore:
             "fund_bonus": self.state.get("fund_bonus", 0)
         }
     
+    def _find_review_file(self, keyword):
+        """兜底扫描 Inbox 找回顾文件（旧版本提交时未存 file_path）"""
+        inbox_dir = Path(self.base_path) / "Inbox"
+        if not inbox_dir.exists():
+            return ""
+        matches = sorted(inbox_dir.glob(f"{keyword}*.md"), key=lambda p: p.stat().st_mtime, reverse=True)
+        return str(matches[0]) if matches else ""
+
 
     def process_publish(self, url):
         self._load_state()

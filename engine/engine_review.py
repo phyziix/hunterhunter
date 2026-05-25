@@ -315,6 +315,7 @@ hunt: true
 
         current_week = self._get_week_str()
         self.state["last_weekly_review"] = current_week
+        self.state["last_weekly_review_file"] = str(fp)
         self.state["weekly_review_done"] = True
         self.state["available_star"] += self.config["weekly_review_reward"]
         self.state["total_star"] = self.state["available_star"] + self.state["fund_pool"]
@@ -411,6 +412,7 @@ hunt: true
             self._check_medals(trigger_type="event")
 
         self.state["last_monthly_report"] = current_month
+        self.state["last_monthly_report_file"] = str(fp)
         self.state["monthly_report_done"] = True
         self.state["completed_reports"] += 1
         self.state["available_star"] += self.config["monthly_report_reward"]

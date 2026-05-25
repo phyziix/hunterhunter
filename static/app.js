@@ -239,16 +239,14 @@ function appData() {
                     return colors[index];
                 },
                 get sortedTags() {
-                    // 排行榜：只显示 count >= 2 的标签，最多 50 个
+                    // 排行榜：显示所有标签，按 count 降序，最多 50 个
                     return Object.entries(this.tagCloudData)
-                        .filter(([_, data]) => data.count >= 2)
                         .sort((a, b) => b[1].count - a[1].count)
                         .slice(0, 50);
                 },
                 get filteredTagCloudEntries() {
-                    // 标签云：只显示 count >= 2 的标签，最多 50 个
+                    // 标签云：显示所有标签，按 count 降序，最多 50 个
                     return Object.entries(this.tagCloudData)
-                        .filter(([_, data]) => data.count >= 2)
                         .sort((a, b) => b[1].count - a[1].count)
                         .slice(0, 50);
                 },
@@ -365,6 +363,14 @@ function appData() {
                         const response = await fetch('/api/status');
                         if (response.ok) {
                             this.status = await response.json();
+                            // 按钮持久化：从后端状态恢复已提交回顾的文件路径
+                            if (this.status.weekly_review_done && this.status.last_weekly_review_file) {
+                                this.lastReviewFile = this.status.last_weekly_review_file;
+                                this.lastReviewType = 'weekly';
+                            } else if (this.status.monthly_report_done && this.status.last_monthly_report_file) {
+                                this.lastReviewFile = this.status.last_monthly_report_file;
+                                this.lastReviewType = 'monthly';
+                            }
                         }
                     } catch (error) {
                         console.error('Failed to load status:', error);
