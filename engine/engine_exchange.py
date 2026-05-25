@@ -53,7 +53,7 @@ class EngineExchange:
     
     def _update_path_streak(self, path):
         """更新路径连续选择计数"""
-        last_choice = self.state.get("last_path_choice", "")
+        last_choice = self.state.get("exchange_path", "")
         last_week = self._get_week_str()
         
         if last_choice == path:
