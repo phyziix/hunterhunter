@@ -27,6 +27,10 @@ fund:
 # 自定义名称
 custom_fund_name: "我的投资账户"
 
+# 消费记录（v0.4 新增）
+consumed_amount: 0
+consumption_records: []
+
 # 连续加成配置
 streak_bonuses:
   - days: 7

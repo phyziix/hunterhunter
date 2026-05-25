@@ -142,6 +142,43 @@ async def exchange_fund(request: ExchangeRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+# ========== 消费记录 API ==========
+
+from pydantic import BaseModel
+
+class ConsumptionRequest(BaseModel):
+    content: str
+    amount: float
+
+@app.post("/api/consume")
+async def record_consumption(request: ConsumptionRequest):
+    """记录一笔消费"""
+    if not ENABLE_EXCHANGE:
+        raise HTTPException(status_code=403, detail="兑换模块已临时关闭")
+    try:
+        result = engine.record_consumption(
+            content=request.content,
+            amount=request.amount
+        )
+        if not result.get("success"):
+            raise HTTPException(status_code=400, detail=result.get("error", "消费记录失败"))
+        return result
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/consume/history")
+async def get_consumption_history():
+    """获取消费记录列表"""
+    if not ENABLE_EXCHANGE:
+        raise HTTPException(status_code=403, detail="兑换模块已临时关闭")
+    try:
+        result = engine.get_consumption_history()
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 # ========== 回顾与战报 API ==========
 
 @app.get("/api/projection")

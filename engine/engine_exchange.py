@@ -224,5 +224,81 @@ class EngineExchange:
             "message": "请手动转账"
         }
     
+    # ========== 消费记录功能 ==========
+    
+    def record_consumption(self, content: str, amount: float):
+        """记录一笔消费
+        
+        从已兑换消费额中扣减相应金额
+        
+        Args:
+            content: 消费内容描述
+            amount: 消费金额
+            
+        Returns:
+            dict: 操作结果
+        """
+        self._load_state()
+        
+        # 计算已兑换消费额和已消费金额的差值（剩余可用额度）
+        coupon_pool = self.state.get("coupon_pool", 0)  # 已兑换消费额
+        consumed_amount = self.state.get("consumed_amount", 0)  # 已消费
+        remaining = coupon_pool - consumed_amount
+        
+        # 校验额度
+        if amount > remaining:
+            return {
+                "success": False,
+                "error": f"额度不足，当前剩余 ¥{remaining:.2f}",
+                "remaining": round(remaining, 2)
+            }
+        
+        # 更新已消费金额
+        self.state["consumed_amount"] = consumed_amount + amount
+        
+        # 记录消费条目
+        if "consumption_records" not in self.state:
+            self.state["consumption_records"] = []
+        
+        self.state["consumption_records"].append({
+            "content": content,
+            "amount": amount,
+            "timestamp": datetime.now().isoformat()
+        })
+        
+        self._save_state()
+        
+        new_remaining = coupon_pool - self.state["consumed_amount"]
+        
+        return {
+            "success": True,
+            "consumed_amount": round(self.state["consumed_amount"], 2),
+            "remaining": round(new_remaining, 2),
+            "record": {
+                "content": content,
+                "amount": amount,
+                "timestamp": datetime.now().isoformat()
+            }
+        }
+    
+    def get_consumption_history(self):
+        """获取消费记录列表
+        
+        Returns:
+            dict: 包含消费记录和统计信息
+        """
+        self._load_state()
+        
+        consumed_amount = self.state.get("consumed_amount", 0)
+        coupon_pool = self.state.get("coupon_pool", 0)
+        records = self.state.get("consumption_records", [])
+        
+        return {
+            "consumed_amount": round(consumed_amount, 2),
+            "coupon_pool": round(coupon_pool, 2),
+            "remaining": round(coupon_pool - consumed_amount, 2),
+            "records": records
+        }
+    
     # ========== 回顾与战报：两步流程 ==========
 

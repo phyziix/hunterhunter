@@ -75,6 +75,16 @@ function appData() {
                 copySuccess: false,
                 renderedContent: '',
                 reviewRawContent: '',
+                // ===== 消费记录（v0.4 新增） =====
+                showConsumptionModal: false,
+                consumptionContent: '',
+                consumptionAmount: null,
+                consumptionData: {
+                    consumed_amount: 0,
+                    coupon_pool: 0,
+                    remaining: 0,
+                    records: []
+                },
                 allMedals: [
                     { name: '灵光乍现', emoji: '💡' },
                     { name: '周常猎人', emoji: '🏹' },
@@ -339,6 +349,13 @@ function appData() {
                     } catch (error) {
                         console.error('Failed to load status:', error);
                     }
+                },
+                
+                // 初始化时加载消费记录数据（v0.4 新增）
+                async init() {
+                    await this.loadStatus();
+                    await this.loadConfig();
+                    await this.loadConsumptionData();  // 加载消费记录
                 },
                 async loadConfig() {
                     try {
@@ -632,6 +649,51 @@ function appData() {
                             await this.loadStatus();
                         } else {
                             this.showNotificationMessage(data.detail || `${title}提交失败`, 'error', '❌');
+                        }
+                    } catch (error) {
+                        this.showNotificationMessage('网络错误', 'error', '❌');
+                    }
+                },
+                
+                // ===== 消费记录（v0.4 新增） =====
+                async loadConsumptionData() {
+                    try {
+                        const response = await fetch('/api/consume/history');
+                        if (response.ok) {
+                            const data = await response.json();
+                            this.consumptionData = data;
+                        }
+                    } catch (error) {
+                        console.error('加载消费记录失败:', error);
+                    }
+                },
+                
+                async submitConsumption() {
+                    if (!this.consumptionContent.trim() || !this.consumptionAmount || this.consumptionAmount <= 0) {
+                        return;
+                    }
+                    
+                    try {
+                        const response = await fetch('/api/consume', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                content: this.consumptionContent,
+                                amount: parseFloat(this.consumptionAmount)
+                            })
+                        });
+                        
+                        const data = await response.json();
+                        
+                        if (response.ok && data.success) {
+                            this.showNotificationMessage('消费记录成功', 'success', '✅');
+                            this.consumptionContent = '';
+                            this.consumptionAmount = null;
+                            this.showConsumptionModal = false;
+                            await this.loadConsumptionData();
+                            await this.loadStatus();
+                        } else {
+                            this.showNotificationMessage(data.error || '记录失败', 'error', '❌');
                         }
                     } catch (error) {
                         this.showNotificationMessage('网络错误', 'error', '❌');
