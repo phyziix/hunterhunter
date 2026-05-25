@@ -9,6 +9,7 @@
 
 | 版本号 | 分支 | 日期 | 部署 | 核心变更 |
 |--------|------|------|:--:|---------|
+| 0.4-dev | v0.4-dev | 05-25 | 🔧 | 兑换模块 feature flag：环境变量控制开关、前端动态隐藏、调试入口 |
 | 0.3.2 | v0.3.2-dev | 05-24 | ✅ | 后端拆分：engine.py → engine/ 包（Core/Backup/Capture/Exchange/Review/Season，Mixin 模式）；修 tag_index 迁移遗漏；切为生产版本 |
 | 0.3.1 | v0.3.1-dev | 05-24 | ✅ | 前端拆分：index.html → styles.css + app.js，修复 Alpine.js 重复加载和样式文件路径 404 |
 | 0.2.5 | v0.2.4 | 05-24 | ✅ | 兑换模块下线、重复提交提示优化、标签提取过滤、相似笔记算法再优化 |

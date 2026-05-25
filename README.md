@@ -44,7 +44,8 @@ python3 -m uvicorn main:app --host 0.0.0.0 --port 8003 --reload
 
 | 版本 | 主要变化 |
 |------|---------|
-| v0.3.2-dev | 🔧 后端拆分：engine.py → core/backup/season/review/exchange/capture（Mixin 模式）|
+| v0.4-dev | 🔧 兑换模块 feature flag：环境变量控制开关、前端动态隐藏、调试入口 |
+| v0.3.2 | ✅ 后端拆分：engine.py → engine/ 包（Mixin 模式）|
 | v0.3.1 | ✅ 前端拆分：index.html → styles.css + app.js，修复静态资源路径冲突 |
 | v0.2.5 | ✅ 兑换+赛季模块下线、重复提交提示优化、标签提取过滤、相似笔记算法再优化、标签宇宙性能优化 |
 | v0.2.4 | ✅ iCloud 同步补回、相似笔记算法升级、规则体系完善、基金池重构 + 动态锁定 |
