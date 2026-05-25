@@ -22,28 +22,35 @@ class EngineExchange:
             f.write(f"- {timestamp} | {type_} | 扣除星点: {amount} | 实际价值: {real_value}\n")
     
 
+    def _calculate_path_streak_bonus(self, path):
+        """计算连续选择路径的奖励加成
+        
+        基金用户：连续2周 +0.05、连续4周 +0.10、连续8周 +0.15
+        消费券用户：连续2周 -0.05、连续4周 -0.10、连续8周 -0.15
+        中断（切换路径）则加成归零
+        """
+        streak_weeks = self.state.get("path_streak_weeks", 0)
+        bonuses = self.config.get("path_bonuses", {}).get(path, [])
+        
+        bonus = 0
+        for b in bonuses:
+            if streak_weeks >= b["weeks"]:
+                bonus += b["rate"]
+        
+        return bonus
+    
     def _calculate_exchange_rate(self, path):
-        """计算当前汇率（含连续选择奖惩，所有增益减益都是加减关系）"""
-        path_bonuses = self.config.get("path_bonuses", {}).get(path, [])
-        streak_weeks = self.state["path_streak_weeks"]
-        
+        """计算当前汇率（所有增益减益都是加减关系）"""
         if path == "fund":
-            base_rate = self.config["fund"]["base_rate"]
-            # 基金基础奖励（常设，任何情况下都有）
-            base_bonus = self.config["fund"].get("base_bonus", 0.5)
-            rate = base_rate + base_bonus
+            # 基金：固定基础倍率 1.0 + 常设基础奖励 0.5 + 连续选择加成
+            rate = self.config["fund"]["base_rate"] + self.config["fund"].get("base_bonus", 0.5)
+            rate += self._calculate_path_streak_bonus("fund")
         else:
-            base_rate = self.config["coupon_rate"]
-            rate = base_rate
-        
-        # 连续选择奖惩（加减关系，path_bonuses 中存储的是增量值）
-        for bonus in path_bonuses:
-            if streak_weeks >= bonus["weeks"]:
-                rate += bonus["rate"]
+            # 消费券：固定为 1.0，无动态因子
+            rate = self.config["coupon_rate"]
         
         return rate
     
-
     def _update_path_streak(self, path):
         """更新路径连续选择计数"""
         last_choice = self.state.get("last_path_choice", "")
@@ -57,29 +64,42 @@ class EngineExchange:
         self.state["exchange_path"] = path
         self.state["last_path_choice"] = last_week
     
-
     def calculate_opportunity_cost(self, amount, from_path):
-        """计算镜像对比数据"""
+        """三层镜像对比
+        
+        等值对比：消费券金额 vs 基金金额
+        时间维度延伸：基金增值预估 / 消费品折旧
+        历史累计：本月消费损失或克制收益
+        """
         fund_rate = self._calculate_exchange_rate("fund")
         coupon_rate = self._calculate_exchange_rate("coupon")
         
-        if from_path == "coupon":
-            fund_value = amount * fund_rate
-            coupon_value = amount * coupon_rate
-            monthly_loss = self.state["consumption_loss_this_month"]
-            monthly_gain = 0
-        else:
-            fund_value = amount * fund_rate
-            coupon_value = amount * coupon_rate
-            monthly_gain = fund_value - coupon_value
-            monthly_loss = 0
+        fund_value = amount * fund_rate
+        coupon_value = amount * coupon_rate
+        
+        # 时间维度延伸：基金增值预估（假设持有1个月）
+        monthly_fund_growth = fund_value * 0.05  # 月增长率约5%
+        
+        # 消费品折旧（假设1个月折旧10%）
+        monthly_coupon_depreciation = coupon_value * 0.10
         
         return {
-            "fund_value": round(fund_value, 2),
-            "coupon_value": round(coupon_value, 2),
-            "difference": round(fund_value - coupon_value, 2),
-            "monthly_loss": round(monthly_loss, 2),
-            "monthly_gain": round(monthly_gain, 2)
+            # 第一层：等值对比
+            "equivalent_comparison": {
+                "coupon_value": round(coupon_value, 2),
+                "fund_value": round(fund_value, 2),
+                "difference": round(fund_value - coupon_value, 2)
+            },
+            # 第二层：时间维度延伸
+            "time_dimension": {
+                "fund_monthly_growth": round(monthly_fund_growth, 2),
+                "coupon_monthly_depreciation": round(monthly_coupon_depreciation, 2)
+            },
+            # 第三层：历史累计
+            "historical_accumulation": {
+                "consumption_loss_this_month": round(self.state.get("consumption_loss_this_month", 0), 2),
+                "fund_gain_this_month": round(self.state.get("fund_gain_this_month", 0), 2)
+            }
         }
     
 
@@ -177,6 +197,11 @@ class EngineExchange:
         
         rate = self._calculate_exchange_rate("fund")
         real_value = amount * rate
+        
+        # 更新本月基金增益
+        coupon_rate = self._calculate_exchange_rate("coupon")
+        fund_gain = amount * (rate - coupon_rate)
+        self.state["fund_gain_this_month"] = self.state.get("fund_gain_this_month", 0) + fund_gain
         
         self._log_exchange("fund", amount, real_value)
         
