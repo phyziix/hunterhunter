@@ -1,10 +1,10 @@
 {
-  "total_star": 1291.0,
+  "total_star": 1491.0,
   "today_count": 6,
   "last_capture_date": "2026-05-24",
   "streak_days": 1,
   "active_days": 2,
-  "total_notes": 27,
+  "total_notes": 14,
   "penalty_active": false,
   "penalty_days": 0,
   "medals": [
@@ -13,9 +13,9 @@
   ],
   "monthly_medals": 0,
   "gray_medal": false,
-  "last_weekly_review": "",
+  "last_weekly_review": "2026-21",
   "last_monthly_report": "",
-  "weekly_review_done": false,
+  "weekly_review_done": true,
   "monthly_report_done": false,
   "completed_reports": 0,
   "exchange_history": [
@@ -77,7 +77,7 @@
   "exchange_path": "fund",
   "fund_pool": 1000.0,
   "coupon_pool": 210.0,
-  "available_star": 291.0,
+  "available_star": 491.0,
   "consumption_loss_this_month": 505.0,
   "path_streak_weeks": 0,
   "last_path_choice": "2026-20",
@@ -85,7 +85,7 @@
   "total_output_star": 1754,
   "abilities": {
     "hunt_power": 5.897939877774275,
-    "link_power": 27.562202302527677,
+    "link_power": 50.0,
     "output_power": 11.3227424783294
   },
   "ability_changes": [
@@ -204,247 +204,269 @@
       "reason": "连接力计算更新"
     }
   ],
-  "cross_domain_notes_count": 25,
+  "cross_domain_notes_count": 13,
   "tag_graph": {
     "nodes": {
-      "#测试": {
-        "count": 4,
-        "first_seen": "2026-05-22"
-      },
-      "#开发": {
-        "count": 3,
-        "first_seen": "2026-05-22"
-      },
-      "#设计": {
-        "count": 2,
-        "first_seen": "2026-05-22"
-      },
-      "#生产力": {
-        "count": 2,
-        "first_seen": "2026-05-22"
-      },
-      "#效率": {
-        "count": 1,
-        "first_seen": "2026-05-22"
-      },
-      "测试": {
-        "count": 1,
-        "first_seen": "2026-05-22"
-      },
-      "API": {
-        "count": 1,
-        "first_seen": "2026-05-22"
-      },
-      "学习": {
-        "count": 1,
-        "first_seen": "2026-05-22"
-      },
-      "认知": {
-        "count": 1,
-        "first_seen": "2026-05-22"
-      },
-      "成长": {
-        "count": 1,
-        "first_seen": "2026-05-22"
-      },
-      "效率": {
-        "count": 1,
-        "first_seen": "2026-05-22"
-      },
-      "时间管理": {
-        "count": 1,
-        "first_seen": "2026-05-22"
-      },
-      "工作法": {
-        "count": 1,
-        "first_seen": "2026-05-22"
-      },
-      "产品设计": {
-        "count": 1,
-        "first_seen": "2026-05-22"
-      },
-      "用户体验": {
-        "count": 1,
-        "first_seen": "2026-05-22"
-      },
-      "反馈": {
-        "count": 1,
-        "first_seen": "2026-05-22"
-      },
-      "AI": {
-        "count": 2,
-        "first_seen": "2026-05-22"
-      },
-      "机器学习": {
-        "count": 1,
-        "first_seen": "2026-05-22"
-      },
-      "技术": {
-        "count": 2,
-        "first_seen": "2026-05-22"
-      },
-      "敏捷": {
-        "count": 1,
-        "first_seen": "2026-05-22"
-      },
-      "团队协作": {
-        "count": 1,
-        "first_seen": "2026-05-22"
-      },
-      "开发": {
-        "count": 2,
-        "first_seen": "2026-05-22"
-      },
-      "注意力": {
-        "count": 1,
-        "first_seen": "2026-05-22"
-      },
-      "信息": {
-        "count": 1,
-        "first_seen": "2026-05-22"
-      },
-      "专注": {
-        "count": 1,
-        "first_seen": "2026-05-22"
-      },
-      "冥想": {
-        "count": 1,
-        "first_seen": "2026-05-22"
-      },
-      "心理健康": {
-        "count": 1,
-        "first_seen": "2026-05-22"
-      },
-      "习惯": {
-        "count": 1,
-        "first_seen": "2026-05-22"
-      },
-      "知识管理": {
-        "count": 1,
-        "first_seen": "2026-05-22"
-      },
-      "网络": {
-        "count": 1,
-        "first_seen": "2026-05-22"
-      },
-      "组织": {
-        "count": 1,
-        "first_seen": "2026-05-22"
-      },
-      "git": {
-        "count": 1,
-        "first_seen": "2026-05-22"
-      },
-      "工具": {
-        "count": 1,
-        "first_seen": "2026-05-22"
-      },
-      "灵感": {
-        "count": 1,
-        "first_seen": "2026-05-22"
-      },
-      "睡眠": {
-        "count": 1,
-        "first_seen": "2026-05-22"
-      },
-      "创造力": {
-        "count": 1,
-        "first_seen": "2026-05-22"
-      },
-      "Python": {
-        "count": 3,
-        "first_seen": "2026-05-22"
-      },
-      "Tech": {
-        "count": 1,
-        "first_seen": "2026-05-22"
-      },
-      "test": {
-        "count": 3,
-        "first_seen": "2026-05-24"
-      },
-      "debug": {
-        "count": 3,
-        "first_seen": "2026-05-24"
-      },
-      "FastAPI": {
-        "count": 1,
-        "first_seen": "2026-05-24"
-      },
-      "LLM": {
-        "count": 1,
-        "first_seen": "2026-05-24"
-      },
-      "LangChain": {
-        "count": 1,
-        "first_seen": "2026-05-24"
-      },
       "薇邻": {
-        "count": 1,
-        "first_seen": "2026-05-24"
+        "count": 5,
+        "first_seen": "2026-05-26"
       },
       "代码重构": {
         "count": 1,
-        "first_seen": "2026-05-24"
+        "first_seen": "2026-05-26"
       },
       "灵感记录": {
         "count": 1,
-        "first_seen": "2026-05-24"
+        "first_seen": "2026-05-26"
       },
       "生活碎片": {
         "count": 1,
-        "first_seen": "2026-05-24"
+        "first_seen": "2026-05-26"
+      },
+      "个人状态": {
+        "count": 1,
+        "first_seen": "2026-05-26"
+      },
+      "生活整理": {
+        "count": 2,
+        "first_seen": "2026-05-26"
+      },
+      "灵感猎手": {
+        "count": 7,
+        "first_seen": "2026-05-26"
+      },
+      "bug修复": {
+        "count": 1,
+        "first_seen": "2026-05-26"
+      },
+      "疲惫": {
+        "count": 1,
+        "first_seen": "2026-05-26"
+      },
+      "周会": {
+        "count": 1,
+        "first_seen": "2026-05-26"
+      },
+      "需求管理": {
+        "count": 1,
+        "first_seen": "2026-05-26"
+      },
+      "进度推进": {
+        "count": 1,
+        "first_seen": "2026-05-26"
+      },
+      "马家堡项目": {
+        "count": 1,
+        "first_seen": "2026-05-26"
+      },
+      "玉林里项目": {
+        "count": 1,
+        "first_seen": "2026-05-26"
+      },
+      "团队管理": {
+        "count": 1,
+        "first_seen": "2026-05-26"
+      },
+      "项目推进": {
+        "count": 2,
+        "first_seen": "2026-05-26"
+      },
+      "会议纪要": {
+        "count": 1,
+        "first_seen": "2026-05-26"
+      },
+      "马家堡": {
+        "count": 2,
+        "first_seen": "2026-05-26"
+      },
+      "文化中心": {
+        "count": 1,
+        "first_seen": "2026-05-26"
+      },
+      "工作流": {
+        "count": 1,
+        "first_seen": "2026-05-26"
+      },
+      "跨设备同步": {
+        "count": 1,
+        "first_seen": "2026-05-26"
+      },
+      "Git": {
+        "count": 1,
+        "first_seen": "2026-05-26"
+      },
+      "LOGS方案": {
+        "count": 1,
+        "first_seen": "2026-05-26"
+      },
+      "效率工具": {
+        "count": 1,
+        "first_seen": "2026-05-26"
+      },
+      "DeepSeek": {
+        "count": 1,
+        "first_seen": "2026-05-26"
+      },
+      "API": {
+        "count": 1,
+        "first_seen": "2026-05-26"
+      },
+      "IDE同步": {
+        "count": 1,
+        "first_seen": "2026-05-26"
+      },
+      "断舍离": {
+        "count": 4,
+        "first_seen": "2026-05-26"
+      },
+      "纠结日常": {
+        "count": 1,
+        "first_seen": "2026-05-26"
+      },
+      "碎片人生": {
+        "count": 1,
+        "first_seen": "2026-05-26"
+      },
+      "AI工作流": {
+        "count": 1,
+        "first_seen": "2026-05-26"
+      },
+      "个人Skill": {
+        "count": 1,
+        "first_seen": "2026-05-26"
+      },
+      "业务沉淀": {
+        "count": 1,
+        "first_seen": "2026-05-26"
+      },
+      "认知升级": {
+        "count": 1,
+        "first_seen": "2026-05-26"
+      },
+      "结构化梳理": {
+        "count": 1,
+        "first_seen": "2026-05-26"
+      },
+      "业态规划": {
+        "count": 1,
+        "first_seen": "2026-05-26"
+      },
+      "策展商业": {
+        "count": 1,
+        "first_seen": "2026-05-26"
+      },
+      "数据结构": {
+        "count": 3,
+        "first_seen": "2026-05-26"
+      },
+      "收拾屋子": {
+        "count": 3,
+        "first_seen": "2026-05-26"
+      },
+      "累": {
+        "count": 3,
+        "first_seen": "2026-05-26"
       }
     },
     "edges": {
-      "#测试<->#开发": 3,
-      "#测试<->#设计": 1,
-      "#设计<->#生产力": 1,
-      "#生产力<->#效率": 1,
-      "测试<->API": 1,
-      "学习<->认知": 1,
-      "学习<->成长": 1,
-      "认知<->成长": 1,
-      "效率<->时间管理": 1,
-      "效率<->工作法": 1,
-      "时间管理<->工作法": 1,
-      "产品设计<->用户体验": 1,
-      "产品设计<->反馈": 1,
-      "用户体验<->反馈": 1,
-      "AI<->机器学习": 1,
-      "AI<->技术": 1,
-      "机器学习<->技术": 1,
-      "敏捷<->团队协作": 1,
-      "敏捷<->开发": 1,
-      "团队协作<->开发": 1,
-      "注意力<->信息": 1,
-      "注意力<->专注": 1,
-      "信息<->专注": 1,
-      "冥想<->心理健康": 1,
-      "冥想<->习惯": 1,
-      "心理健康<->习惯": 1,
-      "知识管理<->网络": 1,
-      "知识管理<->组织": 1,
-      "网络<->组织": 1,
-      "git<->工具": 1,
-      "git<->开发": 1,
-      "工具<->开发": 1,
-      "灵感<->睡眠": 1,
-      "灵感<->创造力": 1,
-      "睡眠<->创造力": 1,
-      "技术<->Python": 1,
-      "Python<->Tech": 1,
-      "test<->debug": 3,
-      "Python<->FastAPI": 1,
-      "AI<->LLM": 1,
-      "AI<->LangChain": 1,
-      "LLM<->LangChain": 1,
       "薇邻<->代码重构": 1,
       "薇邻<->灵感记录": 1,
       "薇邻<->生活碎片": 1,
       "代码重构<->灵感记录": 1,
       "代码重构<->生活碎片": 1,
-      "灵感记录<->生活碎片": 1
+      "灵感记录<->生活碎片": 1,
+      "个人状态<->生活整理": 1,
+      "个人状态<->灵感猎手": 1,
+      "个人状态<->bug修复": 1,
+      "个人状态<->疲惫": 1,
+      "生活整理<->灵感猎手": 1,
+      "生活整理<->bug修复": 1,
+      "生活整理<->疲惫": 1,
+      "灵感猎手<->bug修复": 1,
+      "灵感猎手<->疲惫": 1,
+      "bug修复<->疲惫": 1,
+      "周会<->需求管理": 1,
+      "周会<->灵感猎手": 1,
+      "周会<->进度推进": 1,
+      "周会<->薇邻": 1,
+      "需求管理<->灵感猎手": 1,
+      "需求管理<->进度推进": 1,
+      "需求管理<->薇邻": 1,
+      "灵感猎手<->进度推进": 1,
+      "灵感猎手<->薇邻": 1,
+      "进度推进<->薇邻": 1,
+      "薇邻<->马家堡项目": 1,
+      "薇邻<->玉林里项目": 1,
+      "薇邻<->团队管理": 1,
+      "薇邻<->项目推进": 1,
+      "马家堡项目<->玉林里项目": 1,
+      "马家堡项目<->团队管理": 1,
+      "马家堡项目<->项目推进": 1,
+      "玉林里项目<->团队管理": 1,
+      "玉林里项目<->项目推进": 1,
+      "团队管理<->项目推进": 1,
+      "会议纪要<->薇邻": 1,
+      "会议纪要<->马家堡": 1,
+      "会议纪要<->文化中心": 1,
+      "薇邻<->马家堡": 1,
+      "薇邻<->文化中心": 1,
+      "马家堡<->文化中心": 1,
+      "工作流<->跨设备同步": 1,
+      "工作流<->Git": 1,
+      "工作流<->LOGS方案": 1,
+      "工作流<->效率工具": 1,
+      "跨设备同步<->Git": 1,
+      "跨设备同步<->LOGS方案": 1,
+      "跨设备同步<->效率工具": 1,
+      "Git<->LOGS方案": 1,
+      "Git<->效率工具": 1,
+      "LOGS方案<->效率工具": 1,
+      "灵感猎手<->DeepSeek": 1,
+      "灵感猎手<->API": 1,
+      "灵感猎手<->IDE同步": 1,
+      "灵感猎手<->项目推进": 1,
+      "DeepSeek<->API": 1,
+      "DeepSeek<->IDE同步": 1,
+      "DeepSeek<->项目推进": 1,
+      "API<->IDE同步": 1,
+      "API<->项目推进": 1,
+      "IDE同步<->项目推进": 1,
+      "生活整理<->断舍离": 1,
+      "生活整理<->纠结日常": 1,
+      "生活整理<->碎片人生": 1,
+      "断舍离<->纠结日常": 1,
+      "断舍离<->碎片人生": 1,
+      "纠结日常<->碎片人生": 1,
+      "灵感猎手<->AI工作流": 1,
+      "灵感猎手<->个人Skill": 1,
+      "灵感猎手<->业务沉淀": 1,
+      "灵感猎手<->认知升级": 1,
+      "AI工作流<->个人Skill": 1,
+      "AI工作流<->业务沉淀": 1,
+      "AI工作流<->认知升级": 1,
+      "个人Skill<->业务沉淀": 1,
+      "个人Skill<->认知升级": 1,
+      "业务沉淀<->认知升级": 1,
+      "马家堡<->结构化梳理": 1,
+      "马家堡<->业态规划": 1,
+      "马家堡<->策展商业": 1,
+      "马家堡<->薇邻": 1,
+      "结构化梳理<->业态规划": 1,
+      "结构化梳理<->策展商业": 1,
+      "结构化梳理<->薇邻": 1,
+      "业态规划<->策展商业": 1,
+      "业态规划<->薇邻": 1,
+      "策展商业<->薇邻": 1,
+      "灵感猎手<->数据结构": 3,
+      "灵感猎手<->收拾屋子": 3,
+      "灵感猎手<->断舍离": 3,
+      "灵感猎手<->累": 3,
+      "数据结构<->收拾屋子": 3,
+      "数据结构<->断舍离": 3,
+      "数据结构<->累": 3,
+      "收拾屋子<->断舍离": 3,
+      "收拾屋子<->累": 3,
+      "断舍离<->累": 3
     }
   },
   "current_season": {
@@ -506,6 +528,12 @@
       "amount": 2.0,
       "details": "基础2.0 + 连续奖励0.0（1天）",
       "timestamp": "2026-05-24T00:25:34.693484"
+    },
+    {
+      "source": "周回顾",
+      "amount": 200,
+      "details": "完成周回顾",
+      "timestamp": "2026-05-26T12:39:38.981144"
     }
   ],
   "fund_first_opened_at": "2026-05-22",
@@ -515,5 +543,152 @@
     5,
     20
   ],
-  "tag_index": {}
+  "tag_index": {
+    "薇邻": [
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260524-日常与工作碎片_2026-05-23-010937.md",
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260525-工作小记_2026-05-25-184904.md",
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260524-公司工作日志_2026-05-22-010952.md",
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260522-好的，已根据您最终确认的名字进行修正：-204911.md",
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260525-马家堡项目：像画技术架构一样画商业_-101311.md"
+    ],
+    "代码重构": [
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260524-日常与工作碎片_2026-05-23-010937.md"
+    ],
+    "灵感记录": [
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260524-日常与工作碎片_2026-05-23-010937.md"
+    ],
+    "生活碎片": [
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260524-日常与工作碎片_2026-05-23-010937.md"
+    ],
+    "个人状态": [
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260524-今天泡澡、收拾屋子和修了几个bug_-194806.md"
+    ],
+    "生活整理": [
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260524-今天泡澡、收拾屋子和修了几个bug_-194806.md",
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260525-```markdown-220038.md"
+    ],
+    "灵感猎手": [
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260524-今天泡澡、收拾屋子和修了几个bug_-194806.md",
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260525-工作小记_2026-05-25-184904.md",
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260524-灵感猎手项目进展_2026-05-2-011004.md",
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260523-夜间探索：让AI建立Flow+自-235732.md",
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260524-2026-05-24深夜：收拾屋子-222459.md",
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260524-2026-05-24深夜：收拾屋子-221436.md",
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260524-2026-05-24深夜：收拾屋子-222417.md"
+    ],
+    "bug修复": [
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260524-今天泡澡、收拾屋子和修了几个bug_-194806.md"
+    ],
+    "疲惫": [
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260524-今天泡澡、收拾屋子和修了几个bug_-194806.md"
+    ],
+    "周会": [
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260525-工作小记_2026-05-25-184904.md"
+    ],
+    "需求管理": [
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260525-工作小记_2026-05-25-184904.md"
+    ],
+    "进度推进": [
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260525-工作小记_2026-05-25-184904.md"
+    ],
+    "马家堡项目": [
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260524-公司工作日志_2026-05-22-010952.md"
+    ],
+    "玉林里项目": [
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260524-公司工作日志_2026-05-22-010952.md"
+    ],
+    "团队管理": [
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260524-公司工作日志_2026-05-22-010952.md"
+    ],
+    "项目推进": [
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260524-公司工作日志_2026-05-22-010952.md",
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260524-灵感猎手项目进展_2026-05-2-011004.md"
+    ],
+    "会议纪要": [
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260522-好的，已根据您最终确认的名字进行修正：-204911.md"
+    ],
+    "马家堡": [
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260522-好的，已根据您最终确认的名字进行修正：-204911.md",
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260525-马家堡项目：像画技术架构一样画商业_-101311.md"
+    ],
+    "文化中心": [
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260522-好的，已根据您最终确认的名字进行修正：-204911.md"
+    ],
+    "工作流": [
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260524-协作方案讨论日志_2026-05-2-011037.md"
+    ],
+    "跨设备同步": [
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260524-协作方案讨论日志_2026-05-2-011037.md"
+    ],
+    "Git": [
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260524-协作方案讨论日志_2026-05-2-011037.md"
+    ],
+    "LOGS方案": [
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260524-协作方案讨论日志_2026-05-2-011037.md"
+    ],
+    "效率工具": [
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260524-协作方案讨论日志_2026-05-2-011037.md"
+    ],
+    "##": [
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260524-协作方案讨论日志_2026-05-2-011037.md"
+    ],
+    "DeepSeek": [
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260524-灵感猎手项目进展_2026-05-2-011004.md"
+    ],
+    "API": [
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260524-灵感猎手项目进展_2026-05-2-011004.md"
+    ],
+    "IDE同步": [
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260524-灵感猎手项目进展_2026-05-2-011004.md"
+    ],
+    "断舍离": [
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260525-```markdown-220038.md",
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260524-2026-05-24深夜：收拾屋子-222459.md",
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260524-2026-05-24深夜：收拾屋子-221436.md",
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260524-2026-05-24深夜：收拾屋子-222417.md"
+    ],
+    "纠结日常": [
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260525-```markdown-220038.md"
+    ],
+    "碎片人生": [
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260525-```markdown-220038.md"
+    ],
+    "AI工作流": [
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260523-夜间探索：让AI建立Flow+自-235732.md"
+    ],
+    "个人Skill": [
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260523-夜间探索：让AI建立Flow+自-235732.md"
+    ],
+    "业务沉淀": [
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260523-夜间探索：让AI建立Flow+自-235732.md"
+    ],
+    "认知升级": [
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260523-夜间探索：让AI建立Flow+自-235732.md"
+    ],
+    "结构化梳理": [
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260525-马家堡项目：像画技术架构一样画商业_-101311.md"
+    ],
+    "业态规划": [
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260525-马家堡项目：像画技术架构一样画商业_-101311.md"
+    ],
+    "策展商业": [
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260525-马家堡项目：像画技术架构一样画商业_-101311.md"
+    ],
+    "数据结构": [
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260524-2026-05-24深夜：收拾屋子-222459.md",
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260524-2026-05-24深夜：收拾屋子-221436.md",
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260524-2026-05-24深夜：收拾屋子-222417.md"
+    ],
+    "收拾屋子": [
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260524-2026-05-24深夜：收拾屋子-222459.md",
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260524-2026-05-24深夜：收拾屋子-221436.md",
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260524-2026-05-24深夜：收拾屋子-222417.md"
+    ],
+    "累": [
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260524-2026-05-24深夜：收拾屋子-222459.md",
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260524-2026-05-24深夜：收拾屋子-221436.md",
+      "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/灵感-20260524-2026-05-24深夜：收拾屋子-222417.md"
+    ]
+  },
+  "last_weekly_review_file": "/Users/wayne/Documents/trae_projects/hunterhunter/data/inspire/Inbox/周回顾素材-2026年第21周.md"
 }
