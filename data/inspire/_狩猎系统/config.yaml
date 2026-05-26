@@ -1,41 +1,30 @@
-# 数据根路径 (v0.24 预留)
-# v0.25 将支持用户自定义数据目录
-data_root: "./data/inspire"
-
-# 赛季星点限制 (v0.24)
-season_star_cap: 3000
-season_soft_reset_ratio: 0.5
 base_star: 10
-
-# 跨界采集加成 (v0.24)
-cross_domain_bonus: 5
-
-# 连接力星点奖励 (v0.24)
-link_power_rewards:
-  - threshold: 5
-    reward: 50
-  - threshold: 20
-    reward: 100
-  - threshold: 50
-    reward: 200
-
 content_output_max_times: 5
 content_output_reward_max: 1000
 content_output_reward_min: 750
 coupon_rate: 1.0
+cross_domain_bonus: 5
 custom_fund_name: 我的投资账户
 daily_multipliers:
 - 1.0
 - 1.5
 - 2.0
 - 0.2
+data_root: ./data/inspire
 fund:
-  base_rate: 1.0
   base_bonus: 0.5
+  base_rate: 1.0
   lock_days: 30
   min_withdraw: 500
-fund_base_rate: 1.0
 fund_base_bonus: 0.5
+fund_base_rate: 1.0
+link_power_rewards:
+- reward: 50
+  threshold: 5
+- reward: 100
+  threshold: 20
+- reward: 200
+  threshold: 50
 medals:
 - condition: count >= 3
   event: daily_capture_count
@@ -63,7 +52,6 @@ medals:
   name: 连线新手
   threshold: 5
   trigger: ability
-
 monthly_report_reward: 500
 path_bonuses:
   coupon:
@@ -80,17 +68,11 @@ path_bonuses:
     weeks: 4
   - rate: 0.15
     weeks: 8
-# 赛季配置 (v0.24)
+season_soft_reset_ratio: 0.5
+season_star_cap: 3000
 seasons:
   auto_start: true
-  default_length_days: 15  # 赛季默认15天
-
-# 赛季主题系统 (v0.4 延展，当前不激活)
-# themes:
-#   - id: pioneer, name: 开拓者, bonus: {}
-#   - id: connector, name: 连线大师, bonus: {cross_domain_bonus: 5}
-#   - id: miner, name: 深度矿工, bonus: {depth_bonus: 10}
-#   - id: sharer, name: 分享者, bonus: {publish_bonus: 100}
+  default_length_days: 15
 streak_bonuses:
 - bonus_pct: 10
   days: 7

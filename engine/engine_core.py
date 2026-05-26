@@ -864,7 +864,9 @@ class EngineCore:
             "current_season": self.state["current_season"],
             "total_notes": self.state["total_notes"],
             "active_days": self.state["active_days"],
-            "fund_bonus": self.state.get("fund_bonus", 0)
+            "fund_bonus": self.state.get("fund_bonus", 0),
+            "current_link_power": self.state.get("abilities", {}).get("link_power", 0),
+            "cross_domain_notes_count": self.state.get("cross_domain_notes_count", 0)
         }
     
     def _find_review_file(self, keyword):

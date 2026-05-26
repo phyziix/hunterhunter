@@ -45,7 +45,7 @@ python3 -m uvicorn main:app --host 0.0.0.0 --port 8003 --reload
 
 | 版本 | 主要变化 |
 |------|---------|
-| v0.4.2 | ✅ 标签宇宙优化（低频过滤、展开收起）、回顾按钮样式调整（提交/查看分离居中）、周报月报按钮始终显示 |
+| v0.4.2 | 🔧 标签宇宙优化 + 回顾按钮样式调整 + 数据一致性修复 + Tunnel 公网自检 |
 | v0.4.1 | ✅ 回顾文件重构 + 查看已提交回顾 + 标签云修复 + 部署工具链 + 规则清单测试体系 |
 | v0.4.0 | ✅ 消费记录功能、版本号显示、兑换逻辑与 PRODUCT.md 对齐、移除基金锁定规则、兑换模块启用 |
 | v0.3.2 | ✅ 后端拆分：engine.py → engine/ 包（Mixin 模式）|
@@ -105,7 +105,7 @@ git push origin <DEV_BRANCH>
 
 > 以下是快速摘要。完整部署步骤、踩坑记录、数据流说明见 **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)**（新设备部署必读）。
 
-- 代码仓库 ≠ 运行目录，修改后需 `cp` 到 `<PRODUCTION>/v0.4.1/` 并重启
+- 代码仓库 ≠ 运行目录，修改后需 `cp` 到 `<PRODUCTION>/v0.4.2/` 并重启
 - launchd 守护：FastAPI 服务 + localtunnel 隧道，两个 plist
 - 公网：localtunnel（Cloudflare Tunnel 国内下载被墙）
 - `static/index.html` 需单独部署，忘拷首页 404
