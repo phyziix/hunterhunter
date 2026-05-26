@@ -360,6 +360,10 @@ class EngineCore:
                 tags = [t.strip().strip("'\"") for t in tag_list.split(',')]
                 tags = tags[:5]  # 只取前5个
                 
+                # 排除周月回顾文件：包含 "周回顾" 或 "月回顾" 标签的不统计
+                if "周回顾" in tags or "月回顾" in tags:
+                    continue
+                
                 total_notes += 1
                 
                 # 更新节点
@@ -395,7 +399,10 @@ class EngineCore:
     
 
     def _init_tag_index_from_notes(self):
-        """从现有笔记初始化 tag_index"""
+        """从现有笔记初始化 tag_index
+        
+        只统计每日灵感文档，排除周月回顾文件（包含 "周回顾" 或 "月回顾" 标签的文件）
+        """
         if self.state.get("tag_index", {}) and len(self.state["tag_index"]) > 0:
             return
         
@@ -423,6 +430,10 @@ class EngineCore:
                 
                 tag_list = tags_match.group(1)
                 tags = [t.strip().strip("'\"") for t in tag_list.split(',')]
+                
+                # 排除周月回顾文件：包含 "周回顾" 或 "月回顾" 标签的不统计
+                if "周回顾" in tags or "月回顾" in tags:
+                    continue
                 
                 for tag in tags:
                     if tag not in tag_index:

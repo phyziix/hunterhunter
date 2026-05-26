@@ -342,37 +342,39 @@
 
         <div class="card">
             <h3>📝 回顾与战报</h3>
-            <div class="nav-buttons" style="display: flex; flex-wrap: wrap; gap: 8px;">
-                <button 
-                    class="btn btn-secondary" 
-                    @click="openReview('weekly')"
-                    :disabled="status.weekly_review_done"
-                    :class="{ 'disabled-btn': status.weekly_review_done }"
-                >
-                    📅 周回顾
-                    <span x-show="status.weekly_review_done" class="completion-badge">已完成</span>
-                </button>
-                <button 
-                    x-show="status.weekly_review_done && lastReviewType === 'weekly'"
-                    class="btn btn-secondary"
-                    @click="viewSubmittedReview('weekly')"
-                    style="background: #10b981; color: white; border-color: #10b981;"
-                >📄 查看周报</button>
-                <button 
-                    class="btn btn-secondary" 
-                    @click="openReview('monthly')"
-                    :disabled="status.monthly_report_done"
-                    :class="{ 'disabled-btn': status.monthly_report_done }"
-                >
-                    📈 月度战报
-                    <span x-show="status.monthly_report_done" class="completion-badge">已完成</span>
-                </button>
-                <button 
-                    x-show="status.monthly_report_done && lastReviewType === 'monthly'"
-                    class="btn btn-secondary"
-                    @click="viewSubmittedReview('monthly')"
-                    style="background: #10b981; color: white; border-color: #10b981;"
-                >📄 查看月报</button>
+            <div style="display: flex; flex-wrap: wrap; gap: 16px; justify-content: center;">
+                <div style="text-align: center;">
+                    <button 
+                        class="btn btn-primary" 
+                        @click="openReview('weekly')"
+                        :disabled="status.weekly_review_done"
+                        :class="{ 'disabled-btn': status.weekly_review_done }"
+                    >
+                        📅 周回顾
+                        <span x-show="status.weekly_review_done" class="completion-badge">已完成</span>
+                    </button>
+                    <button 
+                        class="btn btn-secondary"
+                        @click="viewSubmittedReview('weekly')"
+                        style="padding: 2px 6px; font-size: 0.7rem; margin-top: 4px; background: #f1f5f9; color: #64748b; border-color: #e2e8f0;"
+                    >📄 查看</button>
+                </div>
+                <div style="text-align: center;">
+                    <button 
+                        class="btn btn-primary" 
+                        @click="openReview('monthly')"
+                        :disabled="status.monthly_report_done"
+                        :class="{ 'disabled-btn': status.monthly_report_done }"
+                    >
+                        📈 月度战报
+                        <span x-show="status.monthly_report_done" class="completion-badge">已完成</span>
+                    </button>
+                    <button 
+                        class="btn btn-secondary"
+                        @click="viewSubmittedReview('monthly')"
+                        style="padding: 2px 6px; font-size: 0.7rem; margin-top: 4px; background: #f1f5f9; color: #64748b; border-color: #e2e8f0;"
+                    >📄 查看</button>
+                </div>
             </div>
         </div>
 
@@ -959,7 +961,7 @@
         </div>
     </div>
 
-        <script src="/static/app.js"></script>
+        <script src="/static/app.js?v=20260526"></script>
 
     
     <!-- 标签详情弹窗 -->
@@ -994,9 +996,29 @@
             <!-- 正常状态 -->
             <div x-show="!tagDetailLoading && !tagDetailError && tagNotes.length > 0" style="max-height: 400px; overflow-y: auto;">
                 <template x-for="note in tagNotes" :key="note.file_path">
-                    <div style="padding: 12px; border-bottom: 1px solid #eee; cursor: pointer;" @click="openNoteDetail(note)">
-                        <div style="font-weight: 600; color: #333;" x-text="note.title || '无标题'"></div>
-                        <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 4px;" x-text="note.date"></div>
+                    <div style="border-bottom: 1px solid #eee;">
+                        <!-- 文件标题行 -->
+                        <div 
+                            style="padding: 12px; cursor: pointer;" 
+                            @click="toggleNoteExpand(note)"
+                            onmouseover="this.style.background='#f8fafc'"
+                            onmouseout="this.style.background='white'"
+                        >
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span style="font-size: 0.8rem; color: #667eea;" x-text="expandedNote && expandedNote.file_path === note.file_path ? '▼' : '▶'"></span>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600; color: #333;" x-text="note.title || '无标题'"></div>
+                                    <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 2px;" x-text="note.date"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 展开的内容 -->
+                        <div x-show="expandedNote && expandedNote.file_path === note.file_path" style="padding: 0 12px 12px 40px;">
+                            <div 
+                                style="background: #f8fafc; border-radius: 8px; padding: 12px; font-size: 0.85rem; color: #334155; white-space: pre-wrap; word-break: break-word; max-height: 300px; overflow-y: auto; line-height: 1.6;"
+                                x-text="note.content || '（无内容）'"
+                            ></div>
+                        </div>
                     </div>
                 </template>
             </div>

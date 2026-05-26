@@ -168,6 +168,14 @@ function appData() {
                 showTagModal: false,
                 tagDetailLoading: false,
                 tagDetailError: '',
+                expandedNote: null,  // 当前展开的文件
+                async toggleNoteExpand(note) {
+                    if (this.expandedNote && this.expandedNote.file_path === note.file_path) {
+                        this.expandedNote = null;  // 再次点击则收起
+                    } else {
+                        this.expandedNote = note;  // 展开新文件
+                    }
+                },
                 async loadTags() {
                     try {
                         const response = await fetch('/api/tags');
@@ -201,6 +209,16 @@ function appData() {
                 lastReviewFile: '',
                 lastReviewType: '',
                 async viewSubmittedReview(type) {
+                    // 检查是否已提交
+                    const isWeekly = type === 'weekly';
+                    const isDone = isWeekly ? this.status.weekly_review_done : this.status.monthly_report_done;
+                    const reviewName = isWeekly ? '周报' : '月报';
+                    
+                    if (!isDone) {
+                        this.showNotificationMessage(`您还未提交${reviewName}，请先完成${reviewName}后再查看`, 'info', '📄');
+                        return;
+                    }
+                    
                     if (!this.lastReviewFile) {
                         this.showNotificationMessage('暂无已提交的回顾', 'info', '📄');
                         return;
@@ -245,14 +263,16 @@ function appData() {
                     return colors[index];
                 },
                 get sortedTags() {
-                    // 排行榜：显示所有标签，按 count 降序，最多 50 个
+                    // 排行榜：显示使用次数 >= 2 的标签，按 count 降序，最多 50 个
                     return Object.entries(this.tagCloudData)
+                        .filter(([tag, data]) => data.count >= 2)
                         .sort((a, b) => b[1].count - a[1].count)
                         .slice(0, 50);
                 },
                 get filteredTagCloudEntries() {
-                    // 标签云：显示所有标签，按 count 降序，最多 50 个
+                    // 标签云：显示使用次数 >= 2 的标签，按 count 降序，最多 50 个
                     return Object.entries(this.tagCloudData)
+                        .filter(([tag, data]) => data.count >= 2)
                         .sort((a, b) => b[1].count - a[1].count)
                         .slice(0, 50);
                 },
@@ -292,6 +312,7 @@ function appData() {
                     this.showTagModal = false;
                     this.tagNotes = [];
                     this.selectedTag = '';
+                    this.expandedNote = null;
                 },
                 addTag() {
                     if (this.tagInput.trim() && !this.captureForm.tags.includes(this.tagInput.trim())) {

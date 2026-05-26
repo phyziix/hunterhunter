@@ -394,6 +394,13 @@ class EngineCapture:
     def get_tag_cloud_data(self):
         """返回标签云数据"""
         self._load_state()
+        
+        # 如果 tag_graph 为空，触发初始化
+        if not self.state["tag_graph"]["nodes"] and not self.state["tag_graph"]["edges"]:
+            self._init_tag_graph_from_notes()
+            self._init_tag_index_from_notes()
+            self._save_state()
+        
         return {
             "nodes": self.state["tag_graph"]["nodes"],
             "edges": self.state["tag_graph"]["edges"]
@@ -450,7 +457,8 @@ class EngineCapture:
                     "title": title,
                     "date": date_str,
                     "tags": tags,
-                    "file_path": file_path_str
+                    "file_path": file_path_str,
+                    "content": parts[2].strip()[:500]  # 返回前500字符
                 })
             except Exception:
                 continue
